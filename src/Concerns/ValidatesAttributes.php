@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
@@ -10,14 +9,11 @@ use Illuminate\Validation\Validator;
 trait ValidatesAttributes
 {
     protected $errorBag = 'default';
+    
     protected $validator;
 
-    public function validate()
+    protected function resolveValidation()
     {
-        if (! $this->passesAuthorization()) {
-            $this->failedAuthorization();
-        }
-
         if (! $this->passesValidation()) {
             $this->failedValidation();
         }
@@ -25,15 +21,6 @@ trait ValidatesAttributes
         return $this;
     }
 
-    public function passesAuthorization()
-    {
-        if (method_exists($this, 'authorize')) {
-            return $this->authorize();
-        }
-
-        return true;
-    }
-    
     public function passesValidation()
     {
         return $this->getValidatorInstance()->passes();
@@ -73,11 +60,6 @@ trait ValidatesAttributes
             $this->validationData(), $this->rules(),
             $this->messages(), $this->attributes()
         );
-    }
-
-    protected function failedAuthorization()
-    {
-        throw new AuthorizationException('This action is unauthorized.');
     }
 
     protected function failedValidation()

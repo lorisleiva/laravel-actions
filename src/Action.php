@@ -10,6 +10,7 @@ abstract class Action extends Controller
     use Concerns\DependencyResolver;
     use Concerns\HasAttributes;
     use Concerns\ValidatesAttributes;
+    use Concerns\VerifyAuthorization;
 
     public function __construct(array $attributes = [])
     {
@@ -25,8 +26,8 @@ abstract class Action extends Controller
     {
         $this->fill($this->getAttributesFromRequest($request));
 
-        $this->validate();
-        
+        $this->resolveAuthorization();
+        $this->resolveValidation();
         $result = $this->resolveHandle();
 
         return method_exists($this, 'response') ? $this->response($result, $request) : $result;
@@ -41,8 +42,8 @@ abstract class Action extends Controller
 
     public function run()
     {
-        $this->validate();
-
+        $this->resolveAuthorization();
+        $this->resolveValidation();
         return $this->resolveHandle();
     }
 
