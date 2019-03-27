@@ -11,8 +11,6 @@ abstract class Action extends Controller
     use Concerns\HasAttributes;
     use Concerns\ValidatesAttributes;
 
-    protected $internalValidation = false;
-
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
@@ -27,22 +25,25 @@ abstract class Action extends Controller
     {
         $this->fill($this->getAttributesFromRequest($request));
 
-        return $this->response($this->run(true), $request);
+        return $this->response($this->resolveHandle(), $request);
     }
 
     public function runAsListener($event)
     {
         $this->fill($this->getAttributesFromEvent($event));
 
-        return $this->run();
+        return $this->resolveHandle();
     }
 
-    public function run($http = false)
+    public function run()
     {
-        if ($this->internalValidation || $http) {
-            $this->validate($http);
-        }
+        $this->validate();
 
+        return $this->resolveHandle();
+    }
+
+    public function resolveHandle()
+    {
         $parameters = $this->resolveMethodDependencies($this, 'handle');
 
         return $this->handle(...$parameters);
