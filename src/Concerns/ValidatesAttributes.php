@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
-use App\Actions\InternalValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
@@ -13,16 +12,14 @@ trait ValidatesAttributes
     protected $errorBag = 'default';
     protected $validator;
 
-    public function validate($http = false)
+    public function validate()
     {
         if (! $this->passesAuthorization()) {
             $this->failedAuthorization();
         }
 
         if (! $this->passesValidation()) {
-            $http 
-                ? $this->failedHttpValidation() 
-                : $this->failedValidation();
+            $this->failedValidation();
         }
 
         return $this;
@@ -84,11 +81,6 @@ trait ValidatesAttributes
     }
 
     protected function failedValidation()
-    {
-        throw new InternalValidationException($this->validator, $this->errorBag);
-    }
-
-    protected function failedHttpValidation()
     {
         throw (new ValidationException($this->validator))
                     ->errorBag($this->errorBag)

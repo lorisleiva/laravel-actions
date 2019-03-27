@@ -11,6 +11,9 @@ class SimpleCalculator extends Action
         switch ($operation) {
             case 'addition':
                 return $left + $right;
+
+            case 'substraction':
+                return $left - $right;
             
             default:
                 throw new \Exception("Operation [$operation] not supported.");
