@@ -54,6 +54,34 @@ class ValidationTest extends TestCase
         }
     }
 
+    /** @test */
+    public function it_can_define_complex_validation_logic()
+    {
+        $action = $this->validateWith([], function ($validator) {
+            $validator->after(function ($validator) {
+                if ($this->operation === 'substraction' && $this->left <= $this->right) {
+                    $validator->errors()->add('left', 'Left must be greater than right when substracting.');
+                }
+            });
+        });
+
+        $action->fill([
+            'operation' => 'substraction',
+            'left' => 5,
+            'right' => 10,
+        ]);
+
+        try {
+            $this->assertFalse($action->passesValidation());
+            $action->run();
+            $this->fails('Expected a ValidationException');
+        } catch (ValidationException $e) {
+            $this->assertEquals([
+                'left' => ['Left must be greater than right when substracting.'],
+            ], $e->errors());
+        }
+    }
+
     protected function validateWith($rules, $withValidator = null, ...$arguments)
     {
         return new class($rules, $withValidator, ...$arguments) extends SimpleCalculator {
