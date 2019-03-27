@@ -19,4 +19,9 @@ class SimpleCalculator extends Action
                 throw new \Exception("Operation [$operation] not supported.");
         }
     }
+
+    public function response($result)
+    {
+        return "($this->operation)\nLeft: $this->left\nRight: $this->right\nResult: $result";
+    }
 }

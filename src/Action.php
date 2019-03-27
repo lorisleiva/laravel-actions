@@ -25,7 +25,9 @@ abstract class Action extends Controller
     {
         $this->fill($this->getAttributesFromRequest($request));
 
-        return $this->response($this->resolveHandle(), $request);
+        $result = $this->resolveHandle();
+
+        return method_exists($this, 'response') ? $this->response($result, $request) : $result;
     }
 
     public function runAsListener($event)
@@ -60,10 +62,5 @@ abstract class Action extends Controller
     public function getAttributesFromEvent($event)
     {
         return [];
-    }
-
-    public function response($result, Request $request)
-    {
-        return $result;
     }
 }
