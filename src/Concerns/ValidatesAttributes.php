@@ -12,13 +12,9 @@ trait ValidatesAttributes
     
     protected $validator;
 
-    protected function resolveValidation()
+    public function validate()
     {
-        if (! $this->passesValidation()) {
-            $this->failedValidation();
-        }
-
-        return $this;
+        return $this->resolveValidation()->validated();
     }
 
     public function passesValidation()
@@ -33,6 +29,35 @@ trait ValidatesAttributes
         return $this;
     }
 
+    public function validated()
+    {
+        return $this->validator->validated();
+    }
+
+    public function rules()
+    {
+        return [];
+    }
+
+    public function messages()
+    {
+        return [];
+    }
+
+    public function attributes()
+    {
+        return [];
+    }
+
+    protected function resolveValidation()
+    {
+        if (! $this->passesValidation()) {
+            $this->failedValidation();
+        }
+
+        return $this;
+    }
+    
     protected function getValidatorInstance()
     {
         if ($this->validator) {
@@ -77,25 +102,5 @@ trait ValidatesAttributes
     protected function validationData()
     {
         return $this->all();
-    }
-
-    public function validatedData()
-    {
-        return $this->validator->validated();
-    }
-
-    public function rules()
-    {
-        return [];
-    }
-
-    public function messages()
-    {
-        return [];
-    }
-
-    public function attributes()
-    {
-        return [];
     }
 }
