@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Actions;
+namespace LorisLeiva\Actions;
 
-use App\Actions\Action;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Str;
 
