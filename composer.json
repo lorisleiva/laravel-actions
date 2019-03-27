@@ -1,0 +1,48 @@
+{
+    "name": "lorisleiva/laravel-actions",
+    "description": "Laravel components that take care of one specific task",
+    "keywords": [
+        "laravel",
+        "component",
+        "action",
+        "controller",
+        "job"
+    ],
+    "homepage": "https://github.com/lorisleiva/laravel-actions",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Loris LEIVA",
+            "email": "loris.leiva@gmail.com",
+            "homepage": "https://lorisleiva.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "illuminate/support": "5.5.*|5.6.*|5.7.*|5.8.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0.0",
+        "orchestra/testbench": "~3.8.0",
+        "phpunit/phpunit" : "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lorisleiva\\Actions\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lorisleiva\\Actions\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lorisleiva\\Actions\\ActionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
