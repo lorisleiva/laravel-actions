@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Concerns;
+namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;

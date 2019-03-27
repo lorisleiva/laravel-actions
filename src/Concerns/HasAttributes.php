@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Concerns;
+namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Support\Arr;
 
@@ -11,11 +11,15 @@ trait HasAttributes
     public function setRawAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+
+        return $this;
     }
 
     public function fill(array $attributes)
     {
         $this->attributes = array_merge($this->attributes, $attributes);
+
+        return $this;
     }
 
     public function all()
@@ -40,7 +44,9 @@ trait HasAttributes
 
     public function setAttribute($key, $value)
     {
-        return Arr::set($this->attributes, $key, $value);
+        Arr::set($this->attributes, $key, $value);
+
+        return $this;
     }
 
     public function __get($key)

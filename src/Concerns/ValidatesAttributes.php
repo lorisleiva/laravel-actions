@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Concerns;
+namespace Lorisleiva\Actions\Concerns;
 
 use App\Actions\InternalValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
