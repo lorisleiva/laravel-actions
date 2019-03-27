@@ -2,9 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests\Actions;
 
-use Lorisleiva\Actions\Action;
-
-class SimpleCalculator extends Action
+class SimpleCalculator extends TestAction
 {
     public function handle($operation, $left, $right)
     {
