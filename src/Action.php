@@ -25,6 +25,8 @@ abstract class Action extends Controller
     {
         $this->fill($this->getAttributesFromRequest($request));
 
+        $this->validate();
+        
         $result = $this->resolveHandle();
 
         return method_exists($this, 'response') ? $this->response($result, $request) : $result;
