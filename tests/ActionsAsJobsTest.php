@@ -3,8 +3,10 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
+use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorShouldQueue;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
 class ActionsAsJobsTest extends TestCase
@@ -19,6 +21,23 @@ class ActionsAsJobsTest extends TestCase
         ]);
 
         $this->assertEquals(5, $result);
+    }
+
+    /** @test */
+    public function actions_can_run_as_queueable_jobs()
+    {
+        Queue::after(function ($event) {
+            $action = unserialize(array_get($event->job->payload(), 'data.command'));
+            $this->assertEquals('substraction', $action->operation);
+            $this->assertEquals(3, $action->left);
+            $this->assertEquals(2, $action->right);
+        });
+
+        SimpleCalculatorShouldQueue::dispatch([
+            'operation' => 'substraction',
+            'left' => 3,
+            'right' => 2,
+        ]);
     }
 
     /** @todo */
