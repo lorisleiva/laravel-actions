@@ -2,13 +2,18 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Request;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Routing\Controller;
 use ReflectionClass;
 use ReflectionProperty;
 
 abstract class Action extends Controller
 {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use Concerns\DependencyResolver;
     use Concerns\HasAttributes;
     use Concerns\ValidatesAttributes;
@@ -39,6 +44,13 @@ abstract class Action extends Controller
     {
         $this->fill($this->resolveAttributesFromEvent(...func_get_args()));
 
+        $this->resolveAuthorization();
+        $this->resolveValidation();
+        return $this->resolveHandle();
+    }
+
+    public function runAsJob()
+    {
         $this->resolveAuthorization();
         $this->resolveValidation();
         return $this->resolveHandle();

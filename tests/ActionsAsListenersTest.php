@@ -51,7 +51,7 @@ class ActionsAsListenersTest extends TestCase
     }
 
     /** @test */
-    public function it_redirects_back_when_the_action_is_not_validated()
+    public function it_throws_an_exception_when_the_action_is_not_validated()
     {
         $this->expectException(ValidationException::class);
 

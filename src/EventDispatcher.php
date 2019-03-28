@@ -2,10 +2,10 @@
 
 namespace LorisLeiva\Actions;
 
-use Illuminate\Events\Dispatcher;
+use Illuminate\Events\Dispatcher as IlluminateDispatcher;
 use Illuminate\Support\Str;
 
-class EventDispatcher extends Dispatcher
+class EventDispatcher extends IlluminateDispatcher
 {
     protected function parseClassCallable($listener)
     {

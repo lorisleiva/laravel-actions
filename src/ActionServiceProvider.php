@@ -2,8 +2,9 @@
 
 namespace Lorisleiva\Actions;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Bus\Dispatcher as IlluminateBusDispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
+use Illuminate\Support\ServiceProvider;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -12,6 +13,12 @@ class ActionServiceProvider extends ServiceProvider
         $this->app->singleton('events', function ($app) {
             return (new EventDispatcher($app))->setQueueResolver(function () use ($app) {
                 return $app->make(QueueFactoryContract::class);
+            });
+        });
+
+        $this->app->extend(IlluminateBusDispatcher::class, function ($dispatcher, $app) {
+            return new BusDispatcher($app, function ($connection = null) use ($app) {
+                return $app[QueueFactoryContract::class]->connection($connection);
             });
         });
     }
