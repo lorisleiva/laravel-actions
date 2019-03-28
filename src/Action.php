@@ -4,6 +4,8 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use ReflectionClass;
+use ReflectionProperty;
 
 abstract class Action extends Controller
 {
@@ -33,10 +35,12 @@ abstract class Action extends Controller
         return method_exists($this, 'response') ? $this->response($result, $request) : $result;
     }
 
-    public function runAsListener($event)
+    public function runAsListener()
     {
-        $this->fill($this->getAttributesFromEvent($event));
+        $this->fill($this->resolveAttributesFromEvent(...func_get_args()));
 
+        $this->resolveAuthorization();
+        $this->resolveValidation();
         return $this->resolveHandle();
     }
 
@@ -62,8 +66,28 @@ abstract class Action extends Controller
         );
     }
 
-    public function getAttributesFromEvent($event)
+    public function resolveAttributesFromEvent($event = null)
     {
+        if (method_exists($this, 'getAttributesFromEvent')) {
+            return $this->getAttributesFromEvent(...func_get_args());
+        }
+
+        if ($event && is_object($event)) {
+            return $this->getPublicPropertiesOfEvent($event);
+        }
+        
         return [];
+    }
+
+    protected function getPublicPropertiesOfEvent($event)
+    {
+        $class = new ReflectionClass(get_class($event));
+        $attributes = [];
+
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            $attributes[$property->name] = $property->getValue($event);
+        }
+
+        return $attributes;
     }
 }

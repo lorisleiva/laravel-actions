@@ -38,6 +38,10 @@ class ActionsAsControllersTest extends TestCase
     /** @test */
     public function it_redirects_back_when_the_action_is_not_validated()
     {
-        $this->post('/calculator/validated/invalid')->assertRedirect();
+        $this->post('/calculator/validated/invalid')
+            ->assertRedirect()
+            ->assertSessionHasErrors([
+                'operation', 'left', 'right'
+            ]);
     }
 }
