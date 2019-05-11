@@ -66,4 +66,16 @@ class ActionsAsObjectsTest extends TestCase
         $this->assertEquals($action->left, 3);
         $this->assertEquals($action->right, 5);
     }
+
+    /** @test */
+    public function it_can_run_with_some_additional_data_to_fill()
+    {
+        $response = (new SimpleCalculator())->run([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals(8, $response);
+    }
 }

@@ -24,11 +24,12 @@ abstract class Action extends Controller
         $this->fill($attributes);
     }
 
-    public function run()
+    public function run(array $attributes = [])
     {
+        $this->fill($attributes);
         $this->resolveAuthorization();
         $this->resolveValidation();
-        
+
         return $this->resolveHandle();
     }
 
