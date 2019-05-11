@@ -14,8 +14,8 @@ use ReflectionProperty;
 abstract class Action extends Controller
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    use Concerns\DependencyResolver;
     use Concerns\HasAttributes;
+    use Concerns\DependencyResolver;
     use Concerns\ValidatesAttributes;
     use Concerns\VerifyAuthorization;
 

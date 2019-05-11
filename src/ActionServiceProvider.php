@@ -18,7 +18,7 @@ class ActionServiceProvider extends ServiceProvider
 
         $this->app->extend(IlluminateBusDispatcher::class, function ($dispatcher, $app) {
             return new BusDispatcher($app, function ($connection = null) use ($app) {
-                return $app[QueueFactoryContract::class]->connection($connection);
+                return $app->make(QueueFactoryContract::class)->connection($connection);
             });
         });
     }

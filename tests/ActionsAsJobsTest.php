@@ -40,15 +40,19 @@ class ActionsAsJobsTest extends TestCase
         ]);
     }
 
-    /** @todo */
+    /** @test */
     public function it_throws_an_exception_when_the_action_is_authorized()
     {
-        //
+        $this->expectException(AuthorizationException::class);
+
+        SimpleCalculatorWithValidation::dispatchNow(['operation' => 'unauthorized']);
     }
 
-    /** @todo */
+    /** @test */
     public function it_throws_an_exception_when_the_action_is_not_validated()
     {
-        //
+        $this->expectException(ValidationException::class);
+
+        SimpleCalculatorWithValidation::dispatchNow(['operation' => 'invalid']);
     }
 }
