@@ -4,7 +4,7 @@ namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Auth\Access\AuthorizationException;
 
-trait VerifyAuthorization
+trait ResolvesAuthorization
 {
     protected function resolveAuthorization()
     {

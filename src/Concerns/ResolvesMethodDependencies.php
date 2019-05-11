@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use ReflectionMethod;
 use ReflectionParameter;
 
-trait DependencyResolver
+trait ResolvesMethodDependencies
 {
     protected function resolveMethodDependencies($instance, $method)
     {

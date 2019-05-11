@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 
-trait ValidatesAttributes
+trait ResolvesValidation
 {
     protected $errorBag = 'default';
     

@@ -1,0 +1,30 @@
+<?php
+
+namespace Lorisleiva\Actions\Concerns;
+
+use Illuminate\Http\Request;
+
+trait RunsAsController
+{
+    public function __invoke(Request $request)
+    {
+        return $this->runAsController($request);
+    }
+
+    public function runAsController(Request $request)
+    {
+        $this->fill($this->getAttributesFromRequest($request));
+
+        $result = $this->run();
+
+        return method_exists($this, 'response') ? $this->response($result, $request) : $result;
+    }
+
+    public function getAttributesFromRequest(Request $request)
+    {
+        return array_merge(
+            $request->route()->parametersWithoutNulls(),
+            $request->all()
+        );
+    }
+}
