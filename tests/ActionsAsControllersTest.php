@@ -44,4 +44,14 @@ class ActionsAsControllersTest extends TestCase
                 'operation', 'left', 'right'
             ]);
     }
+
+    /** @test */
+    public function it_keeps_track_of_how_the_action_was_ran()
+    {
+        $action = new SimpleCalculator(['operation' => 'addition']);
+
+        $action->runAsController(new \Illuminate\Http\Request);
+
+        $this->assertTrue($action->asController());
+    }
 }

@@ -60,6 +60,16 @@ class ActionsAsListenersTest extends TestCase
         $this->app->make('events')->dispatch($event);
     }
 
+    /** @test */
+    public function it_keeps_track_of_how_the_action_was_ran()
+    {
+        $action = new SimpleCalculator(['operation' => 'addition']);
+
+        $action->runAsListener();
+
+        $this->assertTrue($action->asListener());
+    }
+
     protected function newEvent($operation = 'addition', $left = 1, $right = 1)
     {
         return new class($operation, $left, $right) {

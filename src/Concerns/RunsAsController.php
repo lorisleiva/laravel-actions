@@ -13,6 +13,8 @@ trait RunsAsController
 
     public function runAsController(Request $request)
     {
+        $this->actionRanAs = 'controller';
+
         $this->fill($this->getAttributesFromRequest($request));
 
         $result = $this->run();
@@ -22,9 +24,16 @@ trait RunsAsController
 
     public function getAttributesFromRequest(Request $request)
     {
+        $route = $request->route();
+
         return array_merge(
-            $request->route()->parametersWithoutNulls(),
+            $route ? $route->parametersWithoutNulls() : [],
             $request->all()
         );
+    }
+
+    public function asController()
+    {
+        return $this->actionRanAs === 'controller';
     }
 }

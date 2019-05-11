@@ -19,6 +19,8 @@ abstract class Action extends Controller
     use Concerns\RunsAsListener;
     use Concerns\RunsAsJob;
 
+    protected $actionRanAs = 'object';
+
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
@@ -38,5 +40,10 @@ abstract class Action extends Controller
         $parameters = $this->resolveMethodDependencies($this, 'handle');
 
         return $this->handle(...$parameters);
+    }
+
+    public function asObject()
+    {
+        return $this->actionRanAs === 'object';
     }
 }
