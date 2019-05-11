@@ -29,6 +29,10 @@ abstract class Action extends Controller
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
+
+        if (method_exists($this, 'register')) {
+            $this->register();
+        }
     }
 
     public function run(array $attributes = [])

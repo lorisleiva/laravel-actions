@@ -4,9 +4,8 @@ namespace Lorisleiva\Actions\Tests\Actions;
 
 class SimpleCalculator extends TestAction
 {
-    public function __construct(array $attributes = [])
+    public function register()
     {
-        parent::__construct($attributes);
         $this->middleware(function ($request, $next) {
             if ($request->operation === 'middleware') {
                 abort(400, 'Intercepted by a middleware');

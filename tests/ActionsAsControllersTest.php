@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Http\Request;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
@@ -50,7 +51,7 @@ class ActionsAsControllersTest extends TestCase
     {
         $action = new SimpleCalculator(['operation' => 'addition']);
 
-        $action->runAsController(new \Illuminate\Http\Request);
+        $action->runAsController(new Request);
 
         $this->assertTrue($action->runningAs('controller'));
     }
