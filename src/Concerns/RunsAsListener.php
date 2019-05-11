@@ -9,7 +9,7 @@ trait RunsAsListener
 {
     public function runAsListener()
     {
-        $this->actionRanAs = 'listener';
+        $this->runningAs = 'listener';
 
         $this->fill($this->resolveAttributesFromEvent(...func_get_args()));
 
@@ -39,10 +39,5 @@ trait RunsAsListener
         }
 
         return $attributes;
-    }
-
-    public function asListener()
-    {
-        return $this->actionRanAs === 'listener';
     }
 }

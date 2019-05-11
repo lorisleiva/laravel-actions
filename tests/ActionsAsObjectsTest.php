@@ -88,6 +88,6 @@ class ActionsAsObjectsTest extends TestCase
     {
         $action = new SimpleCalculator();
 
-        $this->assertTrue($action->asObject());
+        $this->assertTrue($action->runningAs('object'));
     }
 }

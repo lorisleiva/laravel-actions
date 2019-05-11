@@ -19,7 +19,7 @@ abstract class Action extends Controller
     use Concerns\RunsAsListener;
     use Concerns\RunsAsJob;
 
-    protected $actionRanAs = 'object';
+    protected $runningAs = 'object';
 
     public function __construct(array $attributes = [])
     {
@@ -42,8 +42,10 @@ abstract class Action extends Controller
         return $this->handle(...$parameters);
     }
 
-    public function asObject()
+    public function runningAs()
     {
-        return $this->actionRanAs === 'object';
+        $any = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
+
+        return in_array($this->runningAs, $any);
     }
 }

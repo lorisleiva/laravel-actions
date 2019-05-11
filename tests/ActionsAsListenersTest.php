@@ -67,7 +67,7 @@ class ActionsAsListenersTest extends TestCase
 
         $action->runAsListener();
 
-        $this->assertTrue($action->asListener());
+        $this->assertTrue($action->runningAs('listener'));
     }
 
     protected function newEvent($operation = 'addition', $left = 1, $right = 1)

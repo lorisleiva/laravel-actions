@@ -54,7 +54,7 @@ class ActionsAsControllersTest extends TestCase
 
         $action->runAsController(new \Illuminate\Http\Request);
 
-        $this->assertTrue($action->asController());
+        $this->assertTrue($action->runningAs('controller'));
     }
 
     /** @test */

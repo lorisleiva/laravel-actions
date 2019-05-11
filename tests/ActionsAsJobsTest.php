@@ -63,6 +63,6 @@ class ActionsAsJobsTest extends TestCase
 
         $action->runAsJob();
 
-        $this->assertTrue($action->asJob());
+        $this->assertTrue($action->runningAs('job'));
     }
 }
