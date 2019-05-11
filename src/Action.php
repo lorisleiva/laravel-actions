@@ -3,14 +3,19 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Routing\Controller;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 abstract class Action extends Controller
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels { 
+        __sleep as protected sleepFromSerializesModels; 
+    }
     use Concerns\HasAttributes;
     use Concerns\ResolvesMethodDependencies;
     use Concerns\ResolvesAuthorization;
@@ -47,5 +52,14 @@ abstract class Action extends Controller
         $any = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
 
         return in_array($this->runningAs, $any);
+    }
+
+    public function __sleep()
+    {
+        $properties = $this->sleepFromSerializesModels();
+
+        return array_values(array_diff($properties, [
+            'middleware', 'runningAs', 'errorBag', 'validator',
+        ]));
     }
 }
