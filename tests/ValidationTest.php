@@ -43,7 +43,7 @@ class ValidationTest extends TestCase
         try {
             $this->assertFalse($action->passesValidation());
             $action->run();
-            $this->fails('Expected a ValidationException');
+            $this->fail('Expected a ValidationException');
         } catch (ValidationException $e) {
             $this->assertEquals([
                 'operation' => ['The selected operation is invalid.'],
@@ -74,7 +74,7 @@ class ValidationTest extends TestCase
         try {
             $this->assertFalse($action->passesValidation());
             $action->run();
-            $this->fails('Expected a ValidationException');
+            $this->fail('Expected a ValidationException');
         } catch (ValidationException $e) {
             $this->assertEquals([
                 'left' => ['Left must be greater than right when substracting.'],

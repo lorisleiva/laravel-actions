@@ -37,12 +37,17 @@ trait HasAttributes
         return Arr::except($this->attributes, $keys);
     }
 
-    public function getAttribute($key, $default = null)
+    public function has($key)
+    {
+        return Arr::has($this->attributes, $key);
+    }
+
+    public function get($key, $default = null)
     {
         return Arr::get($this->attributes, $key, $default);
     }
 
-    public function setAttribute($key, $value)
+    public function set($key, $value)
     {
         Arr::set($this->attributes, $key, $value);
 
@@ -51,11 +56,11 @@ trait HasAttributes
 
     public function __get($key)
     {
-        return $this->getAttribute($key);
+        return $this->get($key);
     }
 
     public function __set($key, $value)
     {
-        $this->setAttribute($key, $value);
+        $this->set($key, $value);
     }
 }

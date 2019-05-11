@@ -45,11 +45,15 @@ class ActionsAsObjectsTest extends TestCase
 
         $action->right = 7;
         $action->foo = 'bar';
+        $action->set('titi', 'toto');
 
         $this->assertEquals($action->operation, 'addition');
         $this->assertEquals($action->left, 3);
         $this->assertEquals($action->right, 7);
         $this->assertEquals($action->foo, 'bar');
+        $this->assertEquals($action->get('titi'), 'toto');
+        $this->assertTrue($action->has('titi'));
+        $this->assertFalse($action->has('missing_attribute'));
         $this->assertEquals($action->run(), 10);
     }
 

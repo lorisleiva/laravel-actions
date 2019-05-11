@@ -1,10 +1,18 @@
 <?php
 
-namespace Lorisleiva\Action\Tests\Actions;
+namespace Lorisleiva\Actions\Tests\Actions;
 
-use Lorisleiva\Actions\Action;
+use Lorisleiva\Actions\Tests\Stubs\User;
+use Lorisleiva\Actions\Tests\Actions\TestAction;
 
-class UpdateProfile extends Action
+class UpdateProfile extends TestAction
 {
-    //
+    public function handle(User $user)
+    {        
+        if ($this->has('avatar')) {
+            return (new UpdateProfilePicture)->run($this->all());
+        }
+
+        return (new UpdateProfileDetails)->run($this->all());
+    }
 }
