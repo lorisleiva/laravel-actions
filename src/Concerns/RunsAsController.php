@@ -19,7 +19,19 @@ trait RunsAsController
 
         $result = $this->run();
 
-        return method_exists($this, 'response') ? $this->response($result, $request) : $result;
+        if (method_exists($this, 'response')) {
+            return $this->response($result, $request);
+        }
+
+        if (method_exists($this, 'jsonResponse') && $request->wantsJson()) {
+            return $this->jsonResponse($result, $request);
+        }
+
+        if (method_exists($this, 'htmlResponse') && ! $request->wantsJson()) {
+            return $this->htmlResponse($result, $request);
+        }
+
+        return $result;
     }
 
     public function getAttributesFromRequest(Request $request)
