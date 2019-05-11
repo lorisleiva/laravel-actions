@@ -50,8 +50,13 @@ abstract class Action extends Controller
 
     public function runningAs()
     {
-        $any = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
+        $matches = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
 
-        return in_array($this->runningAs, $any);
+        return in_array($this->runningAs, $matches);
+    }
+
+    public static function createFrom(Action $action)
+    {
+        return (new static)->fill($action->all());
     }
 }

@@ -8,11 +8,11 @@ use Lorisleiva\Actions\Tests\Actions\TestAction;
 class UpdateProfile extends TestAction
 {
     public function handle(User $user)
-    {        
+    {
         if ($this->has('avatar')) {
-            return (new UpdateProfilePicture)->run($this->all());
+            return UpdateProfilePicture::createFrom($this)->run();
         }
 
-        return (new UpdateProfileDetails)->run($this->all());
+        return UpdateProfileDetails::createFrom($this)->run();
     }
 }
