@@ -3,7 +3,6 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
-use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithMiddleware;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
 class ActionsAsControllersTest extends TestCase
@@ -12,7 +11,6 @@ class ActionsAsControllersTest extends TestCase
     {
         $app->make('router')->post('/calculator/{operation}', SimpleCalculator::class);
         $app->make('router')->post('/calculator/validated/{operation}', SimpleCalculatorWithValidation::class);
-        $app->make('router')->post('/calculator/middleware/{operation}', SimpleCalculatorWithMiddleware::class);
     }
 
     /** @test */
@@ -58,9 +56,9 @@ class ActionsAsControllersTest extends TestCase
     }
 
     /** @test */
-    public function dummy()
+    public function it_can_be_intercepted_by_middleware()
     {
-        $response = $this->post('/calculator/middleware/addition');
+        $response = $this->post('/calculator/middleware');
 
         $this->assertEquals(400, $response->exception->getStatusCode());
         $this->assertEquals('Intercepted by a middleware', $response->exception->getMessage());

@@ -4,6 +4,17 @@ namespace Lorisleiva\Actions\Tests\Actions;
 
 class SimpleCalculator extends TestAction
 {
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->middleware(function ($request, $next) {
+            if ($request->operation === 'middleware') {
+                abort(400, 'Intercepted by a middleware');
+            }
+            return $next($request);
+        });
+    }
+
     public function handle($operation, $left, $right)
     {
         switch ($operation) {
