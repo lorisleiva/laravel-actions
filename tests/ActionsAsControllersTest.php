@@ -65,4 +65,15 @@ class ActionsAsControllersTest extends TestCase
         $this->assertEquals(400, $response->exception->getStatusCode());
         $this->assertEquals('Intercepted by a middleware', $response->exception->getMessage());
     }
+
+    /** @test */
+    public function it_resets_the_action_when_called_multiple_times_by_the_same_route()
+    {
+        // Laravel makes sure that there is only one Controller instance per route defined.
+        // Therefore, when using Actions as Controller, the same Action can be used multiple
+        // times when called from the same route, hence the need to reset it between calls.
+        $this->post('/calculator/validated/addition', ['left' => 5])->assertSessionHasErrors('right');
+        $this->post('/calculator/validated/addition', ['right' => 5])->assertSessionHasErrors('left');
+        $this->post('/calculator/validated/invalid')->assertSessionHasErrors(['operation', 'right', 'left']);
+    }
 }
