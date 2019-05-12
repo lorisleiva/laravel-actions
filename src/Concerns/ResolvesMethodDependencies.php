@@ -75,7 +75,8 @@ trait ResolvesMethodDependencies
 
     protected function findAttributeFromParameter($name, $extras = [])
     {
-        $attributes = $this->getAttributesForResolvingMethodDependencies($extras);
+        $routeAttributes = $this->runningAs('controller') ? $this->getAttributesFromRoute($this->request) : [];
+        $attributes = array_merge($this->attributes, $routeAttributes, $extras);
 
         if (array_key_exists($name, $attributes)) {
             return [$name, $attributes[$name]];
@@ -83,15 +84,6 @@ trait ResolvesMethodDependencies
         if (array_key_exists($snakedName = Str::snake($name), $attributes)) {
             return [$snakedName, $attributes[$snakedName]];
         }
-    }
-
-    public function getAttributesForResolvingMethodDependencies($extras = [])
-    {
-        if (! $this->runningAs('controller')) {
-            return array_merge($this->attributes, $extras);
-        }
-
-        return array_merge($this->attributes, $this->getAttributesFromRoute($this->request), $extras);
     }
 
     public function updateAttributeWithResolvedInstance($key, $instance)
