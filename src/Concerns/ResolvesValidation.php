@@ -73,7 +73,7 @@ trait ResolvesValidation
             : $this->createDefaultValidator($factory);
 
         if (method_exists($this, 'withValidator')) {
-            $this->withValidator($validator);
+            $this->resolveAndCall($this, 'withValidator', compact('validator'));
         }
 
         $this->setValidator($validator);
