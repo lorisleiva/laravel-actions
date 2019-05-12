@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\Tests\Actions;
 
+use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Stubs\User;
-use Lorisleiva\Actions\Tests\Actions\TestAction;
 
-class UpdateProfile extends TestAction
+class UpdateProfile extends Action
 {
     public function handle(User $user)
     {

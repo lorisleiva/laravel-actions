@@ -10,15 +10,17 @@ class AuthorizationTest extends TestCase
     /** @test */
     public function it_defines_authorization_logic_in_a_dedicated_method()
     {
-        $action = new SimpleCalculator([
+        $attributes = [
             'operation' => 'addition',
             'left' => 1,
             'right' => 2,
-        ]);
+        ];
 
-        $action->fakeAuthorize(function () {
-            return $this->operation === 'addition';
-        });
+        $action = new class($attributes) extends SimpleCalculator {
+            public function authorize() {
+                return $this->operation === 'addition';
+            }
+        };
 
         $this->assertTrue($action->passesAuthorization());
         $this->assertEquals(3, $action->run());
@@ -29,9 +31,11 @@ class AuthorizationTest extends TestCase
     {
         $this->expectException(AuthorizationException::class);
 
-        $action = (new SimpleCalculator())->fakeAuthorize(function () {
-            return false;
-        });
+        $action = new class extends SimpleCalculator {
+            public function authorize() {
+                return false;
+            }
+        };
 
         $this->assertFalse($action->passesAuthorization());
         $action->run();

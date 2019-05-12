@@ -2,7 +2,9 @@
 
 namespace Lorisleiva\Actions\Tests\Actions;
 
-class SimpleCalculator extends TestAction
+use Lorisleiva\Actions\Action;
+
+class SimpleCalculator extends Action
 {
     public function register()
     {

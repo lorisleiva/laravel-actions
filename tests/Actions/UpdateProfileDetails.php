@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\Tests\Actions;
 
+use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Stubs\User;
-use Lorisleiva\Actions\Tests\Actions\TestAction;
 
-class UpdateProfileDetails extends TestAction
+class UpdateProfileDetails extends Action
 {
     public function authorize()
     {

@@ -10,17 +10,21 @@ class ValidationTest extends TestCase
     /** @test */
     public function it_uses_validation_rules_to_validate_attributes()
     {
-        $action = new SimpleCalculator([
+        $attributes = [
             'operation' => 'substraction',
             'left' => 5,
             'right' => 2,
-        ]);
+        ];
 
-        $action->fakeRules([
-            'operation' => 'required|in:addition,substraction',
-            'left' => 'required|integer',
-            'right' => 'required|integer',
-        ]);
+        $action = new class($attributes) extends SimpleCalculator {
+            public function rules() {
+                return [
+                    'operation' => 'required|in:addition,substraction',
+                    'left' => 'required|integer',
+                    'right' => 'required|integer',
+                ];
+            }
+        };
 
         $this->assertTrue($action->passesValidation());
         $this->assertEquals(3, $action->run());
@@ -29,16 +33,20 @@ class ValidationTest extends TestCase
     /** @test */
     public function it_throws_a_validation_exception_when_validator_fails()
     {
-        $action = new SimpleCalculator([
+        $attributes = [
             'operation' => 'multiplication',
             'left' => 'five',
-        ]);
+        ];
 
-        $action->fakeRules([
-            'operation' => 'required|in:addition,substraction',
-            'left' => 'required|integer',
-            'right' => 'required|integer',
-        ]);
+        $action = new class($attributes) extends SimpleCalculator {
+            public function rules() {
+                return [
+                    'operation' => 'required|in:addition,substraction',
+                    'left' => 'required|integer',
+                    'right' => 'required|integer',
+                ];
+            }
+        };
 
         try {
             $this->assertFalse($action->passesValidation());
@@ -56,20 +64,21 @@ class ValidationTest extends TestCase
     /** @test */
     public function it_can_define_complex_validation_logic()
     {
-        $action = new SimpleCalculator([
+        $attributes = [
             'operation' => 'substraction',
             'left' => 5,
             'right' => 10,
-        ]);
+        ];
 
-        $action->fakeWithValidator(function ($validator) {
-            $validator->after(function ($validator) {
-                if ($this->operation === 'substraction' && $this->left <= $this->right) {
-                    $validator->errors()->add('left', 'Left must be greater than right when substracting.');
-                }
-            });
-        });
-
+        $action = new class($attributes) extends SimpleCalculator {
+            public function withValidator($validator) {
+                $validator->after(function ($validator) {
+                    if ($this->operation === 'substraction' && $this->left <= $this->right) {
+                        $validator->errors()->add('left', 'Left must be greater than right when substracting.');
+                    }
+                });
+            }
+        };
 
         try {
             $this->assertFalse($action->passesValidation());
