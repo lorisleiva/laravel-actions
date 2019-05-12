@@ -82,12 +82,4 @@ class RunsAsObjectsTest extends TestCase
 
         $this->assertEquals(8, $response);
     }
-
-    /** @test */
-    public function it_keeps_track_of_how_the_action_was_ran()
-    {
-        $action = new SimpleCalculator();
-
-        $this->assertTrue($action->runningAs('object'));
-    }
 }

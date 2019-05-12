@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Tests;
 
-use Illuminate\Http\Request;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
@@ -44,17 +43,6 @@ class RunsAsControllersTest extends TestCase
             ->assertSessionHasErrors([
                 'operation', 'left', 'right'
             ]);
-    }
-
-    /** @test */
-    public function it_keeps_track_of_how_the_action_was_ran()
-    {
-        $action = new SimpleCalculator;
-        $request = (new Request)->merge(['operation' => 'addition']);
-
-        $action->runAsController($request);
-
-        $this->assertTrue($action->runningAs('controller'));
     }
 
     /** @test */
