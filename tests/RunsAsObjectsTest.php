@@ -28,10 +28,10 @@ class RunsAsObjectsTest extends TestCase
             'foo' => 'This variable is not used in the action.',
         ]);
 
-        $this->assertEquals($action->operation, 'addition');
-        $this->assertEquals($action->left, 3);
-        $this->assertEquals($action->right, 5);
-        $this->assertEquals($action->foo, 'This variable is not used in the action.');
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(5, $action->right);
+        $this->assertEquals('This variable is not used in the action.', $action->foo);
     }
 
     /** @test */
@@ -47,14 +47,14 @@ class RunsAsObjectsTest extends TestCase
         $action->foo = 'bar';
         $action->set('titi', 'toto');
 
-        $this->assertEquals($action->operation, 'addition');
-        $this->assertEquals($action->left, 3);
-        $this->assertEquals($action->right, 7);
-        $this->assertEquals($action->foo, 'bar');
-        $this->assertEquals($action->get('titi'), 'toto');
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(7, $action->right);
+        $this->assertEquals('bar', $action->foo);
+        $this->assertEquals('toto', $action->get('titi'));
         $this->assertTrue($action->has('titi'));
         $this->assertFalse($action->has('missing_attribute'));
-        $this->assertEquals($action->run(), 10);
+        $this->assertEquals(10, $action->run());
     }
 
     /** @test */
@@ -66,9 +66,9 @@ class RunsAsObjectsTest extends TestCase
             'right' => 5,
         ]);
 
-        $this->assertEquals($action->operation, 'addition');
-        $this->assertEquals($action->left, 3);
-        $this->assertEquals($action->right, 5);
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(5, $action->right);
     }
 
     /** @test */
