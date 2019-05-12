@@ -9,14 +9,14 @@ use ReflectionParameter;
 
 trait ResolvesMethodDependencies
 {
-    protected function resolveAndCall($instance, $method)
+    protected function resolveAndCall($instance, $method, $extras = [])
     {
-        $parameters = $this->resolveMethodDependencies($instance, $method);
+        $parameters = $this->resolveMethodDependencies($instance, $method, $extras);
 
         return $instance->{$method}(...$parameters);
     }
 
-    protected function resolveMethodDependencies($instance, $method)
+    protected function resolveMethodDependencies($instance, $method, $extras = [])
     {
         if (! method_exists($instance, $method)) {
             return [];
@@ -24,16 +24,16 @@ trait ResolvesMethodDependencies
 
         $reflector = new ReflectionMethod($instance, $method);
 
-        $handler = function ($parameter) {
-            return $this->resolveDependency($parameter);
+        $handler = function ($parameter) use ($extras) {
+            return $this->resolveDependency($parameter, $extras);
         };
 
         return array_map($handler, $reflector->getParameters());
     }
 
-    protected function resolveDependency(ReflectionParameter $parameter)
+    protected function resolveDependency(ReflectionParameter $parameter, $extras = [])
     {   
-        list($key, $value) = $this->findAttributeFromParameter($parameter->name);
+        list($key, $value) = $this->findAttributeFromParameter($parameter->name, $extras);
         $class = $parameter->getClass();
 
         if ($key && (! $class || $value instanceof $class->name)) {
@@ -73,9 +73,9 @@ trait ResolvesMethodDependencies
         return $model;
     }
 
-    protected function findAttributeFromParameter($name)
+    protected function findAttributeFromParameter($name, $extras = [])
     {
-        $attributes = $this->getAttributesForResolvingMethodDependencies();
+        $attributes = $this->getAttributesForResolvingMethodDependencies($extras);
 
         if (array_key_exists($name, $attributes)) {
             return [$name, $attributes[$name]];
@@ -85,13 +85,13 @@ trait ResolvesMethodDependencies
         }
     }
 
-    public function getAttributesForResolvingMethodDependencies()
+    public function getAttributesForResolvingMethodDependencies($extras = [])
     {
         if (! $this->runningAs('controller')) {
-            return $this->attributes;
+            return array_merge($this->attributes, $extras);
         }
 
-        return array_merge($this->attributes, $this->getAttributesFromRoute($this->request));
+        return array_merge($this->attributes, $this->getAttributesFromRoute($this->request), $extras);
     }
 
     public function updateAttributeWithResolvedInstance($key, $instance)
