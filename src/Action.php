@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -42,10 +43,20 @@ abstract class Action extends Controller
     public function run(array $attributes = [])
     {
         $this->fill($attributes);
+        $this->resolveBeforeHook();
         $this->resolveAuthorization();
         $this->resolveValidation();
 
         return $this->resolveAndCall($this, 'handle');
+    }
+
+    public function resolveBeforeHook()
+    {
+        $method = 'as' . Str::studly($this->runningAs);
+
+        if (method_exists($this, $method)) {
+            return $this->resolveAndCall($this, $method);
+        }
     }
 
     public function runningAs()
