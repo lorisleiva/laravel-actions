@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Lorisleiva\Actions\Action;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
@@ -28,6 +29,30 @@ class ResolvesValidationTest extends TestCase
 
         $this->assertTrue($action->passesValidation());
         $this->assertEquals(3, $action->run());
+    }
+
+    /** @test */
+    public function it_can_access_to_the_validated_data_after_validation()
+    {
+        $attributes = [
+            'operation' => 'addition',
+            'left' => 5,
+            'right' => 2,
+        ];
+
+        $action = new class($attributes) extends SimpleCalculator {
+            public function rules() {
+                return [
+                    'left' => 'required|integer',
+                    'right' => 'required|integer',
+                ];
+            }
+        };
+
+        $this->assertTrue($action->passesValidation());
+        $this->assertCount(2, $action->validated());
+        $this->assertEquals(5, $action->validated()['left']);
+        $this->assertEquals(2, $action->validated()['right']);
     }
 
     /** @test */
@@ -89,5 +114,39 @@ class ResolvesValidationTest extends TestCase
                 'left' => ['Left must be greater than right when substracting.'],
             ], $e->errors());
         }
+    }
+
+    /** @test */
+    public function it_can_create_its_own_validator_instance()
+    {
+        $action = new class(['operation' => 'valid']) extends Action {
+            public function validator($factory) {
+                return $factory->make($this->all(), ['operation' => 'in:valid']);
+            }
+        };
+
+        $this->assertTrue($action->passesValidation());
+    }
+
+    /** @test */
+    public function it_can_validate_data_directly_in_the_handle_method()
+    {
+        $action = new class(['operation' => 'valid']) extends Action {
+            public function handle() {
+                $first = $this->validate(['operation' => 'in:valid']);
+
+                try {
+                    $second = $this->validate(['operation' => 'not_in:valid']);
+                } catch (\Throwable $th) {
+                    $second = null;
+                }
+
+                return compact('first', 'second');
+            }
+        };
+
+        $result = $action->run();
+        $this->assertEquals(['operation' => 'valid'], $result['first']);
+        $this->assertNull($result['second']);
     }
 }

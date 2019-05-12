@@ -12,9 +12,11 @@ trait ResolvesValidation
     
     protected $validator;
 
-    public function validate()
+    public function validate($rules = [], $messages = [], $customAttributes = [])
     {
-        return $this->resolveValidation()->validated();
+        return app(ValidationFactory::class)
+             ->make($this->validationData(), $rules, $messages, $customAttributes)
+             ->validate();
     }
 
     public function passesValidation()
