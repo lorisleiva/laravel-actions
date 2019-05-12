@@ -9,14 +9,14 @@ use ReflectionParameter;
 
 trait ResolvesMethodDependencies
 {
-    protected function resolveAndCall($instance, $method, $save = true)
+    protected function resolveAndCall($instance, $method)
     {
-        $parameters = $this->resolveMethodDependencies($instance, $method, $save);
+        $parameters = $this->resolveMethodDependencies($instance, $method);
 
         return $instance->{$method}(...$parameters);
     }
 
-    protected function resolveMethodDependencies($instance, $method, $save = true)
+    protected function resolveMethodDependencies($instance, $method)
     {
         if (! method_exists($instance, $method)) {
             return [];
@@ -24,14 +24,14 @@ trait ResolvesMethodDependencies
 
         $reflector = new ReflectionMethod($instance, $method);
 
-        $handler = function ($parameter) use ($save) {
-            return $this->resolveDependency($parameter, $save);
+        $handler = function ($parameter) {
+            return $this->resolveDependency($parameter);
         };
 
         return array_map($handler, $reflector->getParameters());
     }
 
-    protected function resolveDependency(ReflectionParameter $parameter, $save = true)
+    protected function resolveDependency(ReflectionParameter $parameter)
     {   
         list($key, $value) = $this->findAttributeFromParameter($parameter->name);
         $class = $parameter->getClass();
@@ -41,7 +41,7 @@ trait ResolvesMethodDependencies
         }
 
         if ($class) {
-            return $this->resolveContainerDependency($class->name, $key, $value, $save);
+            return $this->resolveContainerDependency($class->name, $key, $value);
         }
 
         if ($parameter->isDefaultValueAvailable()) {
@@ -49,7 +49,7 @@ trait ResolvesMethodDependencies
         }
     }
 
-    protected function resolveContainerDependency($class, $key, $value, $save = true)
+    protected function resolveContainerDependency($class, $key, $value)
     {
         $instance = app($class);
 
@@ -57,7 +57,7 @@ trait ResolvesMethodDependencies
             $instance = $this->resolveRouteBinding($instance, $value);
         }
 
-        if ($key && $save) {
+        if ($key) {
             $this->updateAttributeWithResolvedInstance($key, $instance);
         }
 
