@@ -2,6 +2,8 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Http\Request;
+use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
@@ -63,5 +65,90 @@ class RunsAsControllersTest extends TestCase
         $this->post('/calculator/validated/addition', ['left' => 5])->assertSessionHasErrors('right');
         $this->post('/calculator/validated/addition', ['right' => 5])->assertSessionHasErrors('left');
         $this->post('/calculator/validated/invalid')->assertSessionHasErrors(['operation', 'right', 'left']);
+    }
+
+    /** @test */
+    public function it_returns_the_result_of_the_handle_method_by_default()
+    {
+        $action = new class extends Action {
+            public function handle() {
+                return 'result from handle';
+            }
+        };
+
+        $result = $action->runAsController(new Request);
+        $this->assertEquals('result from handle', $result);
+    }
+
+    /** @test */
+    public function it_returns_the_result_of_the_response_method_when_provided()
+    {
+        $action = new class extends Action {
+            public function handle() {
+                return 'result from handle';
+            }
+            public function response() {
+                return 'result from response';
+            }
+        };
+
+        $result = $action->runAsController(new Request);
+        $this->assertEquals('result from response', $result);
+    }
+
+    /** @test */
+    public function it_returns_the_result_of_the_html_response_method_when_provided_and_request_wants_html()
+    {
+        $action = new class extends Action {
+            public function handle() {
+                return 'result from handle';
+            }
+            public function htmlResponse() {
+                return 'result from htmlResponse';
+            }
+        };
+
+        $result = $action->runAsController(new Request);
+        $this->assertEquals('result from htmlResponse', $result);
+    }
+
+    /** @test */
+    public function it_returns_the_result_of_the_json_response_method_when_provided_and_request_wants_json()
+    {
+        $action = new class extends Action {
+            public function handle() {
+                return 'result from handle';
+            }
+            public function jsonResponse() {
+                return 'result from jsonResponse';
+            }
+        };
+
+        $request = new Request;
+        $request->headers->add(['Accept' => 'application/json']);
+        $result = $action->runAsController($request);
+        $this->assertEquals('result from jsonResponse', $result);
+    }
+
+    /** @test */
+    public function it_returns_the_result_of_the_response_method_when_everything_is_provided()
+    {
+        $action = new class extends Action {
+            public function handle() {
+                return 'result from handle';
+            }
+            public function response() {
+                return 'result from response';
+            }
+            public function htmlResponse() {
+                return 'result from htmlResponse';
+            }
+            public function jsonResponse() {
+                return 'result from jsonResponse';
+            }
+        };
+
+        $result = $action->runAsController(new Request);
+        $this->assertEquals('result from response', $result);
     }
 }
