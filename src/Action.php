@@ -59,11 +59,9 @@ abstract class Action extends Controller
         }
     }
 
-    public function runningAs()
+    public function runningAs($matches)
     {
-        $matches = is_array(func_get_arg(0)) ? func_get_arg(0) : func_get_args();
-
-        return in_array($this->runningAs, $matches);
+        return in_array($this->runningAs, is_array($matches) ? $matches : func_get_args());
     }
 
     public function actingAs($user)

@@ -82,4 +82,50 @@ class RunsAsObjectsTest extends TestCase
 
         $this->assertEquals(8, $response);
     }
+
+    /** @test */
+    public function it_can_override_all_attributes_with_a_given_array()
+    {
+        $action = new SimpleCalculator(['operation' => 'addition', 'foo' => 'bar']);
+
+        $action->setRawAttributes(['operation' => 'substraction']);
+
+        $this->assertEquals(['operation' => 'substraction'], $action->all());
+    }
+
+    /** @test */
+    public function it_returns_all_attributes_from_an_action()
+    {
+        $action = new SimpleCalculator([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ], $action->all());
+    }
+
+    /** @test */
+    public function it_returns_a_subset_of_the_attributes_of_an_action()
+    {
+        $action = new SimpleCalculator([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals(
+            ['operation' => 'addition'], 
+            $action->only('operation')
+        );
+
+        $this->assertEquals(
+            ['right' => 5], 
+            $action->except('operation', 'left')
+        );
+    }
 }

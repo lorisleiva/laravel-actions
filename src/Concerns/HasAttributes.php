@@ -29,12 +29,12 @@ trait HasAttributes
 
     public function only($keys)
     {
-        return Arr::only($this->attributes, $keys);
+        return Arr::only($this->attributes, is_array($keys) ? $keys : func_get_args());
     }
 
     public function except($keys)
     {
-        return Arr::except($this->attributes, $keys);
+        return Arr::except($this->attributes, is_array($keys) ? $keys : func_get_args());
     }
 
     public function has($key)
