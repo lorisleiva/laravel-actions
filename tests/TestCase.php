@@ -20,7 +20,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         return User::create(array_merge([
             'name' => 'John Doe', 
-            'email' => 'john.doe@gmail.com',
+            'email' => rand() . '@gmail.com',
             'password' => bcrypt('secret'),
         ], $data));
     }
