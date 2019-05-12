@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Access\AuthorizationException;
 
 trait ResolvesAuthorization
@@ -18,7 +19,8 @@ trait ResolvesAuthorization
     public function passesAuthorization()
     {
         if (method_exists($this, 'authorize')) {
-            return $this->authorize();
+            $parameters = $this->resolveMethodDependencies($this, 'authorize');
+            return $this->authorize(...$parameters);
         }
 
         return true;
@@ -27,5 +29,10 @@ trait ResolvesAuthorization
     protected function failedAuthorization()
     {
         throw new AuthorizationException('This action is unauthorized.');
+    }
+
+    protected function can($ability, $arguments = [])
+    {
+        return Gate::allows($ability, $arguments);
     }
 }
