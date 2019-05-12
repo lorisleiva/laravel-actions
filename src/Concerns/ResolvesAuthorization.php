@@ -19,8 +19,7 @@ trait ResolvesAuthorization
     public function passesAuthorization()
     {
         if (method_exists($this, 'authorize')) {
-            $parameters = $this->resolveMethodDependencies($this, 'authorize');
-            return $this->authorize(...$parameters);
+            return $this->resolveAndCall($this, 'authorize');
         }
 
         return true;

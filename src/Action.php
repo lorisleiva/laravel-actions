@@ -45,14 +45,7 @@ abstract class Action extends Controller
         $this->resolveAuthorization();
         $this->resolveValidation();
 
-        return $this->resolveHandle();
-    }
-
-    public function resolveHandle()
-    {
-        $parameters = $this->resolveMethodDependencies($this, 'handle');
-
-        return $this->handle(...$parameters);
+        return $this->resolveAndCall($this, 'handle');
     }
 
     public function runningAs()

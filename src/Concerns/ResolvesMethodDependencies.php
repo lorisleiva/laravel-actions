@@ -9,7 +9,14 @@ use ReflectionParameter;
 
 trait ResolvesMethodDependencies
 {
-    protected function resolveMethodDependencies($instance, $method)
+    protected function resolveAndCall($instance, $method, $save = true)
+    {
+        $parameters = $this->resolveMethodDependencies($instance, $method, $save);
+
+        return $instance->{$method}(...$parameters);
+    }
+
+    protected function resolveMethodDependencies($instance, $method, $save = true)
     {
         if (! method_exists($instance, $method)) {
             return [];
@@ -17,14 +24,14 @@ trait ResolvesMethodDependencies
 
         $reflector = new ReflectionMethod($instance, $method);
 
-        $handler = function ($parameter) {
-            return $this->resolveDependency($parameter);
+        $handler = function ($parameter) use ($save) {
+            return $this->resolveDependency($parameter, $save);
         };
 
         return array_map($handler, $reflector->getParameters());
     }
 
-    protected function resolveDependency(ReflectionParameter $parameter)
+    protected function resolveDependency(ReflectionParameter $parameter, $save = true)
     {   
         list($key, $value) = $this->findAttributeFromParameter($parameter->name);
         $class = $parameter->getClass();
@@ -34,7 +41,7 @@ trait ResolvesMethodDependencies
         }
 
         if ($class) {
-            return $this->resolveContainerDependency($class->name, $key, $value);
+            return $this->resolveContainerDependency($class->name, $key, $value, $save);
         }
 
         if ($parameter->isDefaultValueAvailable()) {
@@ -42,7 +49,7 @@ trait ResolvesMethodDependencies
         }
     }
 
-    protected function resolveContainerDependency($class, $key, $value)
+    protected function resolveContainerDependency($class, $key, $value, $save = true)
     {
         $instance = app($class);
 
@@ -50,7 +57,7 @@ trait ResolvesMethodDependencies
             $instance = $this->resolveRouteBinding($instance, $value);
         }
 
-        if ($key) {
+        if ($key && $save) {
             $this->attributes[$key] = $instance;
         }
 
