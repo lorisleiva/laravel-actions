@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
-class ActionsAsControllersTest extends TestCase
+class RunsAsControllersTest extends TestCase
 {
     protected function getEnvironmentSetUp($app)
     {

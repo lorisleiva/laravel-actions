@@ -8,7 +8,7 @@ use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorForStringEvents;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
-class ActionsAsListenersTest extends TestCase
+class RunsAsListenersTest extends TestCase
 {
     protected function getEnvironmentSetUp($app)
     {

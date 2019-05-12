@@ -4,7 +4,7 @@ namespace Lorisleiva\Actions\Tests;
 
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
-class ActionsAsObjectsTest extends TestCase
+class RunsAsObjectsTest extends TestCase
 {
     /** @test */
     public function it_runs_actions_as_simple_objects()

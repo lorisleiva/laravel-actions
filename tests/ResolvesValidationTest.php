@@ -5,7 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
-class ValidationTest extends TestCase
+class ResolvesValidationTest extends TestCase
 {
     /** @test */
     public function it_uses_validation_rules_to_validate_attributes()

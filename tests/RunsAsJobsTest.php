@@ -9,7 +9,7 @@ use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorShouldQueue;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
-class ActionsAsJobsTest extends TestCase
+class RunsAsJobsTest extends TestCase
 {
     /** @test */
     public function actions_can_be_used_as_dispatchable_jobs()

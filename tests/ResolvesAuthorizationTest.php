@@ -5,7 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Auth\Access\AuthorizationException;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
-class AuthorizationTest extends TestCase
+class ResolvesAuthorizationTest extends TestCase
 {
     /** @test */
     public function it_defines_authorization_logic_in_a_dedicated_method()
