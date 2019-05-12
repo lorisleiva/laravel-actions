@@ -129,6 +129,31 @@ class ResolvesMethodDependenciesTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
         $action->run();
     }
+
+    /** @test */
+    public function it_prioritizes_parameters_over_data_when_resolving_arguments_for_a_controller()
+    {
+        $this->loadLaravelMigrations();
+        $user = $this->createUser();
+
+        $action = new class extends Action {
+            public function handle(User $user) {
+                return [
+                    'parameter' => $user,
+                    'attribute' => $this->user,
+                ];
+            }
+        };
+
+        $request = $this->createRequest('GET', '/action/{user}', '/action/1', [
+            'user' => 'User provided as request payload.',
+        ]);
+
+        $result = $action->runAsController($request);
+
+        $this->assertEquals($user->id, $result['parameter']->id);
+        $this->assertEquals('User provided as request payload.', $result['attribute']);
+    }
 }
 
 class Dummy

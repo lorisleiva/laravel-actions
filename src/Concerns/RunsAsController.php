@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 trait RunsAsController
 {
+    protected $request;
+    
     public function __invoke(Request $request)
     {
         return $this->runAsController($request);
@@ -14,6 +16,7 @@ trait RunsAsController
     public function runAsController(Request $request)
     {
         $this->runningAs = 'controller';
+        $this->request = $request;
 
         $this->reset($request->user());
         $this->fill($this->getAttributesFromRequest($request));
@@ -37,11 +40,16 @@ trait RunsAsController
 
     public function getAttributesFromRequest(Request $request)
     {
-        $route = $request->route();
-
         return array_merge(
-            $route ? $route->parametersWithoutNulls() : [],
+            $this->getAttributesFromRoute($request),
             $request->all()
         );
+    }
+
+    public function getAttributesFromRoute(Request $request)
+    {
+        $route = $request->route();
+
+        return $route ? $route->parametersWithoutNulls() : [];
     }
 }

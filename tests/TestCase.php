@@ -2,7 +2,10 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Lorisleiva\Actions\Tests\Stubs\User;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -23,5 +26,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
             'email' => rand() . '@gmail.com',
             'password' => bcrypt('secret'),
         ], $data));
+    }
+
+    public function createRequest($method, $route, $url, $data = [], $user = null)
+    {
+        $request = Request::createFromBase(
+            SymfonyRequest::create($url, $method)
+        );
+
+        $request->setRouteResolver(function () use ($method, $route, $request) {
+            return (new Route($method, $route, []))->bind($request);
+        });
+
+        return $request->merge($data);
     }
 }
