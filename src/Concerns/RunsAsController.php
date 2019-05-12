@@ -14,6 +14,8 @@ trait RunsAsController
     public function runAsController(Request $request)
     {
         $this->runningAs = 'controller';
+        $this->attributes = [];
+        $this->validator = null;
 
         $this->fill($this->getAttributesFromRequest($request));
 
