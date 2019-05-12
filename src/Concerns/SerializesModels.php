@@ -15,7 +15,7 @@ trait SerializesModels
         $properties = $this->sleepFromBaseSerializesModels();
 
         return array_values(array_diff($properties, [
-            'middleware', 'runningAs', 'errorBag', 'validator',
+            'middleware', 'runningAs', 'actingAs', 'errorBag', 'validator',
         ]));
     }
 }
