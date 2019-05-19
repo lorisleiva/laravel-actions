@@ -76,6 +76,12 @@ trait ResolvesValidation
             $this->resolveAndCall($this, 'withValidator', compact('validator'));
         }
 
+        if (method_exists($this, 'afterValidator')) {
+            $validator->after(function ($validator) {
+                $this->resolveAndCall($this, 'afterValidator', compact('validator'));
+            });
+        }
+
         $this->setValidator($validator);
 
         return $this->validator;
