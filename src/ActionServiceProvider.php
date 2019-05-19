@@ -2,9 +2,10 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Bus\Dispatcher as IlluminateBusDispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
-use Illuminate\Support\ServiceProvider;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,10 @@ class ActionServiceProvider extends ServiceProvider
             return new BusDispatcher($app, function ($connection = null) use ($app) {
                 return $app->make(QueueFactoryContract::class)->connection($connection);
             });
+        });
+
+        Route::macro('actions', function ($group) {
+            $this->namespace('\App\Actions')->group($group);
         });
     }
 }
