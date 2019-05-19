@@ -1,0 +1,23 @@
+<?php
+
+namespace DummyNamespace;
+
+use Lorisleiva\Actions\Action;
+
+class DummyClass extends Action
+{
+    public function authorize()
+    {
+        return true;
+    }
+
+    public function rules()
+    {
+        return [];
+    }
+
+    public function handle()
+    {
+        // Execute the action.
+    }
+}

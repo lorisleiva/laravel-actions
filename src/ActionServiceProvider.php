@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Lorisleiva\Actions\Commands\MakeActionCommand;
 use Illuminate\Bus\Dispatcher as IlluminateBusDispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 
@@ -26,5 +27,14 @@ class ActionServiceProvider extends ServiceProvider
         Route::macro('actions', function ($group) {
             $this->namespace('\App\Actions')->group($group);
         });
+    }
+
+    public function boot()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                MakeActionCommand::class,
+            ]);
+        }
     }
 }
