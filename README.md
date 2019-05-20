@@ -1,20 +1,24 @@
 # laravel-actions
 ⚡️ Laravel components that take care of one specific task
 
+TODO
+
 **[Documentation in progress.]**
 
 ## Installation
 
-TODO
+```sh
+composer require lorisleiva/laravel-actions
+```
 
-## Usage
+## Basic Usage
 
 ```php
 class PublishANewArticle extends Action
 {
     public function authorize()
     {
-        return $this->can('create', Article::class);
+        return $this->user()->hasRole('author');
     }
     
     public function rules()
