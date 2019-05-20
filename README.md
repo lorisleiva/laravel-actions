@@ -1,7 +1,10 @@
 # laravel-actions
 ⚡️ Laravel components that take care of one specific task
 
-TODO
+TODO: Write intro.
+
+![Cover picture](https://user-images.githubusercontent.com/3642397/58055325-50d3b880-7b55-11e9-8e0a-84e98015ad43.png)
+
 
 **[Documentation in progress.]**
 
