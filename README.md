@@ -18,7 +18,7 @@ composer require lorisleiva/laravel-actions
 
 ## Basic Usage
 
-Create your first action using `php artisan make:action PublishANewArticle` and fill the authorisation logic, the validation rules and the handle method.
+Create your first action using `php artisan make:action PublishANewArticle` and fill the authorisation logic, the validation rules and the handle method. Note that the `authorize` and `rules` methods are optional and default to `true` and `[]` respectively.
 
 ```php
 // app/Actions/PublishANewArticle.php
@@ -92,7 +92,7 @@ event(new ProductCreated('My new SaaS application', 'Lorem Ipsum.'));
 // routes/web.php
 Route::post('articles', '\App\Actions\PublishANewArticle');
 ```
-If you need to specify an explicit HTTP response for when an action is used as a controller, you can defined the `response` method which provides the result of the `handle` method as the first argument.
+If you need to specify an explicit HTTP response for when an action is used as a controller, you can define the `response` method which provides the result of the `handle` method as the first argument.
 
 ```php
 class PublishANewArticle extends Action
