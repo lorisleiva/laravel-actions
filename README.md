@@ -1,7 +1,9 @@
 # laravel-actions
 ⚡️ Laravel components that take care of one specific task
 
-TODO: Write intro.
+This package introduces a new way of organising the logic of your Laravel applications by focusing on the actions your application provide.
+
+Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Laravel Actions regroup the authorisation, validation and execution of a task in one class that can be used as an **invokable controller**, as a **plain object**, as a **dispatchable job** and as an **event listener**.
 
 ![Cover picture](https://user-images.githubusercontent.com/3642397/58073806-87342680-7b9b-11e9-9669-df35fba71f6b.png)
 
