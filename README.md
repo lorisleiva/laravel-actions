@@ -18,7 +18,10 @@ composer require lorisleiva/laravel-actions
 
 ## Basic Usage
 
+Create your first action using `php artisan make:action PublishANewArticle` and fill the authorisation logic, the validation rules and the handle method.
+
 ```php
+// app/Actions/PublishANewArticle.php
 class PublishANewArticle extends Action
 {
     public function authorize()
@@ -41,7 +44,9 @@ class PublishANewArticle extends Action
 }
 ```
 
-### Actions as objects
+You can now start using that action in multiple ways:
+
+#### As a plain object.
 
 ```php
 $action = new PublishANewArticle([
@@ -49,29 +54,10 @@ $action = new PublishANewArticle([
     'body' => 'Lorem ipsum.',
 ]);
 
-$action->run();
+$article = $action->run();
 ```
 
-### Actions as controller
-
-```php
-// routes/web.php
-Route::post('articles', '\App\Actions\PublishANewArticle');
-```
-
-```php
-// routes/web.php
-Route::actions(function () {
-    Route::post('articles', 'PublishANewArticle');
-});
-```
-
-```php
-// routes/action.php
-Route::post('articles', 'PublishANewArticle');
-```
-
-### Actions as jobs
+#### As a dispatchable job.
 
 ```php
 PublishANewArticle::dispatch([
@@ -80,18 +66,7 @@ PublishANewArticle::dispatch([
 ]);
 ```
 
-Using ShouldQueue
-
-```php
-use Illuminate\Contracts\Queue\ShouldQueue;
-
-class PublishANewArticle extends Action implements ShouldQueue
-{
-    // ...
-}
-```
-
-### Actions as listeners
+#### As an event listener.
 
 ```php
 class ProductCreated
@@ -109,6 +84,26 @@ class ProductCreated
 Event::listen(ProductCreated::class, PublishANewArticle::class);
 
 event(new ProductCreated('My new SaaS application', 'Lorem Ipsum.'));
+```
+
+#### As an invokable controller.
+
+```php
+// routes/web.php
+Route::post('articles', '\App\Actions\PublishANewArticle');
+```
+If you need to specify an explicit HTTP response for when an action is used as a controller, you can defined the `response` method which provides the result of the `handle` method as the first argument.
+
+```php
+class PublishANewArticle extends Action
+{
+    // ...
+    
+    public function response($article)
+    {
+        return redirect()->route('article.show' $article);
+    }
+}
 ```
 
 TODO: 
