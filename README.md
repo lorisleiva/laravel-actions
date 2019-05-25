@@ -106,17 +106,61 @@ class PublishANewArticle extends Action
 }
 ```
 
-TODO: 
+## Action’s attributes
+- Explain attributes with `__constructor`, `fill`, `all`, `only`, `except`, `has`, `get` and `__get`, `set` and `__set`.
+
+## Dependency injections
+- Resolves dependencies from the method’s argument. `handle`.
+
+## Authorization
+- Explain authorization with `authorize`\*, `can`, `user` and `actingAs`.
+
+## Validation
+- Explain validation with `rules`, `withValidator`\*, `afterValidator`\*, `validate`.
+
+## Actions as objects
+- For each type, explain how the data is fetched and how to override that logic.
+- From constructor, setters, or `run(attributes)`
+
+## Actions as jobs
+- For each type, explain how the data is fetched and how to override that logic.
+- `dispatch(data)`
+- Using ShouldQueue
+
+```php
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class PublishANewArticle extends Action implements ShouldQueue
+{
+    // ...
+}
+```
+
+## Actions as listeners
+- For each type, explain how the data is fetched and how to override that logic.
+- `public` properties of event
+- Override `getAttributesFromEvent` method.
+
+## Actions as controllers
+- For each type, explain how the data is fetched and how to override that logic.
+- From `request->all()` and the route parameters. Explain what happens with conflict.
 - Explain the actions macro (example with and without).
+
+```php
+// routes/web.php
+Route::actions(function () {
+    Route::post('articles', 'PublishANewArticle');
+});
+// routes/action.php
+Route::post('articles', 'PublishANewArticle');
+```
+
 - Explain how to register middleware.
 - Explain how to respond with `response`, `jsonResponse` and `htmlResponse`.
-- For each type, explain how the data is fetched and how to override that logic.
+
+## Before hook
 - Explain the before hooks `asController`, etc. (Note: called just before running and not when created, hence use `register` to add middleware and not `asController`).
 - Explain `runningAs`.
-- Explain attributes with `__constructor`, `fill`, `run(attributes)`, `all`, `only`, `except`, `has`, `get` and `__get`, `set` and `__set`.
-- Explain authorization with `authorize`\*, `can`, `user` and `actingAs`.
-- Explain validation with `rules`, `withValidator`\*, `afterValidator`\*, `validate`.
-- Explain how to call multiple actions from one action (`createFrom`).
-- Explain `make:action` command.
 
-\* = Resolves dependencies from the method's argument.
+## Use actions within actions
+- Explain how to call multiple actions from one action (`createFrom`).
