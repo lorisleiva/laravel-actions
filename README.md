@@ -197,7 +197,54 @@ public function authorize() {
 ```
 
 ## Validation
-- Explain validation with `rules`, `withValidator`\*, `afterValidator`\*, `validate`.
+Just like in Request classes, you can defined your validation logic using the `rules` and `withValidator` methods.
+
+The `rules` method enables you to list validation rules for your action’s attributes.
+
+```php
+public function rules() {
+    return [
+        'title' => 'required',
+        'body' => 'required|min:10',
+    ];
+}
+```
+
+The `withValidator` method provide a convenient way to add custom validation logic.
+
+```php
+public function withValidator($validator) {
+    $validator->after(function ($validator) {
+        if ($this->somethingElseIsInvalid()) {
+            $validator->errors()->add('field', 'Something is wrong with this field!');
+        }
+    });
+}
+```
+
+If all you want to do is add an after validation hook, you can use the `afterValidator` method instead of the `withValidator` method. The following example is equivalent to the one above.
+
+```php
+public function afterValidator($validator) {
+    if ($this->somethingElseIsInvalid()) {
+        $validator->errors()->add('field', 'Something is wrong with this field!');
+    };
+}
+```
+
+It is worth noting that, just like the `handle` method, the `withValidator` and `afterValidator` methods [support dependency injections](#dependency-injections).
+
+Finally, if you want to validate some data directly within the `handle` method, you can use the `validate` method.
+
+```php
+public function handle() {
+    $this->validate([
+        'comment' => 'required|min:10|spamfree',
+    ]);
+}
+```
+
+This will validate the provided rules against the action’s attributes.
 
 ## Actions as objects
 - For each type, explain how the data is fetched and how to override that logic.
