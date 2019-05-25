@@ -107,7 +107,23 @@ class PublishANewArticle extends Action
 ```
 
 ## Action’s attributes
-- Explain attributes with `__constructor`, `fill`, `all`, `only`, `except`, `has`, `get` and `__get`, `set` and `__set`.
+In order to unify the various forms an action can take, the data of an action is implemented as a set of attributes (similarly to models).
+
+This means when interacting with an instance of an `Action`, you can manipulate its attributes with the following methods:
+
+```php
+$action = new Action(['key' => 'value']);   // Initialise an action with the provided attribute.
+$action->fill(['key' => 'value']);          // Merge the new attributes with the existing attributes.
+$action->all();                             // Retrieve all attributes of an action as an array.
+$action->only('title', 'body');             // Retrieve only the attributes provided.
+$action->except('body');                    // Retrieve all attributes excepts the one provided.
+$action->has('title');                      // Whether the action has the provided attribute.
+$action->get('title');                      // Get an attribute.
+$action->get('title', 'Untitled');          // Get an attribute with default value.
+$action->set('title', 'My blog post');      // Set an attribute.
+$action->title;                             // Get an attribute.
+$action->title = 'My blog post';            // Set an attribute.
+```
 
 ## Dependency injections
 - Resolves dependencies from the method’s argument. `handle`.
