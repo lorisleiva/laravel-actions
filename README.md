@@ -1,4 +1,4 @@
-# laravel-actions
+# Laravel Actions
 ⚡️ Laravel components that take care of one specific task
 
 This package introduces a new way of organising the logic of your Laravel applications by focusing on the actions your application provide.
