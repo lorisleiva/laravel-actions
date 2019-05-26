@@ -247,13 +247,43 @@ public function handle() {
 This will validate the provided rules against the action’s attributes.
 
 ## Actions as objects
-- For each type, explain how the data is fetched and how to override that logic.
-- From constructor, setters, or `run(attributes)`
+
+### How are attributes filled?
+
+When running actions as plain PHP objects, their attributes have to be filled manually using the various helper methods mentioned above. For example:
+
+```php
+$action = new PublishANewArticle;
+$action->title = 'My blog post';
+$action->set('body', 'Lorem ipsum.');
+$action->run();
+```
+
+Note that the `run` method also accepts additional attributes to be merged.
+
+```php
+(new PublishANewArticle)->run([
+    'title' => 'My blog post',
+    'body' => 'Lorem ipsum.',
+]);
+```
 
 ## Actions as jobs
-- For each type, explain how the data is fetched and how to override that logic.
-- `dispatch(data)`
-- Using ShouldQueue
+
+### How are attributes filled?
+
+Similarly to actions as objects, attributes are filled manually when you dispatch the action.
+
+```php
+PublishANewArticle::dispatch([
+    'title' => 'My blog post',
+    'body' => 'Lorem ipsum.',
+]);
+```
+
+### Queueable actions
+
+Just like jobs, actions can be queued by implementing the `ShouldQueue` interface.
 
 ```php
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -263,6 +293,8 @@ class PublishANewArticle extends Action implements ShouldQueue
     // ...
 }
 ```
+
+Note that you can also use the `dispatchNow` method to force a queueable action to be executed immediately.
 
 ## Actions as listeners
 - For each type, explain how the data is fetched and how to override that logic.
