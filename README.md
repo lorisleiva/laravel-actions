@@ -517,4 +517,57 @@ It is worth noting that, just like the `handle` method, the before hooks [suppor
 Also note that these before hooks will be called right before the `handle` method is executed and not when the action is being created. This means you cannot use the `asController` method to register your middleware. You need to [use the `register` method](#registering-middleware) instead.
 
 ## Use actions within actions
-- Explain how to call multiple actions from one action (`createFrom`).
+
+With Laravel Actions you can easily call actions within actions.
+
+As you can see in the following example, we use another action as an object in order to access its result.
+
+```php
+class CreateNewRestaurant extends Action
+{
+    public function handle()
+    {
+        $coordinates = (new FetchGoogleMapsCoordinates)->run([
+            'address' => $this->address,
+        ])
+
+        return Restaurant::create([
+            'name' => $this->name,
+            'longitude' => $coordinates->longitude,
+            'latitude' => $coordinates->latitude,
+        ]);
+    }
+}
+```
+
+However, you might sometimes want to delegate completely to another action. That means the action we delegate to should have the same attributes and run as the same type as the parent action. You can achieve this using the `delegateFrom` method.
+
+For example, let’s say you have three actions `UpdateProfilePicture`, `UpdatePassword` and `UpdateProfileDetails` that you want to use in a single endpoint.
+
+```php
+class UpdateProfile extends Action
+{
+    public function handle()
+    {
+        if ($this->has('avatar')) {
+            return UpdateProfilePicture::delegateFrom($this);
+        }
+
+        if ($this->has('password')) {
+            return UpdatePassword::delegateFrom($this);
+        }
+
+        return UpdateProfileDetails::delegateFrom($this);
+    }
+}
+```
+
+In the above example, if we are running the `UpdateProfile` action as a controller, then the sub actions will also be ran as controllers.
+
+It is worth noting that the `delegateFrom` method is implemented using the `createFrom` and `runAs` methods.
+
+```php
+// These two lines are equivalent.
+UpdatePassword::delegateFrom($this);
+UpdatePassword::createFrom($this)->runAs($this);
+```
