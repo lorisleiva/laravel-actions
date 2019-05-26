@@ -16,7 +16,21 @@ Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Lar
 composer require lorisleiva/laravel-actions
 ```
 
-## Basic Usage
+## Table of content
+
+- [Basic usage](#basic-usage)
+- [Action’s attributes](#actions-attributes)
+- [Dependency injections](#dependency-injections)
+- [Authorization](#authorisation)
+- [Validation](#validation)
+- [Actions as objects](#actions-as-objects)
+- [Actions as jobs](#actions-as-jobs)
+- [Actions as listeners](#actions-as-listeners)
+- [Actions as controllers](#actions-as-controllers)
+- [Keeping track of how an action was ran](#keeping-track-of-how-an-action-was-ran)
+- [Use actions within actions](#use-actions-within-actions)
+
+## Basic usage
 
 Create your first action using `php artisan make:action PublishANewArticle` and fill the authorisation logic, the validation rules and the handle method. Note that the `authorize` and `rules` methods are optional and default to `true` and `[]` respectively.
 
@@ -157,9 +171,9 @@ public function handle($title, Comment $comment, MyService $service) {/* ... */}
 
 As you can see, both the action’s attributes and the IoC container are used to resolve dependency injections. When a matching attribute is type-hinted, the library will do its best to provide an instance of that class from the value of the attribute.
 
-## Authorization
+## Authorisation
 
-### The `authorize` method.
+### The `authorize` method
 Actions can define their authorisation logic using the `authorize` method. It will throw a `AuthorizationException` whenever this method returns false.
 
 ```php
@@ -171,7 +185,7 @@ public function authorize()
 
 It is worth noting that, just like the `handle` method, the `authorize` method [supports dependency injections](#dependency-injections).
 
-### The `user` and `actingAs` methods.
+### The `user` and `actingAs` methods
 If you want to access the authenticated user from an action you can simply use the `user` method.
 
 ```php
@@ -189,7 +203,7 @@ If you want to run an action acting on behalf of another user you can use the `a
 $action->actingAs($admin)->run();
 ```
 
-### The `can` method.
+### The `can` method
 If you’d still like to use Gates and Policies to externalise your authorisation logic, you can use the `can` method to verify that the user can perform the provided ability.
 
 ```php
