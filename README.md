@@ -21,7 +21,7 @@ composer require lorisleiva/laravel-actions
 - [Basic usage](#basic-usage)
 - [Action’s attributes](#actions-attributes)
 - [Dependency injections](#dependency-injections)
-- [Authorization](#authorisation)
+- [Authorisation](#authorisation)
 - [Validation](#validation)
 - [Actions as objects](#actions-as-objects)
 - [Actions as jobs](#actions-as-jobs)
