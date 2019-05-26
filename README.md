@@ -406,7 +406,7 @@ Because your actions are located by default in the `\App\Action` namespace and n
 Route::post('articles', '\App\Actions\PublishANewArticle');
 ```
 
-<small>Note that the initial `\` here is important to ensure the namespace does not become `\App\Http\Controller\App\Actions\PublishANewArticle`.</small>
+<sub>*Note that the initial `\` here is important to ensure the namespace does not become `\App\Http\Controller\App\Actions\PublishANewArticle`.*</sub>
 
 Alternatively you can set define them in a group that re-defines the namespace.
 
