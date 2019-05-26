@@ -163,7 +163,8 @@ As you can see, both the action’s attributes and the IoC container are used to
 Actions can define their authorisation logic using the `authorize` method. It will throw a `AuthorizationException` whenever this method returns false.
 
 ```php
-public function authorize() {
+public function authorize()
+{
     // Your authorisation logic here...
 }
 ```
@@ -174,7 +175,8 @@ It is worth noting that, just like the `handle` method, the `authorize` method [
 If you want to access the authenticated user from an action you can simply use the `user` method.
 
 ```php
-public function authorize() {
+public function authorize()
+{
     return $this->user()->isAdmin();
 }
 ```
@@ -191,7 +193,8 @@ $action->actingAs($admin)->run();
 If you’d still like to use Gates and Policies to externalise your authorisation logic, you can use the `can` method to verify that the user can perform the provided ability.
 
 ```php
-public function authorize() {
+public function authorize()
+{
     return $this->can('create', Article::class);
 }
 ```
@@ -202,7 +205,8 @@ Just like in Request classes, you can defined your validation logic using the `r
 The `rules` method enables you to list validation rules for your action’s attributes.
 
 ```php
-public function rules() {
+public function rules()
+{
     return [
         'title' => 'required',
         'body' => 'required|min:10',
@@ -213,7 +217,8 @@ public function rules() {
 The `withValidator` method provide a convenient way to add custom validation logic.
 
 ```php
-public function withValidator($validator) {
+public function withValidator($validator)
+{
     $validator->after(function ($validator) {
         if ($this->somethingElseIsInvalid()) {
             $validator->errors()->add('field', 'Something is wrong with this field!');
@@ -225,7 +230,8 @@ public function withValidator($validator) {
 If all you want to do is add an after validation hook, you can use the `afterValidator` method instead of the `withValidator` method. The following example is equivalent to the one above.
 
 ```php
-public function afterValidator($validator) {
+public function afterValidator($validator)
+{
     if ($this->somethingElseIsInvalid()) {
         $validator->errors()->add('field', 'Something is wrong with this field!');
     };
@@ -237,7 +243,8 @@ It is worth noting that, just like the `handle` method, the `withValidator` and 
 Finally, if you want to validate some data directly within the `handle` method, you can use the `validate` method.
 
 ```php
-public function handle() {
+public function handle()
+{
     $this->validate([
         'comment' => 'required|min:10|spamfree',
     ]);
