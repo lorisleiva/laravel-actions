@@ -297,9 +297,66 @@ class PublishANewArticle extends Action implements ShouldQueue
 Note that you can also use the `dispatchNow` method to force a queueable action to be executed immediately.
 
 ## Actions as listeners
-- For each type, explain how the data is fetched and how to override that logic.
-- `public` properties of event
-- Override `getAttributesFromEvent` method.
+
+### How are attributes filled?
+
+By default, all of the event’s public properties will be used as attributes.
+
+```php
+class ProductCreated
+{
+    public $title;
+    public $body;
+    
+    // ...
+}
+```
+
+You can override that behaviour by defining the `getAttributesFromEvent`.
+
+```php
+// Event
+class ProductCreated
+{
+    public $product;
+}
+
+// Listener
+class PublishANewArticle extends Action
+{
+    public function getAttributesFromEvent($event)
+    {
+        return [
+            'title' => '[New product] ' . $event->product->title,
+            'body' => $event->product->description,
+        ];
+    }
+}
+```
+
+This can also work with events defined as strings.
+
+```php
+// Event
+Event::listen('product_created', PublishANewArticle::class);
+
+// Dispatch
+event('product_created', ['My SaaS app', 'Lorem ipsum']);
+
+// Listener
+class PublishANewArticle extends Action
+{
+    public function getAttributesFromEvent($title, $description)
+    {
+        return [
+            'title' => "[New product] $title",
+            'body' => $description,
+        ];
+    }
+
+    // ...
+}
+```
 
 ## Actions as controllers
 - For each type, explain how the data is fetched and how to override that logic.
