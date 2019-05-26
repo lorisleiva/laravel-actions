@@ -32,6 +32,6 @@ trait ResolvesAuthorization
 
     protected function can($ability, $arguments = [])
     {
-        return Gate::allows($ability, $arguments);
+        return Gate::forUser($this->user())->allows($ability, $arguments);
     }
 }

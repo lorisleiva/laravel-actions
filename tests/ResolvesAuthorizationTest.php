@@ -58,4 +58,24 @@ class ResolvesAuthorizationTest extends TestCase
 
         $this->assertTrue($action->passesAuthorization());
     }
+
+    /** @test */
+    public function it_uses_the_acting_as_user_to_perform_gate_checks()
+    {
+        $alice = new User(['name' => 'Alice']);
+        $bob = new User(['name' => 'Bob']);
+
+        Gate::define('perform-calculation', function (User $user) {
+            return $user->name === 'Alice';
+        });
+
+        $action = new class(['operation' => 'addition']) extends SimpleCalculator {
+            public function authorize() {
+                return $this->can('perform-calculation');
+            }
+        };
+
+        $this->assertTrue($action->actingAs($alice)->passesAuthorization());
+        $this->assertFalse($action->actingAs($bob)->passesAuthorization());
+    }
 }
