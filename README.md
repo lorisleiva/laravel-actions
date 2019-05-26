@@ -126,10 +126,10 @@ $action->title = 'My blog post';            // Set an attribute.
 ```
 Depending on how an action is ran, its attributes are filled with the relevant information available. For example, as a controller, an action’s attributes will contain all of the input from the request. For more information see:
 
-- [How are attributes filled as objects](TODO).
-- [How are attributes filled as jobs](TODO).
-- [How are attributes filled as listeners](TODO).
-- [How are attributes filled as controllers](TODO).
+- [How are attributes filled as objects](#actions-as-objects).
+- [How are attributes filled as jobs](#actions-as-jobs).
+- [How are attributes filled as listeners](#actions-as-listeners).
+- [How are attributes filled as controllers](#actions-as-controllers).
 
 ## Dependency injections
 The `handle` method support dependency injections. That means, whatever arguments you enter in the handle method, Laravel Actions will try to resolve them from the container but also from its own attributes. Let’s have a look at some examples.
