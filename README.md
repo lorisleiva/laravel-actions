@@ -540,7 +540,7 @@ class CreateNewRestaurant extends Action
 }
 ```
 
-However, you might sometimes want to delegate completely to another action. That means the action we delegate to should have the same attributes and run as the same type as the parent action. You can achieve this using the `delegateFrom` method.
+However, you might sometimes want to delegate completely to another action. That means the action we delegate to should have the same attributes and run as the same type as the parent action. You can achieve this using the `delegateTo` method.
 
 For example, let’s say you have three actions `UpdateProfilePicture`, `UpdatePassword` and `UpdateProfileDetails` that you want to use in a single endpoint.
 
@@ -550,24 +550,24 @@ class UpdateProfile extends Action
     public function handle()
     {
         if ($this->has('avatar')) {
-            return UpdateProfilePicture::delegateFrom($this);
+            return $this->delegateTo(UpdateProfilePicture::class);
         }
 
         if ($this->has('password')) {
-            return UpdatePassword::delegateFrom($this);
+            return $this->delegateTo(UpdatePassword::class);
         }
 
-        return UpdateProfileDetails::delegateFrom($this);
+        return $this->delegateTo(UpdateProfileDetails::class);
     }
 }
 ```
 
 In the above example, if we are running the `UpdateProfile` action as a controller, then the sub actions will also be ran as controllers.
 
-It is worth noting that the `delegateFrom` method is implemented using the `createFrom` and `runAs` methods.
+It is worth noting that the `delegateTo` method is implemented using the `createFrom` and `runAs` methods.
 
 ```php
 // These two lines are equivalent.
-UpdatePassword::delegateFrom($this);
+$this->delegateTo(UpdatePassword::class);
 UpdatePassword::createFrom($this)->runAs($this);
 ```
