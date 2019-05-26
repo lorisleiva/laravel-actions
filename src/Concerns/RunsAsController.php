@@ -52,4 +52,9 @@ trait RunsAsController
 
         return $route ? $route->parametersWithoutNulls() : [];
     }
+
+    public function getRequest()
+    {
+        return $this->request;
+    }
 }

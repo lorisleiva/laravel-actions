@@ -7,9 +7,9 @@ use Lorisleiva\Actions\Tests\Stubs\User;
 
 class UpdateProfilePicture extends Action
 {
-    public function authorize()
+    public function authorize(User $user)
     {
-        return $this->user->role !== 'cannot_update_avatar';
+        return $user->role !== 'cannot_update_avatar';
     }
 
     public function rules()
@@ -22,5 +22,7 @@ class UpdateProfilePicture extends Action
     public function handle(User $user, $avatar)
     {
         $user->avatar = $avatar;
+
+        return "UpdateProfilePicture ran as {$this->runningAs}";
     }
 }

@@ -7,9 +7,9 @@ use Lorisleiva\Actions\Tests\Stubs\User;
 
 class UpdateProfileDetails extends Action
 {
-    public function authorize()
+    public function authorize(User $user)
     {
-        return $this->user->role !== 'cannot_update_name';
+        return $user->role !== 'cannot_update_name';
     }
 
     public function rules()
@@ -22,5 +22,7 @@ class UpdateProfileDetails extends Action
     public function handle(User $user, $name)
     {
         $user->name = $name;
+
+        return "UpdateProfileDetails ran as {$this->runningAs}";
     }
 }

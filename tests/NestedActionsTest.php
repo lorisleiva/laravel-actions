@@ -21,22 +21,24 @@ class NestedActionsTest extends TestCase
         $this->assertEquals('alice.jpg', $user->avatar);
 
         // Here UpdateProfile delegates to UpdateProfileDetails.
-        (new UpdateProfile)->run([
+        $result = (new UpdateProfile)->run([
             'user' => $user,
             'name' => 'Bob'
         ]);
 
         $this->assertEquals('Bob', $user->name);
         $this->assertEquals('alice.jpg', $user->avatar);
+        $this->assertEquals('UpdateProfileDetails ran as object', $result);
 
         // Here UpdateProfile delegates to UpdateProfilePicture.
-        (new UpdateProfile)->run([
+        $result = (new UpdateProfile)->run([
             'user' => $user,
             'avatar' => 'bob.png',
         ]);
 
         $this->assertEquals('Bob', $user->name);
         $this->assertEquals('bob.png', $user->avatar);
+        $this->assertEquals('UpdateProfilePicture ran as object', $result);
     }
 
     /** @test */
@@ -77,5 +79,18 @@ class NestedActionsTest extends TestCase
         } catch (ValidationException $e) {
             $this->assertEquals(['avatar'], array_keys($e->errors()));
         }
+    }
+
+    /** @test */
+    public function actions_can_be_delegated_as_controllers()
+    {
+        $this->app->make('router')->post('/users/{user}', UpdateProfile::class);
+        $this->loadLaravelMigrations();
+        $user = $this->createUser(['name' => 'Alice']);
+
+        $this->actingAs($user)
+            ->post("/users/{$user->id}", ['name' => 'Bob'])
+            ->assertSuccessful()
+            ->assertSee('UpdateProfileDetails ran as controller');
     }
 }

@@ -7,12 +7,12 @@ use Lorisleiva\Actions\Tests\Stubs\User;
 
 class UpdateProfile extends Action
 {
-    public function handle(User $user)
+    public function handle()
     {
         if ($this->has('avatar')) {
-            return UpdateProfilePicture::createFrom($this)->run();
+            return $this->delegateTo(UpdateProfilePicture::class);
         }
 
-        return UpdateProfileDetails::createFrom($this)->run();
+        return $this->delegateTo(UpdateProfileDetails::class);
     }
 }

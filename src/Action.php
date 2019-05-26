@@ -40,6 +40,23 @@ abstract class Action extends Controller
         return (new static)->fill($action->all());
     }
 
+    public function runAs(Action $action)
+    {
+        if ($action->runningAs('job')) {
+            return $this->runAsJob();
+        }
+        
+        if ($action->runningAs('listener')) {
+            return $this->runAsListener();
+        }
+        
+        if ($action->runningAs('controller')) {
+            return $this->runAsController($action->getRequest());
+        }
+
+        return $this->run();
+    }
+
     public function run(array $attributes = [])
     {
         $this->fill($attributes);
@@ -81,5 +98,10 @@ abstract class Action extends Controller
         $this->actingAs = $user;
         $this->attributes = [];
         $this->validator = null;
+    }
+
+    public function delegateTo($actionClass)
+    {
+        return $actionClass::createFrom($this)->runAs($this);
     }
 }
