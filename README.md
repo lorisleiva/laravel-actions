@@ -7,9 +7,6 @@ Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Lar
 
 ![Cover picture](https://user-images.githubusercontent.com/3642397/58073806-87342680-7b9b-11e9-9669-df35fba71f6b.png)
 
-
-**[Documentation in progress.]**
-
 ## Installation
 
 ```sh
