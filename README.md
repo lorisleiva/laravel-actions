@@ -439,10 +439,48 @@ Route::post('articles', 'PublishANewArticle');
 ```
 
 ### Registering middleware
-- Explain how to register middleware.
+
+You can register middleware using the `register` method.
+
+```php
+public function register()
+{
+    $this->middleware('auth');
+}
+```
+
+Note that this is basically the equivalent of using the `__construct` method except that you don’t need to worry about the attributes being given as arguments and calling `parent::__construct`.
 
 ### Returning HTTP responses
-- Explain how to respond with `response`, `jsonResponse` and `htmlResponse`.
+
+It is good practice to let the action return a value that makes sense for your domain. For example, the article that was just created or the filtered list of topics that we are searching for.
+
+However, you might want to wrap that value into a proper HTTP response when the action is being ran as a controller. You can use the `response` method for that. It provides the result of the `handle` method as first argument and the HTTP request as second argument.
+
+```php
+public function response($result, $request)
+{
+    return view('articles.index', [
+        'articles' => $result,
+    ])
+}
+```
+
+If you want to return distinctive responses for clients that require HTML and clients that require JSON, you can respectively use the `htmlResponse` and `jsonResponse` methods.
+
+```php
+public function htmlResponse($result, $request)
+{
+    return view('articles.index', [
+        'articles' => $result,
+    ])
+}
+
+public function jsonResponse($result, $request)
+{
+    return new ArticleResource::collection($result);
+}
+```
 
 ## Before hook
 - Explain the before hooks `asController`, etc. (Note: called just before running and not when created, hence use `register` to add middleware and not `asController`).
