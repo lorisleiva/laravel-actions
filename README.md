@@ -482,9 +482,39 @@ public function jsonResponse($result, $request)
 }
 ```
 
-## Before hook
-- Explain the before hooks `asController`, etc. (Note: called just before running and not when created, hence use `register` to add middleware and not `asController`).
-- Explain `runningAs`.
+## Keeping track of how an action was ran
+
+### The `runningAs` method
+
+In some rare cases, you might want to know how the action is being ran. You can access this information using the `runningAs` method.
+
+```php
+public function handle()
+{
+    $this->runningAs('object');
+    $this->runningAs('job');
+    $this->runningAs('listener');
+    $this->runningAs('controller');
+
+    // Returns true of any of them is true.
+    $this->runningAs('object', 'job');
+}
+```
+
+### The before hooks
+
+If you want to execute some code only when the action is ran as a certain type, you can use the before hooks `asObject`, `asJob`, `asListener` and `asController`.
+
+```php
+public function asController(Request $request)
+{
+    $this->token = $request->cookie('token');
+}
+```
+
+It is worth noting that, just like the `handle` method, the before hooks [support dependency injections](#dependency-injections) .
+
+Also note that these before hooks will be called right before the `handle` method is executed and not when the action is being created. This means you cannot use the `asController` method to register your middleware. You need to [use the `register` method](#registering-middleware) instead.
 
 ## Use actions within actions
 - Explain how to call multiple actions from one action (`createFrom`).
