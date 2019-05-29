@@ -157,7 +157,7 @@ public function handle($title, $body) {/* ... */}
 public function handle($title, $body = 'default') {/* ... */}
 
 // Resolved from the attributes using route model binding.
-// -- If $action->comment is already an insteance of Comment, it provides it.
+// -- If $action->comment is already an instance of Comment, it provides it.
 // -- If $action->comment is an id, it will provide the right instance of Comment from the database or fail.
 // -- This will also update $action->comment to be that instance.
 public function handle(Comment $comment) {/* ... */}
