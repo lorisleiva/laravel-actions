@@ -112,7 +112,7 @@ class PublishANewArticle extends Action
     
     public function response($article)
     {
-        return redirect()->route('article.show' $article);
+        return redirect()->route('article.show', $article);
     }
 }
 ```
@@ -484,7 +484,7 @@ public function htmlResponse($result, $request)
 {
     return view('articles.index', [
         'articles' => $result,
-    ])
+    ]);
 }
 
 public function jsonResponse($result, $request)
@@ -540,7 +540,7 @@ class CreateNewRestaurant extends Action
     {
         $coordinates = (new FetchGoogleMapsCoordinates)->run([
             'address' => $this->address,
-        ])
+        ]);
 
         return Restaurant::create([
             'name' => $this->name,
