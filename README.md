@@ -419,7 +419,7 @@ Route::post('articles', '\App\Actions\PublishANewArticle');
 
 <sub>*Note that the initial `\` here is important to ensure the namespace does not become `\App\Http\Controller\App\Actions\PublishANewArticle`.*</sub>
 
-Alternatively you can set define them in a group that re-defines the namespace.
+Alternatively you can place them in a group that re-defines the namespace.
 
 ```php
 // routes/web.php
@@ -489,7 +489,7 @@ public function htmlResponse($result, $request)
 
 public function jsonResponse($result, $request)
 {
-    return new ArticleResource::collection($result);
+    return ArticleResource::collection($result);
 }
 ```
 
