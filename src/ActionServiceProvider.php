@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 
 class ActionServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function boot()
     {
         $this->app->extend('events', function ($dispatcher, $app) {
             return (new EventDispatcher($app))->setQueueResolver(function () use ($app) {
@@ -27,10 +27,7 @@ class ActionServiceProvider extends ServiceProvider
         Route::macro('actions', function ($group) {
             $this->namespace('\App\Actions')->group($group);
         });
-    }
 
-    public function boot()
-    {
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MakeActionCommand::class,
