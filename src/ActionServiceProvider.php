@@ -12,7 +12,7 @@ class ActionServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->singleton('events', function ($app) {
+        $this->app->extend('events', function ($dispatcher, $app) {
             return (new EventDispatcher($app))->setQueueResolver(function () use ($app) {
                 return $app->make(QueueFactoryContract::class);
             });
