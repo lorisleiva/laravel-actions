@@ -10,11 +10,13 @@ use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
 class RunsAsListenersTest extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
+    protected function setUp(): void
     {
-        $app->make('events')->listen('string_event', SimpleCalculatorForStringEvents::class);
-        $app->make('events')->listen(get_class($this->newEvent()), SimpleCalculator::class);
-        $app->make('events')->listen(get_class($this->newValidatedEvent()), SimpleCalculatorWithValidation::class);
+        parent::setUp();
+
+        $this->app->make('events')->listen('string_event', SimpleCalculatorForStringEvents::class);
+        $this->app->make('events')->listen(get_class($this->newEvent()), SimpleCalculator::class);
+        $this->app->make('events')->listen(get_class($this->newValidatedEvent()), SimpleCalculatorWithValidation::class);
     }
 
     /** @test */
