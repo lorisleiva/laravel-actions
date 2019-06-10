@@ -13,9 +13,7 @@ class ActionServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->extend('events', function ($dispatcher, $app) {
-            return (new EventDispatcher($app))->setQueueResolver(function () use ($app) {
-                return $app->make(QueueFactoryContract::class);
-            });
+            return new EventDispatcherDecorator($dispatcher, $app);
         });
 
         $this->app->extend(IlluminateBusDispatcher::class, function ($dispatcher, $app) {
