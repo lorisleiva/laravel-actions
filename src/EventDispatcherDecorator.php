@@ -1,6 +1,6 @@
 <?php
 
-namespace LorisLeiva\Actions;
+namespace Lorisleiva\Actions;
 
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
