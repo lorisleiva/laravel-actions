@@ -1,6 +1,6 @@
 <?php
 
-namespace LorisLeiva\Actions;
+namespace Lorisleiva\Actions;
 
 use Illuminate\Bus\Dispatcher as IlluminateDispatcher;
 
