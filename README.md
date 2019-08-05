@@ -286,6 +286,15 @@ Note that the `run` method also accepts additional attributes to be merged.
 ]);
 ```
 
+Alternatively, you can run a action like a function call.
+
+```php
+(new PublishANewArticle)([
+    'title' => 'My blog post',
+    'body' => 'Lorem ipsum.',
+]);
+```
+
 ## Actions as jobs
 
 ### How are attributes filled?
@@ -451,16 +460,14 @@ Route::post('articles', 'PublishANewArticle');
 
 ### Registering middleware
 
-You can register middleware using the `register` method.
+You can register middleware using the `middleware` method.
 
 ```php
-public function register()
+public function middleware()
 {
-    $this->middleware('auth');
+    return ['auth'];
 }
 ```
-
-Note that this is basically the equivalent of using the `__construct` method except that you don’t need to worry about the attributes being given as arguments and calling `parent::__construct`.
 
 ### Returning HTTP responses
 
