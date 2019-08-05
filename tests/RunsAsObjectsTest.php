@@ -84,6 +84,18 @@ class RunsAsObjectsTest extends TestCase
     }
 
     /** @test */
+    public function it_can_run_like_an_invokable_object()
+    {
+        $response = (new SimpleCalculator())([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals(8, $response);
+    }
+
+    /** @test */
     public function it_can_override_all_attributes_with_a_given_array()
     {
         $action = new SimpleCalculator(['operation' => 'addition', 'foo' => 'bar']);
