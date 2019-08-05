@@ -105,6 +105,11 @@ abstract class Action
     {
         return $actionClass::createFrom($this)->runAs($this);
     }
+    
+    public function __invoke(array $attributes = [])
+    {
+        return $this->run($attributes);
+    }
 
     public function __call($method, $parameters)
     {

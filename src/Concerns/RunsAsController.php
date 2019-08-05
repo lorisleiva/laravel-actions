@@ -8,31 +8,6 @@ trait RunsAsController
 {
     protected $request;
 
-    public function middleware()
-    {
-        return [];
-    }
-    
-    public function getMiddleware()
-    {
-        return array_map(function ($m) {
-            return [
-                'middleware' => $m,
-                'options' => [],
-            ];
-        }, $this->middleware());
-    }
-    
-    public function callAction($method, $parameters)
-    {
-        return call_user_func_array([$this, $method], $parameters);
-    }
-    
-    public function __invoke(Request $request)
-    {
-        return $this->runAsController($request);
-    }
-
     public function runAsController(Request $request)
     {
         $this->runningAs = 'controller';
@@ -76,5 +51,27 @@ trait RunsAsController
     public function getRequest()
     {
         return $this->request;
+    }
+
+    public function middleware()
+    {
+        return [];
+    }
+    
+    public function getMiddleware()
+    {
+        return array_map(function ($m) {
+            return [
+                'middleware' => $m,
+                'options' => [],
+            ];
+        }, $this->middleware());
+    }
+    
+    public function callAction($method, $parameters)
+    {
+        return $method === '__invoke'
+            ? $this->runAsController(app(Request::class))
+            : call_user_func_array([$this, $method], $parameters);
     }
 }
