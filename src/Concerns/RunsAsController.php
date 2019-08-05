@@ -7,6 +7,26 @@ use Illuminate\Http\Request;
 trait RunsAsController
 {
     protected $request;
+
+    public function middleware()
+    {
+        return [];
+    }
+    
+    public function getMiddleware()
+    {
+        return array_map(function ($m) {
+            return [
+                'middleware' => $m,
+                'options' => [],
+            ];
+        }, $this->middleware());
+    }
+    
+    public function callAction($method, $parameters)
+    {
+        return call_user_func_array([$this, $method], $parameters);
+    }
     
     public function __invoke(Request $request)
     {

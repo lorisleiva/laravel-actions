@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-abstract class Action extends Controller
+abstract class Action
 {
     use Dispatchable;
     use InteractsWithQueue;

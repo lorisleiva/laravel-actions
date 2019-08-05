@@ -6,14 +6,16 @@ use Lorisleiva\Actions\Action;
 
 class SimpleCalculator extends Action
 {
-    public function register()
+    public function middleware()
     {
-        $this->middleware(function ($request, $next) {
-            if ($request->operation === 'middleware') {
-                abort(400, 'Intercepted by a middleware');
+        return [
+            function ($request, $next) {
+                if ($request->operation === 'middleware') {
+                    abort(400, 'Intercepted by a middleware');
+                }
+                return $next($request);
             }
-            return $next($request);
-        });
+        ];
     }
 
     public function handle($operation, $left, $right)
