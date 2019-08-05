@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use BadMethodCallException;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Routing\Controller;
@@ -103,5 +104,12 @@ abstract class Action
     public function delegateTo($actionClass)
     {
         return $actionClass::createFrom($this)->runAs($this);
+    }
+
+    public function __call($method, $parameters)
+    {
+        throw new BadMethodCallException(sprintf(
+            'Method %s::%s does not exist.', static::class, $method
+        ));
     }
 }
