@@ -281,10 +281,10 @@ public function handle()
 ```
 
 ### Customise validation texts
-You can customise the validation texts using the `message` and `attributes` methods.
+You can customise the validation texts using the `messages` and `attributes` methods.
 
 ```php
-public function message()
+public function messages()
 {
     return [];
 }
