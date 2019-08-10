@@ -251,7 +251,7 @@ public function afterValidator($validator)
 
 It is worth noting that, just like the `handle` method, the `withValidator` and `afterValidator` methods [support dependency injections](#dependency-injections).
 
-Finally, if you want to validate some data directly within the `handle` method, you can use the `validate` method.
+If you want to validate some data directly within the `handle` method, you can use the `validate` method.
 
 ```php
 public function handle()
@@ -263,6 +263,37 @@ public function handle()
 ```
 
 This will validate the provided rules against the action’s attributes.
+
+### Access validated data
+If you want to access all attributes that have been validated prior to reaching the `handle` method, you can use `$this->validated()` instead of `$this->all()`.
+
+```php
+public function rules()
+{
+    return ['title' => 'min:3'];
+}
+
+public function handle()
+{
+    // Will only return attributes that have been validated be the above rules.
+    $this->validated();
+}
+```
+
+### Customise validation texts
+You can customise the validation texts using the `message` and `attributes` methods.
+
+```php
+public function message()
+{
+    return [];
+}
+
+public function attributes()
+{
+    return [];
+}
+```
 
 ## Actions as objects
 
