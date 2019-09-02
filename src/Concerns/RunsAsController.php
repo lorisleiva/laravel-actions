@@ -52,11 +52,6 @@ trait RunsAsController
     {
         return $this->request;
     }
-
-    public function middleware()
-    {
-        return [];
-    }
     
     public function getMiddleware()
     {
