@@ -50,17 +50,8 @@ trait ResolvesValidation
     {
         return [];
     }
-
-    protected function resolveValidation()
-    {
-        if (! $this->passesValidation()) {
-            $this->failedValidation();
-        }
-
-        return $this;
-    }
     
-    protected function getValidatorInstance()
+    public function getValidatorInstance()
     {
         if ($this->validator) {
             return $this->validator;
@@ -85,6 +76,20 @@ trait ResolvesValidation
         $this->setValidator($validator);
 
         return $this->validator;
+    }
+
+    public function getValidationErrors()
+    {
+        return $this->getValidatorInstance()->errors();
+    }
+
+    protected function resolveValidation()
+    {
+        if (! $this->passesValidation()) {
+            $this->failedValidation();
+        }
+
+        return $this;
     }
 
     protected function createDefaultValidator(ValidationFactory $factory)

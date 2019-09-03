@@ -28,6 +28,9 @@ class ResolvesValidationTest extends TestCase
         };
 
         $this->assertTrue($action->passesValidation());
+        $this->assertTrue($action->getValidatorInstance()->passes());
+        $this->assertEmpty($action->getValidatorInstance()->errors()->all());
+        $this->assertFalse($action->getValidationErrors()->any());
         $this->assertEquals(3, $action->run());
     }
 
