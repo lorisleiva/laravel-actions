@@ -55,12 +55,18 @@ trait RunsAsController
     
     public function getMiddleware()
     {
+        $middleware = [];
+
+        if (method_exists($this, 'middleware')) {
+            $middleware = $this->middleware();
+        }
+        
         return array_map(function ($m) {
             return [
                 'middleware' => $m,
                 'options' => [],
             ];
-        }, $this->middleware());
+        }, $middleware);
     }
     
     public function callAction($method, $parameters)
