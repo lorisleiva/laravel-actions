@@ -5,7 +5,6 @@ namespace Lorisleiva\Actions;
 use BadMethodCallException;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,6 +35,28 @@ abstract class Action
         }
     }
 
+    /**
+     * static constructor
+     * allows things like Action::init($attributes)->run() instead of (new Action($attributes))->run()
+     * @param array $attributes
+     * @return Action
+     */
+    public static function init(array $attributes = [])
+    {
+        return new static($attributes);
+    }
+
+    /**
+     * static execution
+     * allows things like Action::exec($attributes) instead of (new Action($attributes))->run()
+     * @param array $attributes
+     * @return mixed
+     */
+    public static function exec(array $attributes = [])
+    {
+        return (new static($attributes))->run();
+    }
+
     public static function createFrom(Action $action)
     {
         return (new static)->fill($action->all());
@@ -46,11 +67,11 @@ abstract class Action
         if ($action->runningAs('job')) {
             return $this->runAsJob();
         }
-        
+
         if ($action->runningAs('listener')) {
             return $this->runAsListener();
         }
-        
+
         if ($action->runningAs('controller')) {
             return $this->runAsController($action->getRequest());
         }
@@ -105,7 +126,7 @@ abstract class Action
     {
         return $actionClass::createFrom($this)->runAs($this);
     }
-    
+
     public function __invoke(array $attributes = [])
     {
         return $this->run($attributes);
@@ -114,7 +135,9 @@ abstract class Action
     public function __call($method, $parameters)
     {
         throw new BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', static::class, $method
+            'Method %s::%s does not exist.',
+            static::class,
+            $method
         ));
     }
 }
