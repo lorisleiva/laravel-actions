@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
@@ -12,6 +13,7 @@ class ActionServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        Facade::clearResolvedInstance('events');
         $this->app->extend('events', function ($dispatcher, $app) {
             return new EventDispatcherDecorator($dispatcher, $app);
         });
