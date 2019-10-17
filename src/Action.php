@@ -61,6 +61,7 @@ abstract class Action
     public function run(array $attributes = [])
     {
         $this->fill($attributes);
+        $this->prepareForValidation();
         $this->resolveBeforeHook();
         $this->resolveAuthorization();
         $this->resolveValidation();
@@ -68,7 +69,12 @@ abstract class Action
         return $this->resolveAndCall($this, 'handle');
     }
 
-    public function resolveBeforeHook()
+    protected function prepareForValidation()
+    {
+        //
+    }
+
+    protected function resolveBeforeHook()
     {
         $method = 'as' . Str::studly($this->runningAs);
 
