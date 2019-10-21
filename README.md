@@ -561,6 +561,8 @@ public function asController(Request $request)
 }
 ```
 
+If you want to prepare the data before running the action (and thus also before validating the data), you can use the `prepareForValidation` method. Which follows the same naming convention within a FormRequest in Laravel.
+
 It is worth noting that, just like the `handle` method, the before hooks [support dependency injections](#dependency-injections) .
 
 Also note that these before hooks will be called right before the `handle` method is executed and not when the action is being created. This means you cannot use the `asController` method to register your middleware. You need to [use the `register` method](#registering-middleware) instead.
