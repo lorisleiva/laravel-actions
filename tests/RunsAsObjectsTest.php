@@ -84,6 +84,28 @@ class RunsAsObjectsTest extends TestCase
     }
 
     /** @test */
+    public function running_mulitple_times_uses_the_latest_attributes()
+    {
+        $action = new SimpleCalculator();
+
+        $response = $action->run([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals(8, $response);
+
+        $response = $action->run([
+            'operation' => 'substraction',
+            'left' => 3,
+            'right' => 2,
+        ]);
+
+        $this->assertEquals(1, $response);
+    }
+
+    /** @test */
     public function it_can_run_like_an_invokable_object()
     {
         $response = (new SimpleCalculator())([
