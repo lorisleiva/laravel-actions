@@ -152,4 +152,27 @@ class ResolvesValidationTest extends TestCase
         $this->assertEquals(['operation' => 'valid'], $result['first']);
         $this->assertNull($result['second']);
     }
+
+    /** @test */
+    public function validation_should_restart_when_running_again()
+    {
+        $action = new class extends Action {
+            public function rules() {
+                return ['name' => 'required'];
+            }
+            public function handle() {
+                return $this->validated();
+            }
+        };
+
+        $this->assertEquals(
+            ['name' => 'Alice'], 
+            $action->run(['name' => 'Alice'])
+        );
+
+        $this->assertEquals(
+            ['name' => 'Bob'], 
+            $action->run(['name' => 'Bob'])
+        );
+    }
 }

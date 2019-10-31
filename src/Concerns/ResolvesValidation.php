@@ -85,6 +85,8 @@ trait ResolvesValidation
 
     protected function resolveValidation()
     {
+        $this->validator = null;
+        
         if (! $this->passesValidation()) {
             $this->failedValidation();
         }
