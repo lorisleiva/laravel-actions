@@ -58,6 +58,23 @@ class RunsAsObjectsTest extends TestCase
     }
 
     /** @test */
+    public function its_attributes_can_use_isset()
+    {
+        $action = new SimpleCalculator([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertTrue(isset($action->right));
+        $this->assertFalse(isset($action->foo));
+
+        $action->foo = 'bar';
+
+        $this->assertTrue(isset($action->foo));
+    }
+
+    /** @test */
     public function it_can_fill_multiple_attributes_at_once()
     {
         $action = (new SimpleCalculator())->fill([

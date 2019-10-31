@@ -63,4 +63,9 @@ trait HasAttributes
     {
         $this->set($key, $value);
     }
+
+    public function __isset($key)
+    {
+        return ! is_null($this->get($key));
+    }
 }
