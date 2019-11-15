@@ -6,17 +6,16 @@ use Illuminate\Bus\Dispatcher as IlluminateDispatcher;
 
 class BusDispatcher extends IlluminateDispatcher
 {
-    public function getCommandHandler($command)
+    public function dispatchNow($command, $handler = null)
     {
-        if ($command instanceof Action) {
-            return new class() {
-                public function handle($action)
-                {
-                    return $action->runAsJob();
-                }
-            };
+        if (! $command instanceof Action) {
+            return parent::dispatchNow($command, $handler);
         }
 
-        return parent::getCommandHandler($command);
+        $callback = function ($command) {
+            return $this->container->call([$command, 'runAsJob']);
+        };
+
+        return $this->pipeline->send($command)->through($this->pipes)->then($callback);
     }
 }
