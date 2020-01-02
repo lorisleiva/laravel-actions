@@ -92,8 +92,8 @@ trait ResolvesValidation
     protected function failedValidation()
     {
         throw (new ValidationException($this->validator))
-                    ->errorBag($this->errorBag)
-                    ->redirectTo($this->getRedirectUrl());
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 
     protected function getRedirectUrl()
