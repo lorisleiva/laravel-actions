@@ -249,7 +249,7 @@ public function afterValidator($validator)
 }
 ```
 
-It is worth noting that, just like the `handle` method, the `withValidator` and `afterValidator` methods [support dependency injections](#dependency-injections).
+It is worth noting that, just like the `handle` method, the `rules`, `withValidator` and `afterValidator` methods [support dependency injections](#dependency-injections).
 
 If you want to validate some data directly within the `handle` method, you can use the `validate` method.
 
@@ -294,6 +294,8 @@ public function attributes()
     return [];
 }
 ```
+
+It is worth noting that, just like the `handle` method, the `messages`, `attributes` methods [support dependency injections](#dependency-injections).
 
 ## Actions as objects
 
