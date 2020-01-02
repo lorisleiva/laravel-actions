@@ -35,21 +35,6 @@ trait ResolvesValidation
     {
         return $this->validator->validated();
     }
-
-    public function rules()
-    {
-        return [];
-    }
-
-    public function messages()
-    {
-        return [];
-    }
-
-    public function attributes()
-    {
-        return [];
-    }
     
     public function getValidatorInstance()
     {
@@ -96,10 +81,12 @@ trait ResolvesValidation
 
     protected function createDefaultValidator(ValidationFactory $factory)
     {
-        return $factory->make(
-            $this->validationData(), $this->rules(),
-            $this->messages(), $this->attributes()
-        );
+        $data = $this->validationData();
+        $rules = method_exists($this, 'rules') ? $this->resolveAndCall($this, 'rules') : [];
+        $messages = method_exists($this, 'messages') ? $this->resolveAndCall($this, 'messages') : [];
+        $attributes = method_exists($this, 'attributes') ? $this->resolveAndCall($this, 'attributes') : [];
+
+        return $factory->make($data, $rules, $messages, $attributes);
     }
 
     protected function failedValidation()
