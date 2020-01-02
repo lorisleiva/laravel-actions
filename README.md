@@ -275,7 +275,7 @@ public function rules()
 
 public function handle()
 {
-    // Will only return attributes that have been validated be the above rules.
+    // Will only return attributes that have been validated by the rules above.
     $this->validated();
 }
 ```
@@ -545,7 +545,7 @@ public function handle()
     $this->runningAs('listener');
     $this->runningAs('controller');
 
-    // Returns true of any of them is true.
+    // Returns true if any of them is true.
     $this->runningAs('object', 'job');
 }
 ```
