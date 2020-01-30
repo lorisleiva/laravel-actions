@@ -38,44 +38,44 @@ class EventDispatcherDecorator implements DispatcherContract
             return false;
         }
 
-        return $this->container->make($class) instanceof Action;
+        return false !== in_array(Action::class, \class_parents($class));
     }
-    
+
     public function hasListeners($eventName)
     {
         return $this->dispatcher->hasListeners($eventName);
     }
-    
+
     public function subscribe($subscriber)
     {
         return $this->dispatcher->subscribe($subscriber);
     }
-    
+
     public function until($event, $payload = [])
     {
         return $this->dispatcher->until($event, $payload);
     }
-    
+
     public function dispatch($event, $payload = [], $halt = false)
     {
         return $this->dispatcher->dispatch($event, $payload, $halt);
     }
-    
+
     public function push($event, $payload = [])
     {
         return $this->dispatcher->push($event, $payload);
     }
-    
+
     public function flush($event)
     {
         return $this->dispatcher->flush($event);
     }
-    
+
     public function forget($event)
     {
         return $this->dispatcher->forget($event);
     }
-    
+
     public function forgetPushed()
     {
         return $this->dispatcher->forgetPushed();
