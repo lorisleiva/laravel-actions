@@ -319,13 +319,14 @@ Note that the `run` method also accepts additional attributes to be merged.
 ]);
 ```
 
-Alternatively, you can run a action like a function call.
+Alternatively, you can run an action like a function call or with a simple static call.
 
 ```php
-(new PublishANewArticle)([
-    'title' => 'My blog post',
-    'body' => 'Lorem ipsum.',
-]);
+// Actions are invokable objects.
+(new PublishANewArticle)([/* ... */]);
+
+// You can also use the `run` method statically.
+PublishANewArticle::run([/* ... */]);
 ```
 
 ## Actions as jobs
