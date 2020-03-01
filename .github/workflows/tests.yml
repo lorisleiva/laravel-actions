@@ -1,0 +1,46 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  phpunit73:
+    name: "Tests on PHP 7.3"
+    runs-on: ubuntu-latest
+    container: 
+      image: lorisleiva/laravel-docker:7.3
+    steps:
+    - uses: actions/checkout@v2
+    - name: Dummy php version check (to remove)
+      run: php -v
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: /composer/cache/files
+        key: dependencies-composer-${{ hashFiles('composer.json') }}
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Run tests
+      run: phpunit
+      
+  phpunit74:
+    name: "Tests on PHP 7.4"
+    runs-on: ubuntu-latest
+    container: 
+      image: lorisleiva/laravel-docker:7.4
+    steps:
+    - uses: actions/checkout@v2
+    - name: Dummy php version check (to remove)
+      run: php -v
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: /composer/cache/files
+        key: dependencies-composer-${{ hashFiles('composer.json') }}
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Run tests
+      run: phpunit
