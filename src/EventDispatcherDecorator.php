@@ -38,7 +38,7 @@ class EventDispatcherDecorator implements DispatcherContract
             return false;
         }
 
-        return false !== in_array(Action::class, \class_parents($class));
+        return in_array(Action::class, class_parents($class));
     }
 
     public function hasListeners($eventName)
