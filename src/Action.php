@@ -36,6 +36,11 @@ abstract class Action
         }
     }
 
+    public static function make(array $attributes = [])
+    {
+        return new static($attributes);
+    }
+
     public static function createFrom(Action $action)
     {
         return (new static)->fill($action->all());
@@ -122,5 +127,10 @@ abstract class Action
         throw new BadMethodCallException(sprintf(
             'Method %s::%s does not exist.', static::class, $method
         ));
+    }
+
+    public static function __callStatic($method, $parameters)
+    {
+        return (new static)->$method(...$parameters);
     }
 }
