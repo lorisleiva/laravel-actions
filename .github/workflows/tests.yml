@@ -10,8 +10,6 @@ jobs:
       image: lorisleiva/laravel-docker:7.3
     steps:
     - uses: actions/checkout@v2
-    - name: Dummy php version check (to remove)
-      run: php -v
     - name: Validate composer.json and composer.lock
       run: composer validate
     - name: Cache dependencies
@@ -31,8 +29,6 @@ jobs:
       image: lorisleiva/laravel-docker:7.4
     steps:
     - uses: actions/checkout@v2
-    - name: Dummy php version check (to remove)
-      run: php -v
     - name: Validate composer.json and composer.lock
       run: composer validate
     - name: Cache dependencies
