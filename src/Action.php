@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * @method mixed run(array $attributes = [])
+ * @method static mixed run(array $attributes = [])
+ */
 abstract class Action
 {
     use Dispatchable;
@@ -63,7 +67,7 @@ abstract class Action
         return $this->run();
     }
 
-    public function run(array $attributes = [])
+    protected function handleRun(array $attributes = [])
     {
         $this->fill($attributes);
         $this->prepareForValidation();
@@ -124,6 +128,10 @@ abstract class Action
 
     public function __call($method, $parameters)
     {
+        if ($method === 'run') {
+            return $this->handleRun(...$parameters);
+        }
+
         throw new BadMethodCallException(sprintf(
             'Method %s::%s does not exist.', static::class, $method
         ));

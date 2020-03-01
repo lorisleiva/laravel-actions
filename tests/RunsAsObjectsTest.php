@@ -135,6 +135,30 @@ class RunsAsObjectsTest extends TestCase
     }
 
     /** @test */
+    public function it_can_be_instantiated_statically()
+    {
+        $response = SimpleCalculator::make([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ])->run();
+
+        $this->assertEquals(8, $response);
+    }
+
+    /** @test */
+    public function it_can_run_through_the_run_static_method()
+    {
+        $response = SimpleCalculator::run([
+            'operation' => 'addition',
+            'left' => 3,
+            'right' => 5,
+        ]);
+
+        $this->assertEquals(8, $response);
+    }
+
+    /** @test */
     public function it_can_override_all_attributes_with_a_given_array()
     {
         $action = new SimpleCalculator(['operation' => 'addition', 'foo' => 'bar']);
