@@ -27,6 +27,7 @@ abstract class Action
     use Concerns\RunsAsController;
     use Concerns\RunsAsListener;
     use Concerns\RunsAsJob;
+    use Concerns\RunsAsCommand;
 
     protected $actingAs;
     protected $runningAs = 'object';
@@ -55,13 +56,17 @@ abstract class Action
         if ($action->runningAs('job')) {
             return $this->runAsJob();
         }
-        
+
         if ($action->runningAs('listener')) {
             return $this->runAsListener();
         }
-        
+
         if ($action->runningAs('controller')) {
             return $this->runAsController($action->getRequest());
+        }
+
+        if ($action->runningAs('command')) {
+            return $this->runAsCommand();
         }
 
         return $this->run();
@@ -120,7 +125,7 @@ abstract class Action
     {
         return $actionClass::createFrom($this)->runAs($this);
     }
-    
+
     public function __invoke(array $attributes = [])
     {
         return $this->run($attributes);
