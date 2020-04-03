@@ -3,6 +3,8 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 trait RunsAsCommand
 {
@@ -50,5 +52,15 @@ trait RunsAsCommand
     public function getAttributesFromCommandInput(InputInterface $input): array
     {
         return array_merge($input->getArguments(), $input->getOptions());
+    }
+
+    public function formatResultForConsole($result)
+    {
+        $dumper = new CliDumper();
+        $cloner = new VarCloner();
+        if ($result instanceof \Illuminate\Contracts\Support\Arrayable) {
+            $result = $result->toArray();
+        }
+        return $dumper->dump($cloner->cloneVar($result), true);
     }
 }

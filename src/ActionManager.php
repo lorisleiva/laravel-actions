@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Foundation\Console\ClosureCommand;
 use Lorisleiva\Actions\Repositories\ActionRepository;
 
 class ActionManager
@@ -31,9 +32,14 @@ class ActionManager
                     continue;
                 }
                 \Artisan::command($action->getCommandSignature(), function () use ($action) {
+                    /** @var ClosureCommand $command */
+                    $command = $this;
+                    $input = $command->input;
+                    $output = $command->getOutput();
                     try {
-                        /** @noinspection PhpUndefinedFieldInspection */
-                        $action->runAsCommand($this->input);
+                        $result = $action->runAsCommand($input);
+                        $formatted = $action->formatResultForConsole($result);
+                        $output->write($formatted);
                         return 0;
                     } catch (\Exception $e) {
                         return 1;
