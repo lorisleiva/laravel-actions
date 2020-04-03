@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
+use Lorisleiva\Actions\Repositories\ActionRepository;
+use Lorisleiva\Actions\Repositories\AutoloaderActionRepository;
+use Lorisleiva\Actions\Repositories\TestActionRepository;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -29,7 +32,14 @@ class ActionServiceProvider extends ServiceProvider
             $this->namespace('\App\Actions')->group($group);
         });
 
-        $manager = new ActionManager(new ActionRepository());
+        if ($this->app->runningUnitTests()) {
+            $this->app->bind(ActionRepository::class, TestActionRepository::class);
+        } else {
+            $this->app->bind(ActionRepository::class, AutoloaderActionRepository::class);
+        }
+
+        $manager = new ActionManager($this->app->make(ActionRepository::class));
+        $this->app->instance('action-manager', $manager);
 
         if ($this->app->runningInConsole()) {
             $this->commands([

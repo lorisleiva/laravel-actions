@@ -1,22 +1,20 @@
 <?php
 
 
-namespace Lorisleiva\Actions;
+namespace Lorisleiva\Actions\Repositories;
 
 use Illuminate\Support\Str;
+use Lorisleiva\Actions\Action;
 
-class ActionRepository
+class AutoloaderActionRepository implements ActionRepository
 {
     /**
      * @var string
      */
     private $cacheKey = 'lorisleiva-actions:list';
 
-    public function all(bool $refresh = false): array
+    public function all(): array
     {
-        if ($refresh) {
-            $this->flushCache();
-        }
         return \Cache::rememberForever($this->cacheKey, function () {
             return $this->discoverFromAutoloader();
         });

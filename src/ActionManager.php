@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Lorisleiva\Actions\Repositories\ActionRepository;
 
 class ActionManager
 {
@@ -41,5 +42,10 @@ class ActionManager
             } catch (BindingResolutionException $e) {
             }
         }
+    }
+
+    public function getRepository()
+    {
+        return $this->repository;
     }
 }
