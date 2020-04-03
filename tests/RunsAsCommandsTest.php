@@ -80,15 +80,13 @@ class RunsAsCommandsTest extends TestCase
         ];
         \Artisan::call('calculate:simple', $arguments);
         $output = \Artisan::output();
-        $expected = <<<'EXPECTED'
-array:4 [
+        $expected = 'array:4 [
   "operation" => "addition"
   "left" => 1
   "right" => 2
   "mode" => "return-attributes"
 ]
-
-EXPECTED;
+';
         $this->assertEquals($expected, $output);
     }
 
@@ -117,19 +115,17 @@ EXPECTED;
         ];
         \Artisan::call('calculate:simple', $arguments);
         $output = \Artisan::output();
-        $expected = <<<'EXPECTED'
-Lorisleiva\Actions\Tests\Actions\SimpleDTO {#4784
-  +public: "public-attribute"
-  #protected: "protected-attribute"
-  -private: "private-attribute"
-  +array: array:3 [
+        $expected = 'array:4 [
+  "public" => "public-attribute"
+  "\x00*\x00protected" => "protected-attribute"
+  "\x00Lorisleiva\Actions\Tests\Actions\SimpleDTO\x00private" => "private-attribute"
+  "array" => array:3 [
     0 => 1
     1 => 2
     2 => 3
   ]
-}
-
-EXPECTED;
+]
+';
         $this->assertEquals($expected, $output);
     }
 }

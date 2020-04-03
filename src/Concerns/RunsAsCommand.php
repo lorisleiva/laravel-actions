@@ -72,6 +72,9 @@ trait RunsAsCommand
         if ($result instanceof \Illuminate\Contracts\Support\Arrayable) {
             $result = $result->toArray();
         }
+        if (is_object($result)) {
+            $result = (array) $result;
+        }
         return $dumper->dump($cloner->cloneVar($result), true);
     }
 }
