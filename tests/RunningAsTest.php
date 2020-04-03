@@ -4,6 +4,8 @@ namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
+use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
+use Symfony\Component\Console\Input\ArrayInput;
 
 class RunningAsTest extends TestCase
 {
@@ -44,5 +46,17 @@ class RunningAsTest extends TestCase
         $action->runAsJob();
 
         $this->assertTrue($action->runningAs('job'));
+    }
+
+    /** @test */
+    public function it_keeps_track_of_how_actions_ran_as_commands()
+    {
+        $action = new SimpleCalculatorWithCommandSignature();
+        $input = new ArrayInput(['operation' => 'addition',
+            'left' => '2',
+            'right' => '3'], $action->getInputDefinition());
+        $action->runAsCommand($input);
+
+        $this->assertTrue($action->runningAs('command'));
     }
 }

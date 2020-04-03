@@ -2,6 +2,8 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Console\Parser;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
@@ -29,21 +31,6 @@ trait RunsAsCommand
         return $this->fill($attributes)->run();
     }
 
-    public function getCommandSignature(): string
-    {
-        return $this->commandSignature;
-    }
-
-    public function getCommandDescription(): string
-    {
-        return $this->commandDescription;
-    }
-
-    public function canRunAsCommand(): bool
-    {
-        return $this->getCommandSignature() !== '';
-    }
-
     /**
      * Transforms CLI input into Action attributes
      * @param InputInterface $input
@@ -52,6 +39,30 @@ trait RunsAsCommand
     public function getAttributesFromCommandInput(InputInterface $input): array
     {
         return array_merge($input->getArguments(), $input->getOptions());
+    }
+
+    public function getCommandDescription(): string
+    {
+        return $this->commandDescription;
+    }
+
+    public function getInputDefinition(): InputDefinition
+    {
+        [$name, $arguments, $options] = Parser::parse($this->commandSignature);
+        $definition = new InputDefinition();
+        $definition->setArguments($arguments);
+        $definition->setOptions($options);
+        return $definition;
+    }
+
+    public function canRunAsCommand(): bool
+    {
+        return $this->getCommandSignature() !== '';
+    }
+
+    public function getCommandSignature(): string
+    {
+        return $this->commandSignature;
     }
 
     public function formatResultForConsole($result)
