@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Lorisleiva\Actions\Concerns;
 
+use Symfony\Component\Console\Input\InputInterface;
 
 trait RunsAsCommand
 {
@@ -11,18 +11,44 @@ trait RunsAsCommand
      *
      * @var string
      */
-    protected $signature = '';
+    protected $commandSignature = '';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '';
+    protected $commandDescription = '';
 
-    public function runAsCommand()
+    public function runAsCommand(InputInterface $input)
     {
         $this->runningAs = 'command';
-        return $this->run();
+        $attributes = $this->getAttributesFromCommandInput($input);
+        return $this->fill($attributes)->run();
+    }
+
+    public function getCommandSignature(): string
+    {
+        return $this->commandSignature;
+    }
+
+    public function getCommandDescription(): string
+    {
+        return $this->commandDescription;
+    }
+
+    public function canRunAsCommand(): bool
+    {
+        return $this->getCommandSignature() !== '';
+    }
+
+    /**
+     * Transforms CLI input into Action attributes
+     * @param InputInterface $input
+     * @return array
+     */
+    public function getAttributesFromCommandInput(InputInterface $input): array
+    {
+        return array_merge($input->getArguments(), $input->getOptions());
     }
 }
