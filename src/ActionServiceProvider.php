@@ -9,7 +9,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Lorisleiva\Actions\Commands\FlushDiscoveryCache;
+use Lorisleiva\Actions\Commands\BenchmarkActionDiscoveryCommand;
+use Lorisleiva\Actions\Commands\FlushDiscoveryCacheCommand;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
 
 class ActionServiceProvider extends ServiceProvider
@@ -61,7 +62,8 @@ class ActionServiceProvider extends ServiceProvider
             ]);
             $this->commands([
                 MakeActionCommand::class,
-                FlushDiscoveryCache::class
+                FlushDiscoveryCacheCommand::class,
+                BenchmarkActionDiscoveryCommand::class
             ]);
             if (Arr::get($config, 'discovery.caching.auto-flush')) {
                 // Flush the cache when package:discover has run (happens when Composer autoload is dumped)

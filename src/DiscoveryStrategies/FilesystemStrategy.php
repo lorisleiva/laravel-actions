@@ -48,7 +48,7 @@ class FilesystemStrategy implements ActionDiscoveryStrategy
                 }
                 $classname = $fileInfo->getBasename('.php');
                 return sprintf('%s\\%s', $namespace, $classname);
-            })->filter(static function (string $fqn) {
+            })->filter(static function ($fqn) {
                 return $fqn !== null && is_subclass_of($fqn, Action::class);
             })->values();
     }

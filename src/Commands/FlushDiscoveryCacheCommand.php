@@ -5,7 +5,7 @@ namespace Lorisleiva\Actions\Commands;
 use Illuminate\Console\Command;
 use Lorisleiva\Actions\ActionManager;
 
-class FlushDiscoveryCache extends Command
+class FlushDiscoveryCacheCommand extends Command
 {
     /**
      * The name and signature of the console command.
