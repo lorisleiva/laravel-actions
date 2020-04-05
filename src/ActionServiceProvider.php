@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Lorisleiva\Actions\Commands\FlushDiscoveryCache;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
 use Lorisleiva\Actions\DiscoveryStrategies\TestbenchDiscovery;
 
@@ -52,7 +53,7 @@ class ActionServiceProvider extends ServiceProvider
             ];
         }
         $manager = new ActionManager($config);
-        $this->app->instance('action-manager', $manager);
+        $this->app->instance(ActionManager::class, $manager);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -60,6 +61,7 @@ class ActionServiceProvider extends ServiceProvider
             ]);
             $this->commands([
                 MakeActionCommand::class,
+                FlushDiscoveryCache::class
             ]);
             $manager->registerActionCommands();
         }

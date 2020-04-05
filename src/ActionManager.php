@@ -4,6 +4,8 @@ namespace Lorisleiva\Actions;
 
 use Artisan;
 use Exception;
+use Illuminate\Cache\CacheManager;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Console\ClosureCommand;
 
 class ActionManager
@@ -43,5 +45,16 @@ class ActionManager
                     }
                 })->describe($action->getCommandDescription());
             });
+    }
+
+    public function flushDiscoveryCache(): bool
+    {
+        try {
+            if ($cache = app()->make(CacheManager::class)) {
+                return $cache->forget(ActionDiscovery::$cacheKey);
+            }
+        } catch (BindingResolutionException $e) {
+            return false;
+        }
     }
 }
