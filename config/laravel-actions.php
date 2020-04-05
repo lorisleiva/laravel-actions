@@ -11,7 +11,7 @@ return [
          * Use Composer's autoloader class-map to automatically discover actions.
          * Note: new actions will only be discoverable after Composer has updated the autoload files (dump-autoload).
          */
-        'autoloader' => env('ACTIONS_AUTOLOADER_DISCOVERY', false),
+        'autoloader' => env('ACTIONS_AUTOLOADER_DISCOVERY', true),
         /*
          * Scan the specified folders recursively.
          */
