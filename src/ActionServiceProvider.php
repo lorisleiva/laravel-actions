@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
-use Lorisleiva\Actions\Repositories\ActionRepository;
-use Lorisleiva\Actions\Repositories\AutoloaderActionRepository;
-use Lorisleiva\Actions\Repositories\TestActionRepository;
+use Lorisleiva\Actions\DiscoveryStrategies\TestbenchDiscovery;
 
 class ActionServiceProvider extends ServiceProvider
 {
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/laravel-actions.php', 'laravel-actions'
+        );
+    }
+
 
     public function boot()
     {
@@ -32,16 +37,27 @@ class ActionServiceProvider extends ServiceProvider
             $this->namespace('\App\Actions')->group($group);
         });
 
+        $config = config()->get('laravel-actions');
         if ($this->app->runningUnitTests()) {
-            $this->app->bind(ActionRepository::class, TestActionRepository::class);
-        } else {
-            $this->app->bind(ActionRepository::class, AutoloaderActionRepository::class);
+            $config = [
+                'discovery' => [
+                    'autoloader' => false,
+                    'folders' => [
+                        __DIR__ . '/../tests/Actions'
+                    ],
+                    'caching' => [
+                        'enabled' => false
+                    ]
+                ]
+            ];
         }
-
-        $manager = new ActionManager($this->app->make(ActionRepository::class));
+        $manager = new ActionManager($config);
         $this->app->instance('action-manager', $manager);
 
         if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/laravel-actions.php' => config_path('laravel-actions.php'),
+            ]);
             $this->commands([
                 MakeActionCommand::class,
             ]);

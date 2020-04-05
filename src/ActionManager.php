@@ -2,36 +2,33 @@
 
 namespace Lorisleiva\Actions;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Artisan;
+use Exception;
 use Illuminate\Foundation\Console\ClosureCommand;
-use Lorisleiva\Actions\Repositories\ActionRepository;
 
 class ActionManager
 {
     /**
-     * @var ActionRepository
+     * @var ActionDiscovery
      */
-    private $repository;
+    private $discovery;
 
     /**
      * ActionManager constructor.
-     * @param ActionRepository $repository
+     * @param array $config
      */
-    public function __construct(ActionRepository $repository)
+    public function __construct(array $config)
     {
-        $this->repository = $repository;
+        $this->discovery = new ActionDiscovery($config);
     }
 
     public function registerActionCommands(): void
     {
-        foreach ($this->repository->all() as $class) {
-            try {
-                /** @var Action $action */
-                $action = app()->make($class);
-                if (!$action->canRunAsCommand()) {
-                    continue;
-                }
-                \Artisan::command($action->getCommandSignature(), function () use ($action) {
+        $this->discovery->getActions()
+            ->filter(static function (Action $action) {
+                return $action->canRunAsCommand();
+            })->each(static function (Action $action) {
+                Artisan::command($action->getCommandSignature(), function () use ($action) {
                     /** @var ClosureCommand $command */
                     $command = $this;
                     $input = $command->input;
@@ -41,17 +38,10 @@ class ActionManager
                         $formatted = $action->formatResultForConsole($result);
                         $output->write($formatted);
                         return 0;
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         return 1;
                     }
                 })->describe($action->getCommandDescription());
-            } catch (BindingResolutionException $e) {
-            }
-        }
-    }
-
-    public function getRepository()
-    {
-        return $this->repository;
+            });
     }
 }

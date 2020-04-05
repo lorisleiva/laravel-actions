@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Console\Parser;
+use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -69,7 +70,7 @@ trait RunsAsCommand
     {
         $dumper = new CliDumper();
         $cloner = new VarCloner();
-        if ($result instanceof \Illuminate\Contracts\Support\Arrayable) {
+        if ($result instanceof Arrayable) {
             $result = $result->toArray();
         }
         if (is_object($result)) {
