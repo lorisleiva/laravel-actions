@@ -43,7 +43,6 @@ class ActionServiceProvider extends ServiceProvider
         if ($this->app->runningUnitTests()) {
             $config = [
                 'discovery' => [
-                    'autoloader' => false,
                     'folders' => [
                         __DIR__ . '/../tests/Actions'
                     ],
@@ -64,7 +63,7 @@ class ActionServiceProvider extends ServiceProvider
                 MakeActionCommand::class,
                 FlushDiscoveryCache::class
             ]);
-            if (Arr::get($config, 'discovery.autoloader') && Arr::get($config, 'discovery.caching.enabled')) {
+            if (Arr::get($config, 'discovery.caching.auto-flush')) {
                 // Flush the cache when package:discover has run (happens when Composer autoload is dumped)
                 $this->app->make('events')
                     ->listen(CommandFinished::class, static function (CommandFinished $event) use ($manager) {

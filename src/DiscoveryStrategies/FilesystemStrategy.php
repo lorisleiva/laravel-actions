@@ -15,6 +15,10 @@ class FilesystemStrategy implements ActionDiscoveryStrategy
      * @var array
      */
     private $folders;
+    /**
+     * @var Collection
+     */
+    private $resolvedNamespaces;
 
     /**
      * FilesystemDiscovery constructor.
@@ -23,6 +27,7 @@ class FilesystemStrategy implements ActionDiscoveryStrategy
     public function __construct(array $folders = [])
     {
         $this->folders = $folders;
+        $this->resolvedNamespaces = collect();
     }
 
     public function getActionClasses(): Collection
@@ -37,20 +42,23 @@ class FilesystemStrategy implements ActionDiscoveryStrategy
             ->files();
         return collect(iterator_to_array($finder))
             ->map(function (SplFileInfo $fileInfo) {
-                $namespace = $this->getFileNamespace($fileInfo->getPathname());
+                $namespace = $this->getFileNamespace($fileInfo);
                 if (!$namespace) {
                     return null;
                 }
                 $classname = $fileInfo->getBasename('.php');
                 return sprintf('%s\\%s', $namespace, $classname);
-            })->filter(function (string $fqn) {
+            })->filter(static function (string $fqn) {
                 return $fqn !== null && is_subclass_of($fqn, Action::class);
             })->values();
     }
 
-    private function getFileNamespace($path)
+    private function getFileNamespace(SplFileInfo $fileInfo): ?string
     {
-        $tokens = token_get_all(file_get_contents($path));
+        if ($resolved = $this->resolvedNamespaces->get($fileInfo->getPath())) {
+            return $resolved;
+        }
+        $tokens = token_get_all($fileInfo->getContents());
         $count = count($tokens);
         $i = 0;
         $namespace = '';
@@ -71,6 +79,8 @@ class FilesystemStrategy implements ActionDiscoveryStrategy
             }
             $i++;
         }
+
+        $this->resolvedNamespaces->put($fileInfo->getPath(), $namespace ?: null);
 
         if (!$namespace_ok) {
             return null;

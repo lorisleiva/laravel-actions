@@ -7,16 +7,11 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Lorisleiva\Actions\DiscoveryStrategies\AutoloaderStrategy;
 use Lorisleiva\Actions\DiscoveryStrategies\ClassnameStrategy;
 use Lorisleiva\Actions\DiscoveryStrategies\FilesystemStrategy;
 
 class ActionDiscovery
 {
-    /**
-     * @var AutoloaderStrategy
-     */
-    private $autoloaderStrategy;
     /**
      * @var FilesystemStrategy
      */
@@ -30,13 +25,9 @@ class ActionDiscovery
      */
     private $useCache;
     /**
-     * @var int
-     */
-    private $cacheTtl;
-    /**
      * @var string
      */
-    public static $cacheKey;
+    public static $cacheKey = 'laravel-actions:discovered';
 
     /**
      * ActionResolver constructor.
@@ -44,12 +35,9 @@ class ActionDiscovery
      */
     public function __construct(array $config)
     {
-        $this->autoloaderStrategy = new AutoloaderStrategy(Arr::get($config, 'discovery.autoloader', false));
         $this->filesystemStrategy = new FilesystemStrategy(Arr::get($config, 'discovery.folders', []));
         $this->classnameStrategy = new ClassnameStrategy(Arr::get($config, 'discovery.classes', []));
         $this->useCache = Arr::get($config, 'discovery.caching.enabled', true);
-        $this->cacheTtl = Arr::get($config, 'discovery.caching.ttl', -1);
-        self::$cacheKey = Arr::get($config, 'discovery.caching.cacheKey', 'laravel-actions:discovered');
     }
 
     /**
@@ -62,13 +50,7 @@ class ActionDiscovery
             return $this->discover();
         }
         try {
-            $cache = app()->make(CacheManager::class);
-            if ($this->cacheTtl === -1) {
-                return $cache->rememberForever(self::$cacheKey, function () {
-                    return $this->discover();
-                });
-            }
-            return $cache->remember(self::$cacheKey, $this->cacheTtl, function () {
+            return app()->make(CacheManager::class)->rememberForever(self::$cacheKey, function () {
                 return $this->discover();
             });
         } catch (BindingResolutionException $e) {
@@ -78,12 +60,8 @@ class ActionDiscovery
 
     private function discover(): Collection
     {
-        $fromAutoloader = $this->autoloaderStrategy->getActionClasses();
-        $fromFilesystem = $this->filesystemStrategy->getActionClasses();
-        $fromClassname = $this->classnameStrategy->getActionClasses();
-        return $fromAutoloader
-            ->merge($fromFilesystem)
-            ->merge($fromClassname)
+        return $this->filesystemStrategy->getActionClasses()
+            ->merge($this->classnameStrategy->getActionClasses())
             ->sort()
             ->unique()
             ->map(static function (string $class) {
