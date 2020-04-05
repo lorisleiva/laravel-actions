@@ -40,20 +40,13 @@ class ActionServiceProvider extends ServiceProvider
             $this->namespace('\App\Actions')->group($group);
         });
 
-        $config = config()->get('laravel-actions');
         if ($this->app->runningUnitTests()) {
-            $config = [
-                'discovery' => [
-                    'folders' => [
-                        __DIR__ . '/../tests/Actions'
-                    ],
-                    'caching' => [
-                        'enabled' => false
-                    ]
-                ]
-            ];
+            config()->set('laravel-actions.discovery.folders', [
+                __DIR__ . '/../tests/Actions'
+            ]);
+            config()->set('laravel-actions.discovery.caching.enabled', false);
         }
-        $manager = new ActionManager($config);
+        $manager = new ActionManager();
         $this->app->instance(ActionManager::class, $manager);
 
         if ($this->app->runningInConsole()) {
@@ -65,7 +58,7 @@ class ActionServiceProvider extends ServiceProvider
                 FlushDiscoveryCacheCommand::class,
                 BenchmarkActionDiscoveryCommand::class
             ]);
-            if (Arr::get($config, 'discovery.caching.auto-flush')) {
+            if (config()->get('laravel-actions.discovery.caching.auto-flush')) {
                 // Flush the cache when package:discover has run (happens when Composer autoload is dumped)
                 $this->app->make('events')
                     ->listen(CommandFinished::class, static function (CommandFinished $event) use ($manager) {

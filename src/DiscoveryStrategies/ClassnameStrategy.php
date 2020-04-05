@@ -7,23 +7,10 @@ use Lorisleiva\Actions\Action;
 
 class ClassnameStrategy implements ActionDiscoveryStrategy
 {
-    /**
-     * @var array
-     */
-    private $classes;
-
-    /**
-     * ClassnameStrategy constructor.
-     * @param array $classes
-     */
-    public function __construct(array $classes)
-    {
-        $this->classes = $classes;
-    }
 
     public function getActionClasses(): Collection
     {
-        return collect($this->classes)
+        return collect(config()->get('laravel-actions.discovery.classes', []))
             ->filter(static function (string $fqn) {
                 return class_exists($fqn) && is_subclass_of($fqn, Action::class);
             })

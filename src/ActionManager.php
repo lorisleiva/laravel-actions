@@ -18,11 +18,10 @@ class ActionManager
 
     /**
      * ActionManager constructor.
-     * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct()
     {
-        $this->discovery = new ActionDiscovery($config);
+        $this->discovery = new ActionDiscovery();
     }
 
     public function registerActionCommands(): void

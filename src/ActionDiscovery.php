@@ -21,23 +21,17 @@ class ActionDiscovery
      */
     private $classnameStrategy;
     /**
-     * @var bool
-     */
-    private $useCache;
-    /**
      * @var string
      */
     public static $cacheKey = 'laravel-actions:discovered';
 
     /**
      * ActionResolver constructor.
-     * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct()
     {
-        $this->filesystemStrategy = new FilesystemStrategy(Arr::get($config, 'discovery.folders', []));
-        $this->classnameStrategy = new ClassnameStrategy(Arr::get($config, 'discovery.classes', []));
-        $this->useCache = Arr::get($config, 'discovery.caching.enabled', true);
+        $this->filesystemStrategy = new FilesystemStrategy();
+        $this->classnameStrategy = new ClassnameStrategy();
     }
 
     /**
@@ -46,7 +40,7 @@ class ActionDiscovery
      */
     public function getActions(): Collection
     {
-        if (!$this->useCache) {
+        if (!config()->get('laravel-actions.discovery.caching.enabled')) {
             return $this->discover();
         }
         try {

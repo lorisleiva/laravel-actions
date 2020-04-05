@@ -12,31 +12,26 @@ use Symfony\Component\Finder\SplFileInfo;
 class FilesystemStrategy implements ActionDiscoveryStrategy
 {
     /**
-     * @var array
-     */
-    private $folders;
-    /**
      * @var Collection
      */
     private $resolvedNamespaces;
 
     /**
      * FilesystemDiscovery constructor.
-     * @param array $folders
      */
-    public function __construct(array $folders = [])
+    public function __construct()
     {
-        $this->folders = $folders;
         $this->resolvedNamespaces = collect();
     }
 
     public function getActionClasses(): Collection
     {
-        if (empty($this->folders)) {
+        $folders = config()->get('laravel-actions.discovery.folders', []);
+        if (empty($folders)) {
             return collect();
         }
         $finder = Finder::create()
-            ->in($this->folders)
+            ->in($folders)
             ->ignoreDotFiles(true)
             ->name('*.php')
             ->files();
