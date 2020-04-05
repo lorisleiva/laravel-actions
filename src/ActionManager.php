@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Console\ClosureCommand;
+use Illuminate\Support\Collection;
 
 class ActionManager
 {
@@ -47,6 +48,19 @@ class ActionManager
             });
     }
 
+    /**
+     * Get instances of all discovered Action classes
+     * @return Collection
+     */
+    public function getActions(): Collection
+    {
+        return $this->discovery->getActions();
+    }
+
+    /**
+     * Remove currently discovered actions from cache
+     * @return bool
+     */
     public function flushDiscoveryCache(): bool
     {
         try {
