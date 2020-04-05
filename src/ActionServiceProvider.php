@@ -3,13 +3,14 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Bus\Dispatcher as IlluminateBusDispatcher;
+use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Commands\FlushDiscoveryCache;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
-use Lorisleiva\Actions\DiscoveryStrategies\TestbenchDiscovery;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -63,6 +64,15 @@ class ActionServiceProvider extends ServiceProvider
                 MakeActionCommand::class,
                 FlushDiscoveryCache::class
             ]);
+            if (Arr::get($config, 'discovery.autoloader') && Arr::get($config, 'discovery.caching.enabled')) {
+                // Flush the cache when package:discover has run (happens when Composer autoload is dumped)
+                $this->app->make('events')
+                    ->listen(CommandFinished::class, static function (CommandFinished $event) use ($manager) {
+                        if ($event->command === 'package:discover') {
+                            $manager->flushDiscoveryCache();
+                        }
+                    });
+            }
             $manager->registerActionCommands();
         }
     }
