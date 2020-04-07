@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Console\OutputStyle;
 use Illuminate\Console\Parser;
 use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -66,7 +67,7 @@ trait RunsAsCommand
         return $this->commandSignature;
     }
 
-    public function formatResultForConsole($result)
+    public function outputResultToConsole($result, OutputStyle $output)
     {
         $dumper = new CliDumper();
         $cloner = new VarCloner();
@@ -76,6 +77,7 @@ trait RunsAsCommand
         if (is_object($result)) {
             $result = (array) $result;
         }
-        return $dumper->dump($cloner->cloneVar($result), true);
+        $formatted = $dumper->dump($cloner->cloneVar($result), true);
+        $output->write($formatted);
     }
 }

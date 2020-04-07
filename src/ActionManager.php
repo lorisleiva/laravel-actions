@@ -37,8 +37,7 @@ class ActionManager
                     $output = $command->getOutput();
                     try {
                         $result = $action->runAsCommand($input);
-                        $formatted = $action->formatResultForConsole($result);
-                        $output->write($formatted);
+                        $action->outputResultToConsole($result, $output);
                         return 0;
                     } catch (Exception $e) {
                         return 1;
