@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -11,25 +12,38 @@ use Symfony\Component\Finder\Finder;
 
 class ActionManager
 {
-    /** @var array array */
-    protected $paths = [];
+    /** @var Collection */
+    protected $paths;
 
+    /** @var Collection */
+    protected $loadedActions;
+
+    /**
+     * Define the default path to load.
+     */
     public function __construct()
     {
-        $this->paths = [
-            app_path('Actions'),
-        ];
+        $this->paths('app/Actions');
+        $this->loadedActions = collect();
     }
 
     /**
      * Define the paths to use when loading actions.
      *
-     * @param $paths
+     * @param array|string $paths
      * @return $this
      */
     public function paths($paths): ActionManager
     {
-        $this->paths = array_unique(Arr::wrap($paths));
+        $this->paths = Collection::wrap($paths)
+            ->map(function (string $path) {
+                return Str::startsWith($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
+            })
+            ->unique()
+            ->filter(function (string $path) {
+                return is_dir($path);
+            })
+            ->values();
 
         return $this;
     }
@@ -39,15 +53,11 @@ class ActionManager
      */
     public function load(): void
     {
-        $paths = array_filter($this->paths, function ($path) {
-            return is_dir($path);
-        });
-
-        if (empty($paths)) {
+        if ($this->paths->isEmpty()) {
             return;
         }
 
-        foreach ((new Finder)->in($paths)->files() as $file) {
+        foreach ((new Finder)->in($this->paths->toArray())->files() as $file) {
             $this->loadAction(
                 $this->getClassnameFromPathname($file->getPathname())
             );
@@ -62,7 +72,7 @@ class ActionManager
      */
     public function loadAction($action): void
     {
-        if (! $this->isAction($action)) {
+        if (! $this->isAction($action) || $this->isLoaded($action)) {
             return;
         }
 
@@ -71,6 +81,7 @@ class ActionManager
         }
 
         $action->registerCommand();
+        $this->loadedActions->push(get_class($action));
     }
 
     /**
@@ -84,6 +95,19 @@ class ActionManager
     {
         return is_subclass_of($action, Action::class) &&
             ! (new ReflectionClass($action))->isAbstract();
+    }
+
+    /**
+     * Determine if an action has already been loaded.
+     *
+     * @param mixed $action
+     * @return bool
+     */
+    public function isLoaded($action): bool
+    {
+        $class = is_string($action) ? $action : get_class($action);
+
+        return $this->loadedActions->contains($class);
     }
 
     /**
