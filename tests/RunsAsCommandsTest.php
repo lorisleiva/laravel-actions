@@ -2,7 +2,9 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Console\Command;
+use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
@@ -44,6 +46,30 @@ class RunsAsCommandsTest extends TestCase
         $this->expectExceptionMessage('The "foo" argument does not exist.');
         $this->artisan('calculate:simple', [
             'foo' => 'bar',
+        ]);
+    }
+
+    /** @test */
+    public function it_fails_when_the_action_is_not_authorized()
+    {
+        $this->expectException(AuthorizationException::class);
+        $this->expectExceptionMessage('This action is unauthorized.');
+        $this->artisan('calculate:simple', [
+            'operation' => 'unauthorized',
+            'left' => '3',
+            'right' => '5',
+        ]);
+    }
+
+    /** @test */
+    public function it_fails_when_the_data_is_invalid()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The given data was invalid.');
+        $this->artisan('calculate:simple', [
+            'operation' => 'invalid',
+            'left' => '3',
+            'right' => '5',
         ]);
     }
 
