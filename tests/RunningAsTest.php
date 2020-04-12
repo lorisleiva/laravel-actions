@@ -2,10 +2,13 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Console\OutputStyle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\StringInput;
 
 class RunningAsTest extends TestCase
 {
@@ -52,10 +55,16 @@ class RunningAsTest extends TestCase
     public function it_keeps_track_of_how_actions_ran_as_commands()
     {
         $action = new SimpleCalculatorWithCommandSignature();
-        $input = new ArrayInput(['operation' => 'addition',
-            'left' => '2',
-            'right' => '3'], $action->getInputDefinition());
-        $action->runAsCommand($input);
+        $arguments = [
+            'operation' => 'addition',
+            'left' => '5',
+            'right' => '3',
+        ];
+
+        $command = $action->registerClosureCommand();
+        $command->setInput(new ArrayInput($arguments, $command->getDefinition()));
+
+        $action->runAsCommand($command);
 
         $this->assertTrue($action->runningAs('command'));
     }

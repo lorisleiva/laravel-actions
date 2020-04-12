@@ -45,7 +45,7 @@ trait RunsAsCommand
         return $this->getCommandSignature() !== '';
     }
 
-    public function getAttributesFromCommandInput(Command $command): array
+    public function getAttributesFromCommand(Command $command): array
     {
         return array_merge($command->arguments(), $command->options());
     }
@@ -57,6 +57,8 @@ trait RunsAsCommand
 
     public function consoleOutput($result, Command $command)
     {
-        $command->getOutput()->writeln(var_dump($result));
+        if ($output = $command->getOutput()) {
+            $command->getOutput()->writeln(var_dump($result));
+        }
     }
 }

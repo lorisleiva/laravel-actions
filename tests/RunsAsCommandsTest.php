@@ -2,12 +2,21 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Support\Facades\Artisan;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArgvInput;
 
 class RunsAsCommandsTest extends TestCase
 {
+    /** @test */
+    public function it_can_successfully_run_as_a_command()
+    {
+        Artisan::call('calculate:simple');
+
+        // TODO
+    }
+
     /** @test */
     public function it_fails_when_required_arguments_are_missing()
     {
@@ -54,7 +63,7 @@ class RunsAsCommandsTest extends TestCase
             'right' => 2,
             'mode' => 'default'
         ];
-        $this->assertEquals($expected, $action->getAttributesFromCommandInput($input));
+        $this->assertEquals($expected, $action->getAttributesFromCommand($input));
     }
 
     /** @test */
