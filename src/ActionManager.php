@@ -74,6 +74,19 @@ class ActionManager
     }
 
     /**
+     * Determine if an object or its classname is an Action.
+     *
+     * @param mixed $action
+     * @return bool
+     * @throws ReflectionException
+     */
+    public function isAction($action): bool
+    {
+        return is_subclass_of($action, Action::class) &&
+            ! (new ReflectionClass($action))->isAbstract();
+    }
+
+    /**
      * Get the fully-qualified name of a class from its pathname.
      *
      * @param string $pathname
@@ -86,18 +99,5 @@ class ActionManager
             ['\\', ''],
             Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
         );
-    }
-
-    /**
-     * Determine if an object or its classname is an Action.
-     *
-     * @param mixed $action
-     * @return bool
-     * @throws ReflectionException
-     */
-    protected function isAction($action): bool
-    {
-        return is_subclass_of($action, Action::class) &&
-            ! (new ReflectionClass($action))->isAbstract();
     }
 }

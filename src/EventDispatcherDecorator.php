@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Container\Container as ContainerContract;
+use Lorisleiva\Actions\Facades\Actions;
 
 class EventDispatcherDecorator implements DispatcherContract
 {
@@ -38,7 +39,7 @@ class EventDispatcherDecorator implements DispatcherContract
             return false;
         }
 
-        return in_array(Action::class, class_parents($class));
+        return Actions::isAction($listener);
     }
 
     public function hasListeners($eventName)
