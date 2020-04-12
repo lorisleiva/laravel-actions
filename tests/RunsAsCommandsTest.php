@@ -3,7 +3,6 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use InvalidArgumentException;
 use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
@@ -70,74 +69,65 @@ class RunsAsCommandsTest extends TestCase
     }
 
     /** @test */
-    public function it_writes_expected_output_to_console()
+    public function it_can_override_what_gets_written_to_the_console()
     {
-        \Artisan::call('calculate:simple', [
+        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        {
+            public function consoleOutput($result, Command $command)
+            {
+                $command->line("Congratulations! Your result is [$result].");
+            }
+        });
+
+        $this->artisan('calculate:simple', [
             'operation' => 'addition',
-            'left' => '1',
-            'right' => '2'
-        ]);
-        $output = \Artisan::output();
-        $this->assertEquals("3\n", $output);
+            'left' => '3',
+            'right' => '5',
+        ])->expectsOutput('Congratulations! Your result is [8].');
     }
 
     /** @test */
-    public function it_dumps_returned_arrays_to_console()
+    public function it_can_provide_a_custom_console_exit_code()
     {
-        $arguments = [
+        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        {
+            public function consoleOutput($result, Command $command)
+            {
+                return 42;
+            }
+        });
+
+        $this->artisan('calculate:simple', [
             'operation' => 'addition',
-            'left' => '1',
-            'right' => '2',
-            'mode' => 'return-attributes'
-        ];
-        \Artisan::call('calculate:simple', $arguments);
-        $output = \Artisan::output();
-        $expected = 'array:4 [
-  "operation" => "addition"
-  "left" => 1
-  "right" => 2
-  "mode" => "return-attributes"
-]
-';
-        $this->assertEquals($expected, $output);
+            'left' => '3',
+            'right' => '5',
+        ])->assertExitCode(42);
     }
 
     /** @test */
-    public function it_writes_returned_booleans_as_string()
+    public function it_can_request_additional_input_from_the_console()
     {
-        $arguments = [
-            'operation' => 'addition',
-            'left' => '1',
-            'right' => '2',
-            'mode' => 'return-true'
-        ];
-        \Artisan::call('calculate:simple', $arguments);
-        $output = \Artisan::output();
-        $this->assertEquals("true\n", $output);
-    }
+        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        {
+            public function consoleInput(Command $command)
+            {
+                $this->multiplier = (int) $command->ask('What should we multiple the final result by?');
+            }
 
-    /** @test */
-    public function it_dumps_returned_objects_to_console()
-    {
-        $arguments = [
+            public function handle($operation, $left, $right)
+            {
+                return $this->multiplier * parent::handle($operation, $left, $right);
+            }
+        });
+
+        $input = [
             'operation' => 'addition',
-            'left' => '1',
-            'right' => '2',
-            'mode' => 'return-object'
+            'left' => '3',
+            'right' => '5',
         ];
-        \Artisan::call('calculate:simple', $arguments);
-        $output = \Artisan::output();
-        $expected = 'array:4 [
-  "public" => "public-attribute"
-  "\x00*\x00protected" => "protected-attribute"
-  "\x00Lorisleiva\Actions\Tests\Actions\SimpleDTO\x00private" => "private-attribute"
-  "array" => array:3 [
-    0 => 1
-    1 => 2
-    2 => 3
-  ]
-]
-';
-        $this->assertEquals($expected, $output);
+
+        $this->artisan('calculate:simple', $input)
+            ->expectsQuestion('What should we multiple the final result by?', 3)
+            ->expectsOutput('24');
     }
 }
