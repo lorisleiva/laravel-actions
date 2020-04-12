@@ -117,6 +117,18 @@ class PublishANewArticle extends Action
 }
 ```
 
+#### As an artisan command.
+
+```php
+class PublishANewArticle extends Action
+{
+    protected $commandSignature = 'make:article {title} {body}';
+    protected $commandDescription = 'Publishes a new article';
+
+    // ...
+}
+```
+
 ## Action’s attributes
 In order to unify the various forms an action can take, the data of an action is implemented as a set of attributes (similarly to models).
 
@@ -141,6 +153,7 @@ Depending on how an action is ran, its attributes are filled with the relevant i
 - [How are attributes filled as jobs](#actions-as-jobs).
 - [How are attributes filled as listeners](#actions-as-listeners).
 - [How are attributes filled as controllers](#actions-as-controllers).
+- [How are attributes filled as commands](#actions-as-commands).
 
 ## Dependency injections
 The `handle` method support dependency injections. That means, whatever arguments you enter in the handle method, Laravel Actions will try to resolve them from the container but also from its own attributes. Let’s have a look at some examples.
@@ -534,6 +547,13 @@ public function jsonResponse($result, $request)
 }
 ```
 
+
+## Actions as commands
+
+### How are attributes filled?
+
+TODO
+
 ## Keeping track of how an action was ran
 
 ### The `runningAs` method
@@ -547,6 +567,7 @@ public function handle()
     $this->runningAs('job');
     $this->runningAs('listener');
     $this->runningAs('controller');
+    $this->runningAs('command');
 
     // Returns true if any of them is true.
     $this->runningAs('object', 'job');
@@ -581,7 +602,7 @@ class CreateNewRestaurant extends Action
 {
     public function handle()
     {
-        $coordinates = (new FetchGoogleMapsCoordinates)->run([
+        $coordinates = FetchGoogleMapsCoordinates::run([
             'address' => $this->address,
         ]);
 
