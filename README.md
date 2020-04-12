@@ -3,7 +3,7 @@
 
 This package introduces a new way of organising the logic of your Laravel applications by focusing on the actions your application provide.
 
-Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Laravel Actions regroup the authorisation, validation and execution of a task in one class that can be used as an **invokable controller**, as a **plain object**, as a **dispatchable job** and as an **event listener**.
+Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Laravel Actions regroup the authorisation, validation and execution of a task in one class that can be used as an **invokable controller**, as a **plain object**, as a **dispatchable job**, as an **event listener** and as an **artisan command**.
 
 ![Cover picture](https://user-images.githubusercontent.com/3642397/58073806-87342680-7b9b-11e9-9669-df35fba71f6b.png)
 
@@ -24,6 +24,7 @@ composer require lorisleiva/laravel-actions
 - [Actions as jobs](#actions-as-jobs)
 - [Actions as listeners](#actions-as-listeners)
 - [Actions as controllers](#actions-as-controllers)
+- [Actions as commands (WIP)](#actions-as-commands)
 - [Keeping track of how an action was ran](#keeping-track-of-how-an-action-was-ran)
 - [Use actions within actions](#use-actions-within-actions)
 
@@ -550,7 +551,21 @@ public function jsonResponse($result, $request)
 
 ## Actions as commands
 
+WIP: This new addition has not been tagged yet.
+
 ### How are attributes filled?
+
+TODO
+
+### Registering commands
+
+TODO
+
+### Promting additional data
+
+TODO
+
+### Console output and exit code
 
 TODO
 
@@ -576,7 +591,7 @@ public function handle()
 
 ### The before hooks
 
-If you want to execute some code only when the action is ran as a certain type, you can use the before hooks `asObject`, `asJob`, `asListener` and `asController`.
+If you want to execute some code only when the action is ran as a certain type, you can use the before hooks `asObject`, `asJob`, `asListener`, `asController` and `asCommand`.
 
 ```php
 public function asController(Request $request)
@@ -589,7 +604,7 @@ If you want to prepare the data before running the action (and thus also before 
 
 It is worth noting that, just like the `handle` method, the before hooks [support dependency injections](#dependency-injections) .
 
-Also note that these before hooks will be called right before the `handle` method is executed and not when the action is being created. This means you cannot use the `asController` method to register your middleware. You need to [use the `register` method](#registering-middleware) instead.
+Also note that these before hooks will be called right before the `handle` method is executed and not when the action is being created. This means you cannot use the `asController` method to register your middleware. You need to [use the `middleware` method](#registering-middleware) instead.
 
 ## Use actions within actions
 
