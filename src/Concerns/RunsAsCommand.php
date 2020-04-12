@@ -17,20 +17,22 @@ trait RunsAsCommand
         $this->runningAs = 'command';
         $this->fill($this->getAttributesFromCommand($command));
         $this->consoleInput($command);
-        $result = $this->run();
-        $this->consoleOutput($result, $command);
-        return $result;
+        return $this->run();
     }
 
-    public function registerClosureCommand(): ClosureCommand
+    public function registerCommand(): ?ClosureCommand
     {
         /** @var Action $action */
-        $action = $this;
+        if (! ($action = $this)->canRunAsCommand()) {
+            return null;
+        }
 
         $handler = function () use ($action) {
             try {
-                /** @var ClosureCommand $this */
-                return $action->runAsCommand($this) ?? 0;
+                /** @var ClosureCommand $command */
+                $command = $this;
+                $result = $action->runAsCommand($command);
+                return $action->consoleOutput($result, $command) ?? 0;
             } catch (Exception $e) {
                 return 1;
             }
@@ -42,7 +44,7 @@ trait RunsAsCommand
 
     public function canRunAsCommand(): bool
     {
-        return $this->getCommandSignature() !== '';
+        return $this->commandSignature !== '';
     }
 
     public function getAttributesFromCommand(Command $command): array
@@ -58,7 +60,7 @@ trait RunsAsCommand
     public function consoleOutput($result, Command $command)
     {
         if ($output = $command->getOutput()) {
-            $command->getOutput()->writeln(var_dump($result));
+            $command->getOutput()->write(var_export($result, true));
         }
     }
 }

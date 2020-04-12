@@ -23,7 +23,7 @@ class EventDispatcherDecorator implements DispatcherContract
             $listener = $listener . '@runAsListener';
         }
 
-        return $this->dispatcher->listen($events, $listener);
+        $this->dispatcher->listen($events, $listener);
     }
 
     public function isActionFullyQualifiedName($listener)
@@ -48,7 +48,7 @@ class EventDispatcherDecorator implements DispatcherContract
 
     public function subscribe($subscriber)
     {
-        return $this->dispatcher->subscribe($subscriber);
+        $this->dispatcher->subscribe($subscriber);
     }
 
     public function until($event, $payload = [])
@@ -63,22 +63,22 @@ class EventDispatcherDecorator implements DispatcherContract
 
     public function push($event, $payload = [])
     {
-        return $this->dispatcher->push($event, $payload);
+        $this->dispatcher->push($event, $payload);
     }
 
     public function flush($event)
     {
-        return $this->dispatcher->flush($event);
+        $this->dispatcher->flush($event);
     }
 
     public function forget($event)
     {
-        return $this->dispatcher->forget($event);
+        $this->dispatcher->forget($event);
     }
 
     public function forgetPushed()
     {
-        return $this->dispatcher->forgetPushed();
+        $this->dispatcher->forgetPushed();
     }
 
     public function __call($method, $parameters)

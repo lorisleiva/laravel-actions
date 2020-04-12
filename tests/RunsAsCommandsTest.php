@@ -2,68 +2,71 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use InvalidArgumentException;
+use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithCommandSignature;
 use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Input\ArgvInput;
 
 class RunsAsCommandsTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Actions::loadAction(SimpleCalculatorWithCommandSignature::class);
+    }
+
     /** @test */
     public function it_can_successfully_run_as_a_command()
     {
-        Artisan::call('calculate:simple');
-
-        // TODO
+        $this->artisan('calculate:simple', [
+                'operation' => 'addition',
+                'left' => '3',
+                'right' => '5',
+            ])
+            ->assertExitCode(0)
+            ->expectsOutput('8');
     }
 
     /** @test */
     public function it_fails_when_required_arguments_are_missing()
     {
-        try {
-            \Artisan::call('calculate:simple');
-            $this->fail('Expected a console runtime exception');
-        } catch (RuntimeException $e) {
-            $this->assertEquals($e->getMessage(), 'Not enough arguments (missing: "operation, left, right").');
-        }
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Not enough arguments (missing: "operation, left, right").');
+        $this->artisan('calculate:simple');
     }
 
     /** @test */
-    public function it_fails_when_too_many_arguments_are_passed()
+    public function it_fails_when_we_provide_arguments_that_have_not_been_registered_in_the_signature()
     {
-        try {
-            $action = new SimpleCalculatorWithCommandSignature();
-            new ArgvInput([
-                'command-name',
-                'addition',
-                '1',
-                '2',
-                'default',
-                'extra-argument'
-            ], $action->getInputDefinition());
-            $this->fail('Expected a console runtime exception');
-        } catch (RuntimeException $e) {
-            $this->assertEquals($e->getMessage(), 'Too many arguments, expected arguments "operation" "left" "right" "mode".');
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The "foo" argument does not exist.');
+        $this->artisan('calculate:simple', [
+            'foo' => 'bar',
+        ]);
     }
 
     /** @test */
-    public function it_parses_command_line_input_correctly()
+    public function it_can_override_the_way_we_get_attribute_from_the_command()
     {
-        $action = new SimpleCalculatorWithCommandSignature();
-        $input = new ArgvInput([
-            'command-name',
-            'addition',
-            '1',
-            '2',
-        ], $action->getInputDefinition());
-        $expected = [
-            'operation' => 'addition',
-            'left' => 1,
-            'right' => 2,
-            'mode' => 'default'
-        ];
-        $this->assertEquals($expected, $action->getAttributesFromCommand($input));
+        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        {
+            protected $commandSignature = 'calculate:simple {number}';
+
+            public function getAttributesFromCommand(Command $command): array
+            {
+                return [
+                    'operation' => 'addition',
+                    'left' => (int) $command->argument('number'),
+                    'right' => (int) $command->argument('number'),
+                ];
+            }
+        });
+
+        $this->artisan('calculate:simple', ['number' => '10'])
+            ->expectsOutput('20');
     }
 
     /** @test */

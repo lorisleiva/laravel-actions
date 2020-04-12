@@ -61,7 +61,7 @@ class RunningAsTest extends TestCase
             'right' => '3',
         ];
 
-        $command = $action->registerClosureCommand();
+        $command = $action->registerCommand();
         $command->setInput(new ArrayInput($arguments, $command->getDefinition()));
 
         $action->runAsCommand($command);
