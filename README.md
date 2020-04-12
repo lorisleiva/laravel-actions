@@ -387,7 +387,7 @@ class ProductCreated
 }
 ```
 
-You can override that behaviour by defining the `getAttributesFromEvent`.
+You can override that behaviour by defining the `getAttributesFromEvent` method.
 
 ```php
 // Event
@@ -402,7 +402,7 @@ class PublishANewArticle extends Action
     public function getAttributesFromEvent($event)
     {
         return [
-            'title' => '[New product] ' . $event->product->title,
+            'title' => '[New product] ' . $event->product->name,
             'body' => $event->product->description,
         ];
     }
@@ -561,7 +561,7 @@ TODO
 
 TODO
 
-### Promting additional data
+### Prompting additional data
 
 TODO
 
