@@ -2,59 +2,42 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
-use Illuminate\Console\OutputStyle;
-use Illuminate\Console\Parser;
-use Illuminate\Contracts\Support\Arrayable;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Dumper\CliDumper;
+use Illuminate\Console\Command;
+use Illuminate\Foundation\Console\ClosureCommand;
+use Illuminate\Support\Facades\Artisan;
+use Lorisleiva\Actions\Action;
 
 trait RunsAsCommand
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $commandSignature = '';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $commandDescription = '';
 
-    public function runAsCommand(InputInterface $input)
+    public function runAsCommand(Command $command)
     {
         $this->runningAs = 'command';
-        $attributes = $this->getAttributesFromCommandInput($input);
-        return $this->fill($attributes)->run();
+        $this->fill($this->getAttributesFromCommand($command));
+        $this->consoleInput($command);
+        $result = $this->run();
+        $this->consoleOutput($result, $command);
+        return $result;
     }
 
-    /**
-     * Transforms CLI input into Action attributes
-     * @param InputInterface $input
-     * @return array
-     */
-    public function getAttributesFromCommandInput(InputInterface $input): array
+    public function registerClosureCommand(): ClosureCommand
     {
-        return array_merge($input->getArguments(), $input->getOptions());
-    }
+        /** @var Action $action */
+        $action = $this;
 
-    public function getCommandDescription(): string
-    {
-        return $this->commandDescription;
-    }
+        $handler = function () use ($action) {
+            try {
+                /** @var ClosureCommand $this */
+                return $action->runAsCommand($this) ?? 0;
+            } catch (Exception $e) {
+                return 1;
+            }
+        };
 
-    public function getInputDefinition(): InputDefinition
-    {
-        [$name, $arguments, $options] = Parser::parse($this->commandSignature);
-        $definition = new InputDefinition();
-        $definition->setArguments($arguments);
-        $definition->setOptions($options);
-        return $definition;
+        return Artisan::command($this->commandSignature, $handler)
+            ->describe($this->commandDescription);
     }
 
     public function canRunAsCommand(): bool
@@ -62,22 +45,18 @@ trait RunsAsCommand
         return $this->getCommandSignature() !== '';
     }
 
-    public function getCommandSignature(): string
+    public function getAttributesFromCommandInput(Command $command): array
     {
-        return $this->commandSignature;
+        return array_merge($command->arguments(), $command->options());
     }
 
-    public function outputResultToConsole($result, OutputStyle $output)
+    public function consoleInput(Command $command)
     {
-        $dumper = new CliDumper();
-        $cloner = new VarCloner();
-        if ($result instanceof Arrayable) {
-            $result = $result->toArray();
-        }
-        if (is_object($result)) {
-            $result = (array) $result;
-        }
-        $formatted = $dumper->dump($cloner->cloneVar($result), true);
-        $output->write($formatted);
+        //
+    }
+
+    public function consoleOutput($result, Command $command)
+    {
+        $command->getOutput()->writeln(var_dump($result));
     }
 }

@@ -5,7 +5,6 @@ namespace Lorisleiva\Actions;
 use BadMethodCallException;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
