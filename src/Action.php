@@ -95,10 +95,17 @@ abstract class Action
     protected function resolveBeforeHook()
     {
         $method = 'as' . Str::studly($this->runningAs);
+        $extras = [];
 
-        if (method_exists($this, $method)) {
-            return $this->resolveAndCall($this, $method);
+        if (! method_exists($this, $method)) {
+            return null;
         }
+
+        if ($this->runningAs('command')) {
+            $extras['command'] = $this->getCommandInstance();
+        }
+
+        return $this->resolveAndCall($this, $method, $extras);
     }
 
     public function runningAs($matches)

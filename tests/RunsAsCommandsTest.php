@@ -135,7 +135,7 @@ class RunsAsCommandsTest extends TestCase
     {
         Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
         {
-            public function consoleInput(Command $command)
+            public function asCommand(Command $command)
             {
                 $this->multiplier = (int) $command->ask('What should we multiple the final result by?');
             }

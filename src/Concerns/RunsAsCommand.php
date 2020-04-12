@@ -17,9 +17,7 @@ trait RunsAsCommand
     {
         $this->runningAs = 'command';
         $this->commandInstance = $command;
-
         $this->fill($this->getAttributesFromCommand($command));
-        $this->consoleInput($command);
 
         return $this->run();
     }
