@@ -4,29 +4,14 @@ namespace Lorisleiva\Actions;
 
 use Artisan;
 use Exception;
-use Illuminate\Cache\CacheManager;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Console\ClosureCommand;
 use Illuminate\Support\Collection;
 
 class ActionManager
 {
-    /**
-     * @var ActionDiscovery
-     */
-    private $discovery;
-
-    /**
-     * ActionManager constructor.
-     */
-    public function __construct()
-    {
-        $this->discovery = new ActionDiscovery();
-    }
-
     public function registerActionCommands(): void
     {
-        $this->discovery->getActions()
+        $this->getActions()
             ->filter(static function (Action $action) {
                 return $action->canRunAsCommand();
             })->each(static function (Action $action) {
@@ -52,21 +37,6 @@ class ActionManager
      */
     public function getActions(): Collection
     {
-        return $this->discovery->getActions();
-    }
-
-    /**
-     * Remove currently discovered actions from cache
-     * @return bool
-     */
-    public function flushDiscoveryCache(): bool
-    {
-        try {
-            if ($cache = app()->make(CacheManager::class)) {
-                return $cache->forget(ActionDiscovery::$cacheKey);
-            }
-        } catch (BindingResolutionException $e) {
-            return false;
-        }
+        return collect(); // TODO
     }
 }
