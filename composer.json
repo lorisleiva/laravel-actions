@@ -37,7 +37,10 @@
         "laravel": {
             "providers": [
                 "Lorisleiva\\Actions\\ActionServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Actions": "Lorisleiva\\Actions\\Facades\\Actions"
+            }
         }
     },
     "minimum-stability": "dev",
