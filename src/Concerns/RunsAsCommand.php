@@ -9,14 +9,18 @@ use Lorisleiva\Actions\Action;
 
 trait RunsAsCommand
 {
+    protected $commandInstance;
     protected $commandSignature = '';
     protected $commandDescription = '';
 
     public function runAsCommand(Command $command)
     {
         $this->runningAs = 'command';
+        $this->commandInstance = $command;
+
         $this->fill($this->getAttributesFromCommand($command));
         $this->consoleInput($command);
+
         return $this->run();
     }
 
@@ -62,5 +66,10 @@ trait RunsAsCommand
         if ($output = $command->getOutput()) {
             $command->getOutput()->write(var_export($result, true));
         }
+    }
+
+    public function getCommandInstance()
+    {
+        return $this->commandInstance;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Stubs\User;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -92,5 +93,17 @@ class NestedActionsTest extends TestCase
             ->post("/users/{$user->id}", ['name' => 'Bob'])
             ->assertSuccessful()
             ->assertSee('UpdateProfileDetails ran as controller');
+    }
+
+    /** @test */
+    public function actions_can_be_delegated_as_commands()
+    {
+        Actions::loadAction(UpdateProfile::class);
+
+        $this->artisan('profile:update')
+            ->expectsOutput("'UpdateProfileDetails ran as command'");
+
+        $this->artisan('profile:update --avatar')
+            ->expectsOutput("'UpdateProfilePicture ran as command'");
     }
 }

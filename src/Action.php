@@ -50,6 +50,11 @@ abstract class Action
         return (new static)->fill($action->all());
     }
 
+    public function delegateTo($actionClass)
+    {
+        return $actionClass::createFrom($this)->runAs($this);
+    }
+
     public function runAs(Action $action)
     {
         if ($action->runningAs('job')) {
@@ -65,7 +70,7 @@ abstract class Action
         }
 
         if ($action->runningAs('command')) {
-            return $this->runAsCommand();
+            return $this->runAsCommand($action->getCommandInstance());
         }
 
         return $this->run();
@@ -118,11 +123,6 @@ abstract class Action
         $this->actingAs = $user;
         $this->attributes = [];
         $this->validator = null;
-    }
-
-    public function delegateTo($actionClass)
-    {
-        return $actionClass::createFrom($this)->runAs($this);
     }
 
     public function __invoke(array $attributes = [])
