@@ -123,8 +123,8 @@ class PublishANewArticle extends Action
 ```php
 class PublishANewArticle extends Action
 {
-    protected $commandSignature = 'make:article {title} {body}';
-    protected $commandDescription = 'Publishes a new article';
+    protected static $commandSignature = 'make:article {title} {body}';
+    protected static $commandDescription = 'Publishes a new article';
 
     // ...
 }
