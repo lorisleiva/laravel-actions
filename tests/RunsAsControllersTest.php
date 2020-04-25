@@ -4,7 +4,9 @@ namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Action;
+use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
+use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithRoutes;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
 
 class RunsAsControllersTest extends TestCase
@@ -150,5 +152,18 @@ class RunsAsControllersTest extends TestCase
 
         $result = $action->runAsController(new Request);
         $this->assertEquals('result from response', $result);
+    }
+
+    /** @test */
+    public function routes_can_be_defined_directly_in_the_action_class()
+    {
+        Actions::register(SimpleCalculatorWithRoutes::class);
+
+        $this->get('/calculator-with-routes/substraction/5/3')
+            ->assertOk()
+            ->assertSee('(substraction)')
+            ->assertSee('Left: 5')
+            ->assertSee('Right: 3')
+            ->assertSee('Result: 2');
     }
 }

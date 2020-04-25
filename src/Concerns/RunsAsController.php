@@ -9,11 +9,6 @@ trait RunsAsController
 {
     protected $request;
 
-    public static function registerRoutes()
-    {
-        static::routes(app(Router::class));
-    }
-
     public static function routes(Router $router)
     {
         //

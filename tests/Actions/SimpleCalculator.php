@@ -26,7 +26,7 @@ class SimpleCalculator extends Action
 
             case 'substraction':
                 return $left - $right;
-            
+
             default:
                 throw new \Exception("Operation [$operation] not supported.");
         }

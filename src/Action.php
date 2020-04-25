@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use BadMethodCallException;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ abstract class Action
     public static function register(): void
     {
         static::registerCommand();
-        static::registerRoutes();
+        static::routes(app(Router::class));
 
         if (method_exists(static::class, 'registed')) {
             static::registed();
