@@ -18,7 +18,6 @@ trait RunsAsCommand
         $this->runningAs = 'command';
         $this->commandInstance = $command;
         $this->fill($this->getAttributesFromCommand($command));
-        $this->consoleInput($command);
 
         return $this->run();
     }
@@ -53,11 +52,6 @@ trait RunsAsCommand
     public function getAttributesFromCommand(Command $command): array
     {
         return array_merge($command->arguments(), $command->options());
-    }
-
-    public function consoleInput(Command $command)
-    {
-        //
     }
 
     public function consoleOutput($result, Command $command)
