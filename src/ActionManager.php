@@ -48,6 +48,18 @@ class ActionManager
     }
 
     /**
+     * Forbid the action manager to register any actions automatically.
+     *
+     * @return $this
+     */
+    public function dontRegister(): ActionManager
+    {
+        $this->paths = collect();
+
+        return $this;
+    }
+
+    /**
      * Register all actions found in the provided paths.
      */
     public function registerAllPaths(): void
