@@ -16,7 +16,7 @@ trait ResolvesMethodDependencies
         return $instance->{$method}(...$parameters);
     }
 
-    protected function resolveMethodDependencies($instance, $method, $extras = [])
+    protected function resolveMethodDependencies($instance, $method, $extras = []): array
     {
         if (! method_exists($instance, $method)) {
             return [];
@@ -32,7 +32,7 @@ trait ResolvesMethodDependencies
     }
 
     protected function resolveDependency(ReflectionParameter $parameter, $extras = [])
-    {   
+    {
         list($key, $value) = $this->findAttributeFromParameter($parameter->name, $extras);
         $class = $parameter->getClass();
 
@@ -73,7 +73,7 @@ trait ResolvesMethodDependencies
         return $model;
     }
 
-    protected function findAttributeFromParameter($name, $extras = [])
+    protected function findAttributeFromParameter($name, $extras = []): array
     {
         $routeAttributes = $this->runningAs('controller') ? $this->getAttributesFromRoute($this->request) : [];
         $attributes = array_merge($this->attributes, $routeAttributes, $extras);
@@ -81,17 +81,20 @@ trait ResolvesMethodDependencies
         if (array_key_exists($name, $attributes)) {
             return [$name, $attributes[$name]];
         }
+
         if (array_key_exists($snakedName = Str::snake($name), $attributes)) {
             return [$snakedName, $attributes[$snakedName]];
         }
+
+        return [null, null];
     }
 
-    public function updateAttributeWithResolvedInstance($key, $instance)
+    protected function updateAttributeWithResolvedInstance($key, $instance): void
     {
         if ($this->runningAs('controller') && $this->request->has($key)) {
             return;
         }
 
-        return $this->attributes[$key] = $instance;
+        $this->attributes[$key] = $instance;
     }
 }

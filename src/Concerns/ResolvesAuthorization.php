@@ -24,7 +24,7 @@ trait ResolvesAuthorization
 
         return true;
     }
-    
+
     protected function failedAuthorization()
     {
         throw new AuthorizationException('This action is unauthorized.');

@@ -9,7 +9,7 @@ use Illuminate\Validation\Validator;
 trait ResolvesValidation
 {
     protected $errorBag = 'default';
-    
+
     protected $validator;
 
     public function validate($rules = [], $messages = [], $customAttributes = [])
@@ -35,7 +35,7 @@ trait ResolvesValidation
     {
         return $this->validator->validated();
     }
-    
+
     public function getValidatorInstance()
     {
         if ($this->validator) {
@@ -71,7 +71,7 @@ trait ResolvesValidation
     protected function resolveValidation()
     {
         $this->validator = null;
-        
+
         if (! $this->passesValidation()) {
             $this->failedValidation();
         }
@@ -100,7 +100,7 @@ trait ResolvesValidation
     {
         return redirect()->getUrlGenerator()->previous();
     }
-    
+
     protected function validationData()
     {
         return $this->all();

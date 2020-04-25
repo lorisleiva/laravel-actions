@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;

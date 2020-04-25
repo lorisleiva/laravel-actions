@@ -25,7 +25,7 @@ trait RunsAsListener
         if ($event && is_object($event)) {
             return $this->getPublicPropertiesOfEvent($event);
         }
-        
+
         return [];
     }
 

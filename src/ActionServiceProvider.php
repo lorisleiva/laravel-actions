@@ -20,7 +20,7 @@ class ActionServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // TODO: test
+        // Load all actions and register their commands and/or routes.
         Actions::load();
 
         // Extend the EventDispatcher in order to run as listeners.

@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 trait HasAttributes
 {
     protected $attributes = [];
-    
+
     public function setRawAttributes(array $attributes)
     {
         $this->attributes = $attributes;

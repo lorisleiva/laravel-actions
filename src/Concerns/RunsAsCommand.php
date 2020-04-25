@@ -33,6 +33,7 @@ trait RunsAsCommand
             try {
                 /** @var ClosureCommand $command */
                 $command = $this;
+                $action->consoleInput($command);
                 $result = $action->runAsCommand($command);
                 return $action->consoleOutput($result, $command) ?? 0;
             } catch (Exception $e) {
@@ -66,7 +67,7 @@ trait RunsAsCommand
         }
     }
 
-    public function getCommandInstance()
+    public function getCommandInstance(): Command
     {
         return $this->commandInstance;
     }

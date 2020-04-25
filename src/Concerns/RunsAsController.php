@@ -52,7 +52,7 @@ trait RunsAsController
     {
         return $this->request;
     }
-    
+
     public function getMiddleware()
     {
         $middleware = [];
@@ -60,7 +60,7 @@ trait RunsAsController
         if (method_exists($this, 'middleware')) {
             $middleware = $this->middleware();
         }
-        
+
         return array_map(function ($m) {
             return [
                 'middleware' => $m,
@@ -68,7 +68,7 @@ trait RunsAsController
             ];
         }, $middleware);
     }
-    
+
     public function callAction($method, $parameters)
     {
         return $method === '__invoke'
