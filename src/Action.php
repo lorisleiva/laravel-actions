@@ -31,7 +31,11 @@ abstract class Action
     protected $actingAs;
     protected $runningAs = 'object';
 
-    public static function register()
+    /**
+     * Register the action as a command if a signature is defined
+     * and register the action's routes if they are present.
+     */
+    public static function register(): void
     {
         static::registerCommand();
         static::registerRoutes();
@@ -79,10 +83,6 @@ abstract class Action
         return $actionClass::createFrom($this)->runAs($this);
     }
 
-    /**
-     * @param Action $action
-     * @return mixed
-     */
     public function runAs(Action $action)
     {
         if ($action->runningAs('job')) {
@@ -104,10 +104,6 @@ abstract class Action
         return $this->run();
     }
 
-    /**
-     * @param array $attributes
-     * @return mixed
-     */
     protected function handleRun(array $attributes = [])
     {
         $this->fill($attributes);

@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 
 trait RunsAsController
 {
@@ -10,7 +11,12 @@ trait RunsAsController
 
     public static function registerRoutes()
     {
-        // TODO
+        static::routes(app(Router::class));
+    }
+
+    public static function routes(Router $router)
+    {
+        //
     }
 
     public function runAsController(Request $request)
