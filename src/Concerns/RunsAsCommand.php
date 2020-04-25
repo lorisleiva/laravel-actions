@@ -10,8 +10,40 @@ use Lorisleiva\Actions\Action;
 trait RunsAsCommand
 {
     protected $commandInstance;
-    protected $commandSignature = '';
-    protected $commandDescription = '';
+    protected static $commandSignature = '';
+    protected static $commandDescription = '';
+
+    public static function registerCommand(): ?ClosureCommand
+    {
+        /** @var Action $action */
+        if (! static::canRunAsCommand()) {
+            return null;
+        }
+
+        $self = static::class;
+        $handler = function () use ($self) {
+            try {
+                /** @var ClosureCommand $command */
+                $command = $this;
+
+                /** @var Action $action */
+                $action = new $self;
+
+                $result = $action->runAsCommand($command);
+                return $action->consoleOutput($result, $command) ?? 0;
+            } catch (Exception $e) {
+                return 1;
+            }
+        };
+
+        return Artisan::command(static::$commandSignature, $handler)
+            ->describe(static::$commandDescription);
+    }
+
+    public static function canRunAsCommand(): bool
+    {
+        return static::$commandSignature !== '';
+    }
 
     public function runAsCommand(Command $command)
     {
@@ -20,33 +52,6 @@ trait RunsAsCommand
         $this->fill($this->getAttributesFromCommand($command));
 
         return $this->run();
-    }
-
-    public function registerCommand(): ?ClosureCommand
-    {
-        /** @var Action $action */
-        if (! ($action = $this)->canRunAsCommand()) {
-            return null;
-        }
-
-        $handler = function () use ($action) {
-            try {
-                /** @var ClosureCommand $command */
-                $command = $this;
-                $result = $action->runAsCommand($command);
-                return $action->consoleOutput($result, $command) ?? 0;
-            } catch (Exception $e) {
-                return 1;
-            }
-        };
-
-        return Artisan::command($this->commandSignature, $handler)
-            ->describe($this->commandDescription);
-    }
-
-    public function canRunAsCommand(): bool
-    {
-        return $this->commandSignature !== '';
     }
 
     public function getAttributesFromCommand(Command $command): array

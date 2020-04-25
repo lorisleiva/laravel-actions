@@ -50,7 +50,7 @@ class ActionManager
     /**
      * Register all actions found in the provided paths.
      */
-    public function registerFromPaths(): void
+    public function registerAllPaths(): void
     {
         if ($this->paths->isEmpty()) {
             return;
@@ -75,20 +75,14 @@ class ActionManager
             return;
         }
 
-        if (is_string($action)) {
-            $action = new $action();
-        }
-
-        $action->registerCommand();
-        $action->registerRoutes();
-
-        $this->registeredActions->push(get_class($action));
+        $action::register();
+        $this->registeredActions->push(is_string($action) ? $action : get_class($action));
     }
 
     /**
      * Determine if an object or its classname is an Action.
      *
-     * @param mixed $action
+     * @param Action|string $action
      * @return bool
      * @throws ReflectionException
      */
@@ -101,7 +95,7 @@ class ActionManager
     /**
      * Determine if an action has already been loaded.
      *
-     * @param mixed $action
+     * @param Action|string $action
      * @return bool
      */
     public function isRegistered($action): bool

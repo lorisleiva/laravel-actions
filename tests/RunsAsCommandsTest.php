@@ -78,7 +78,7 @@ class RunsAsCommandsTest extends TestCase
     {
         Actions::register(new class() extends SimpleCalculatorWithCommandSignature
         {
-            protected $commandSignature = 'calculate:simple {number}';
+            protected static $commandSignature = 'calculate:simple {number}';
 
             public function getAttributesFromCommand(Command $command): array
             {

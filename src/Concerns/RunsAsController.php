@@ -8,6 +8,11 @@ trait RunsAsController
 {
     protected $request;
 
+    public static function registerRoutes()
+    {
+        // TODO
+    }
+
     public function runAsController(Request $request)
     {
         $this->runningAs = 'controller';
@@ -74,10 +79,5 @@ trait RunsAsController
         return $method === '__invoke'
             ? $this->runAsController(app(Request::class))
             : call_user_func_array([$this, $method], $parameters);
-    }
-
-    public function registerRoutes()
-    {
-        // TODO
     }
 }

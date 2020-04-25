@@ -7,7 +7,7 @@ use Lorisleiva\Actions\Action;
 
 class UpdateProfile extends Action
 {
-    protected $commandSignature = 'profile:update {--avatar : Determine if we should update the avatar or the profile details}';
+    protected static $commandSignature = 'profile:update {--avatar : Determine if we should update the avatar or the profile details}';
 
     public function getAttributesFromCommand(Command $command): array
     {

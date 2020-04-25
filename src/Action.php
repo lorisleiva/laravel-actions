@@ -28,29 +28,25 @@ abstract class Action
     use Concerns\RunsAsJob;
     use Concerns\RunsAsCommand;
 
-    protected static $booted = false;
     protected $actingAs;
     protected $runningAs = 'object';
+
+    public static function register()
+    {
+        static::registerCommand();
+        static::registerRoutes();
+
+        if (method_exists(static::class, 'registed')) {
+            static::registed();
+        }
+    }
 
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
 
-        if (! static::$booted) {
-            static::boot();
-        }
-
         if (method_exists($this, 'initialized')) {
             $this->resolveAndCall($this, 'initialized');
-        }
-    }
-
-    public static function boot()
-    {
-        static::$booted = true;
-
-        if (method_exists(static::class, 'booted')) {
-            static::booted();
         }
     }
 

@@ -20,8 +20,8 @@ class ActionServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // Load all actions and register their commands and/or routes.
-        Actions::registerFromPaths();
+        // Register all actions (i.e. register their routes and/or themselves as commands).
+        Actions::registerAllPaths();
 
         // Extend the EventDispatcher in order to run as listeners.
         Facade::clearResolvedInstance('events');
