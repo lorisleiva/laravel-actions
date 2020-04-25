@@ -16,7 +16,7 @@ class RunsAsCommandsTest extends TestCase
     {
         parent::setUp();
 
-        Actions::loadAction(SimpleCalculatorWithCommandSignature::class);
+        Actions::register(SimpleCalculatorWithCommandSignature::class);
     }
 
     /** @test */
@@ -76,7 +76,7 @@ class RunsAsCommandsTest extends TestCase
     /** @test */
     public function it_can_override_the_way_we_get_attribute_from_the_command()
     {
-        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        Actions::register(new class() extends SimpleCalculatorWithCommandSignature
         {
             protected $commandSignature = 'calculate:simple {number}';
 
@@ -97,7 +97,7 @@ class RunsAsCommandsTest extends TestCase
     /** @test */
     public function it_can_override_what_gets_written_to_the_console()
     {
-        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        Actions::register(new class() extends SimpleCalculatorWithCommandSignature
         {
             public function consoleOutput($result, Command $command)
             {
@@ -115,7 +115,7 @@ class RunsAsCommandsTest extends TestCase
     /** @test */
     public function it_can_provide_a_custom_console_exit_code()
     {
-        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        Actions::register(new class() extends SimpleCalculatorWithCommandSignature
         {
             public function consoleOutput($result, Command $command)
             {
@@ -133,7 +133,7 @@ class RunsAsCommandsTest extends TestCase
     /** @test */
     public function it_can_request_additional_input_from_the_console()
     {
-        Actions::loadAction(new class() extends SimpleCalculatorWithCommandSignature
+        Actions::register(new class() extends SimpleCalculatorWithCommandSignature
         {
             public function asCommand(Command $command)
             {

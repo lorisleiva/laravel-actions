@@ -18,6 +18,7 @@ trait RunsAsCommand
         $this->runningAs = 'command';
         $this->commandInstance = $command;
         $this->fill($this->getAttributesFromCommand($command));
+        $this->consoleInput($command);
 
         return $this->run();
     }
@@ -33,7 +34,6 @@ trait RunsAsCommand
             try {
                 /** @var ClosureCommand $command */
                 $command = $this;
-                $action->consoleInput($command);
                 $result = $action->runAsCommand($command);
                 return $action->consoleOutput($result, $command) ?? 0;
             } catch (Exception $e) {

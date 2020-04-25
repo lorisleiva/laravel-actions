@@ -28,6 +28,7 @@ abstract class Action
     use Concerns\RunsAsJob;
     use Concerns\RunsAsCommand;
 
+    protected static $booted = false;
     protected $actingAs;
     protected $runningAs = 'object';
 
@@ -35,26 +36,57 @@ abstract class Action
     {
         $this->fill($attributes);
 
-        if (method_exists($this, 'register')) {
-            $this->register();
+        if (! static::$booted) {
+            static::boot();
+        }
+
+        if (method_exists($this, 'initialized')) {
+            $this->resolveAndCall($this, 'initialized');
         }
     }
 
+    public static function boot()
+    {
+        static::$booted = true;
+
+        if (method_exists(static::class, 'booted')) {
+            static::booted();
+        }
+    }
+
+    /**
+     * @param array $attributes
+     * @return static
+     */
     public static function make(array $attributes = [])
     {
         return new static($attributes);
     }
 
+    /**
+     * @param Action $action
+     * @return static
+     */
     public static function createFrom(Action $action)
     {
         return (new static)->fill($action->all());
     }
 
-    public function delegateTo($actionClass)
+    /**
+     * @param string $actionClass
+     * @return mixed
+     * @uses createFrom
+     * @uses runAs
+     */
+    public function delegateTo(string $actionClass)
     {
         return $actionClass::createFrom($this)->runAs($this);
     }
 
+    /**
+     * @param Action $action
+     * @return mixed
+     */
     public function runAs(Action $action)
     {
         if ($action->runningAs('job')) {
@@ -76,6 +108,10 @@ abstract class Action
         return $this->run();
     }
 
+    /**
+     * @param array $attributes
+     * @return mixed
+     */
     protected function handleRun(array $attributes = [])
     {
         $this->fill($attributes);

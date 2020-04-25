@@ -15,19 +15,19 @@ class ActionManager
     protected $paths;
 
     /** @var Collection */
-    protected $loadedActions;
+    protected $registeredActions;
 
     /**
-     * Define the default path to load.
+     * Define the default path to use when registering actions.
      */
     public function __construct()
     {
         $this->paths('app/Actions');
-        $this->loadedActions = collect();
+        $this->registeredActions = collect();
     }
 
     /**
-     * Define the paths to use when loading actions.
+     * Define the paths to use when registering actions.
      *
      * @param array|string $paths
      * @return $this
@@ -48,30 +48,30 @@ class ActionManager
     }
 
     /**
-     * Load all actions found in the provided paths.
+     * Register all actions found in the provided paths.
      */
-    public function load(): void
+    public function registerFromPaths(): void
     {
         if ($this->paths->isEmpty()) {
             return;
         }
 
         foreach ((new Finder)->in($this->paths->toArray())->files() as $file) {
-            $this->loadAction(
+            $this->register(
                 $this->getClassnameFromPathname($file->getPathname())
             );
         }
     }
 
     /**
-     * Load one action either through an object or its classname.
+     * Register one action either through an object or its classname.
      *
      * @param Action|string $action
      * @throws ReflectionException
      */
-    public function loadAction($action): void
+    public function register($action): void
     {
-        if (! $this->isAction($action) || $this->isLoaded($action)) {
+        if (! $this->isAction($action) || $this->isRegistered($action)) {
             return;
         }
 
@@ -80,7 +80,9 @@ class ActionManager
         }
 
         $action->registerCommand();
-        $this->loadedActions->push(get_class($action));
+        $action->registerRoutes();
+
+        $this->registeredActions->push(get_class($action));
     }
 
     /**
@@ -102,11 +104,11 @@ class ActionManager
      * @param mixed $action
      * @return bool
      */
-    public function isLoaded($action): bool
+    public function isRegistered($action): bool
     {
         $class = is_string($action) ? $action : get_class($action);
 
-        return $this->loadedActions->contains($class);
+        return $this->registeredActions->contains($class);
     }
 
     /**

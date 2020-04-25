@@ -98,7 +98,7 @@ class NestedActionsTest extends TestCase
     /** @test */
     public function actions_can_be_delegated_as_commands()
     {
-        Actions::loadAction(UpdateProfile::class);
+        Actions::register(UpdateProfile::class);
 
         $this->artisan('profile:update')
             ->expectsOutput("'UpdateProfileDetails ran as command'");

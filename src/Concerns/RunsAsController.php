@@ -75,4 +75,9 @@ trait RunsAsController
             ? $this->runAsController(app(Request::class))
             : call_user_func_array([$this, $method], $parameters);
     }
+
+    public function registerRoutes()
+    {
+        // TODO
+    }
 }
