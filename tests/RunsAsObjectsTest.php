@@ -250,4 +250,16 @@ class RunsAsObjectsTest extends TestCase
         $this->assertEquals(5, $action->right);
         $this->assertEquals(8, $action->run());
     }
+
+    /** @test */
+    public function it_uses_custom_constructor_attributes_when_calling_the_run_method_statically()
+    {
+        $actionClass = new class() extends SimpleCalculator {
+            protected $getAttributesFromConstructor = ['operation', 'left', 'right'];
+        };
+
+        $result = $actionClass::run('substraction', 3, 5);
+
+        $this->assertEquals(-2, $result);
+    }
 }
