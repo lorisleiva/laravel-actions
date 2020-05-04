@@ -44,8 +44,8 @@ abstract class Action
         static::registerCommand();
         static::routes(app(Router::class));
 
-        if (method_exists(static::class, 'registed')) {
-            static::registed();
+        if (method_exists(static::class, 'registered')) {
+            static::registered();
         }
     }
 

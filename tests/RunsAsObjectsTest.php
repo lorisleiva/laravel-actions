@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use BadMethodCallException;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
 class RunsAsObjectsTest extends TestCase
@@ -261,5 +262,23 @@ class RunsAsObjectsTest extends TestCase
         $result = $actionClass::run('substraction', 3, 5);
 
         $this->assertEquals(-2, $result);
+    }
+
+    /** @test */
+    public function it_throws_an_exception_when_calling_missing_methods()
+    {
+        try {
+            (new SimpleCalculator)->missingMethod();
+            $this->fail('Expected a BadMethodCallException.');
+        } catch (BadMethodCallException $e) {
+            $this->assertEquals('Method Lorisleiva\Actions\Tests\Actions\SimpleCalculator::missingMethod does not exist.', $e->getMessage());
+        }
+
+        try {
+            SimpleCalculator::missingStaticMethod();
+            $this->fail('Expected a BadMethodCallException.');
+        } catch (BadMethodCallException $e) {
+            $this->assertEquals('Method Lorisleiva\Actions\Tests\Actions\SimpleCalculator::missingStaticMethod does not exist.', $e->getMessage());
+        }
     }
 }

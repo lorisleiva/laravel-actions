@@ -118,6 +118,16 @@ class ActionManager
     }
 
     /**
+     * Returns a collection of all actions that have been registered.
+     *
+     * @return Collection
+     */
+    public function getRegisteredActions(): Collection
+    {
+        return $this->registeredActions;
+    }
+
+    /**
      * Get the fully-qualified name of a class from its pathname.
      *
      * @param string $pathname
