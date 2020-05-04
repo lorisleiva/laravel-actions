@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Facades\Actions;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
+use ReflectionClass;
 
 class RegistersActionsTest extends TestCase
 {
@@ -114,5 +115,19 @@ class RegistersActionsTest extends TestCase
         };
         
         $this->assertTrue($action::$initializedCalled);
+    }
+
+    /** @test */
+    public function it_knows_how_to_transform_a_filename_in_the_app_directory_into_a_classname()
+    {
+        $pathname = app_path('Actions/MyDummyAction.php');
+
+        // Call protected method ActionManager::getClassnameFromPathname.
+        $reflection = new ReflectionClass(ActionManager::class);
+        $method = $reflection->getMethod('getClassnameFromPathname');
+        $method->setAccessible(true);
+        $classname = $method->invoke(new ActionManager, $pathname);
+
+        $this->assertEquals('App\\Actions\\MyDummyAction', $classname);
     }
 }
