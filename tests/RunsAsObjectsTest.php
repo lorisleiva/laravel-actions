@@ -203,4 +203,51 @@ class RunsAsObjectsTest extends TestCase
             $action->except('operation', 'left')
         );
     }
+
+    /** @test */
+    public function it_can_override_the_way_we_get_attribute_from_the_constructor()
+    {
+        $action = new class('addition', 3, 5) extends SimpleCalculator {
+            public function getAttributesFromConstructor(string $operation, int $left, int $right): array
+            {
+                return compact('operation', 'left', 'right');
+            }
+        };
+
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(5, $action->right);
+        $this->assertEquals(8, $action->run());
+    }
+
+    /** @test */
+    public function it_can_override_constructor_attributes_via_a_property()
+    {
+        $action = new class('addition', 3, 5) extends SimpleCalculator {
+            protected $getAttributesFromConstructor = ['operation', 'left', 'right'];
+        };
+
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(5, $action->right);
+        $this->assertEquals(8, $action->run());
+    }
+
+    /** @test */
+    public function it_can_override_constructor_attributes_by_reflecting_the_properties_of_the_handle_method()
+    {
+        $action = new class('addition', 3, 5) extends SimpleCalculator {
+            protected $getAttributesFromConstructor = true;
+
+            public function handle($operation, $left, $right) 
+            {
+                return parent::handle($operation, $left, $right);
+            }
+        };
+
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(3, $action->left);
+        $this->assertEquals(5, $action->right);
+        $this->assertEquals(8, $action->run());
+    }
 }

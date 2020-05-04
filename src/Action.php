@@ -63,7 +63,7 @@ abstract class Action
     protected function resolveAttributesFromConstructor(...$arguments)
     {
         if (method_exists($this, 'getAttributesFromConstructor')) {
-            return call_user_func_array([$this, 'getAttributesFromConstructor'], $arguments);
+            return $this->fill(call_user_func_array([$this, 'getAttributesFromConstructor'], $arguments));
         }
 
         if (! $attributes = $this->getAttributesFromConstructor) {
