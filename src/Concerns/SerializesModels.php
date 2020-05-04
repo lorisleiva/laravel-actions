@@ -17,6 +17,7 @@ trait SerializesModels
         return array_values(array_diff($properties, [
             'request', 'runningAs', 'actingAs', 'errorBag', 'validator',
             'commandInstance', 'commandSignature', 'commandDescription',
+            'getAttributesFromConstructor',
         ]));
     }
 }

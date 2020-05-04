@@ -3,12 +3,14 @@
 namespace Lorisleiva\Actions;
 
 use BadMethodCallException;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use ReflectionMethod;
 
 /**
  * @method mixed run(array $attributes = [])
@@ -31,6 +33,7 @@ abstract class Action
 
     protected $actingAs;
     protected $runningAs = 'object';
+    protected $getAttributesFromConstructor = false;
 
     /**
      * Register the action as a command if a signature is defined
@@ -46,12 +49,34 @@ abstract class Action
         }
     }
 
-    public function __construct(array $attributes = [])
+    public function __construct()
     {
-        $this->fill($attributes);
-
         if (method_exists($this, 'initialized')) {
             $this->resolveAndCall($this, 'initialized');
+        }
+
+        if (func_num_args() > 0) {
+            $this->resolveAttributesFromConstructor(...func_get_args());
+        }
+    }
+
+    protected function resolveAttributesFromConstructor(...$arguments)
+    {
+        if (method_exists($this, 'getAttributesFromConstructor')) {
+            return call_user_func_array([$this, 'getAttributesFromConstructor'], $arguments);
+        }
+
+        if (! $attributes = $this->getAttributesFromConstructor) {
+            return $this->fill(Arr::get($arguments, 0, []));
+        }
+
+        if ($attributes === true && method_exists($this, 'handle')) {
+            $reflector = new ReflectionMethod($this, 'handle');
+            $attributes = collect($reflector->getParameters())->map->getName()->toArray();
+        }
+
+        foreach (Arr::wrap($attributes) as $index => $name) {
+            $this->set($name, Arr::get($arguments, $index, null));
         }
     }
 
@@ -179,6 +204,10 @@ abstract class Action
 
     public static function __callStatic($method, $parameters)
     {
+        if ($method === 'run') {
+            return (new static(...$parameters))->handleRun();
+        }
+
         return (new static)->$method(...$parameters);
     }
 }
