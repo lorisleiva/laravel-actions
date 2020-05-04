@@ -43,6 +43,16 @@ class RegistersActionsTest extends TestCase
     }
 
     /** @test */
+    public function it_can_force_not_to_register_any_paths()
+    {
+        Actions::paths(__DIR__ . '/Actions');
+        Actions::dontRegister();
+        Actions::registerAllPaths();
+
+        $this->assertCount(0, Actions::getRegisteredActions());
+    }
+
+    /** @test */
     public function it_can_register_one_specific_action()
     {
         Actions::register(new SimpleCalculator);
