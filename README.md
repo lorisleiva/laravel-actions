@@ -33,8 +33,8 @@ class PublishANewArticle extends Action
     public function rules()
     {
         return [
-            'title' => 'required',
-            'body' => 'required|min:10',
+            'title' => ['required'],
+            'body' => ['required', 'min:10'],
         ];
     }
     
