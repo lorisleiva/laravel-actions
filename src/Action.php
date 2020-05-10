@@ -13,8 +13,7 @@ use Illuminate\Support\Str;
 use ReflectionMethod;
 
 /**
- * @method mixed run(array $attributes = [])
- * @method static mixed run(...$mixed)
+ * @method mixed run(...$mixed)
  */
 abstract class Action
 {
