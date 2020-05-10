@@ -14,7 +14,7 @@ use ReflectionMethod;
 
 /**
  * @method mixed run(array $attributes = [])
- * @method static mixed run(array $attributes = [])
+ * @method static mixed run(...$mixed)
  */
 abstract class Action
 {
