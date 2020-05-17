@@ -137,6 +137,10 @@ abstract class Action
         $this->resolveAuthorization();
         $this->resolveValidation();
 
+        if (! method_exists($this, 'handle')) {
+            return;
+        }
+
         return $this->resolveAndCall($this, 'handle');
     }
 

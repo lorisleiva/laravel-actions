@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Tests;
 
 use BadMethodCallException;
+use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 
 class RunsAsObjectsTest extends TestCase
@@ -195,14 +196,24 @@ class RunsAsObjectsTest extends TestCase
         ]);
 
         $this->assertEquals(
-            ['operation' => 'addition'], 
+            ['operation' => 'addition'],
             $action->only('operation')
         );
 
         $this->assertEquals(
-            ['right' => 5], 
+            ['right' => 5],
             $action->except('operation', 'left')
         );
+    }
+
+    /** @test */
+    public function actions_can_have_no_handle_method()
+    {
+        // An empty action...
+        $action = new class() extends Action {};
+
+        // ...returns null without throwing any exceptions.
+        $this->assertNull($action->run());
     }
 
     /** @test */
@@ -240,7 +251,7 @@ class RunsAsObjectsTest extends TestCase
         $action = new class('addition', 3, 5) extends SimpleCalculator {
             protected $getAttributesFromConstructor = true;
 
-            public function handle($operation, $left, $right) 
+            public function handle($operation, $left, $right)
             {
                 return parent::handle($operation, $left, $right);
             }
