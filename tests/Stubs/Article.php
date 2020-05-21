@@ -2,9 +2,9 @@
 
 namespace Lorisleiva\Actions\Tests\Stubs;
 
-use Illuminate\Foundation\Auth\User as BaseUser;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends BaseUser
+class Article extends Model
 {
     protected $guarded = [];
 }

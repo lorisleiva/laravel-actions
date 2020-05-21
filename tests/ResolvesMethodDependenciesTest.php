@@ -23,7 +23,7 @@ class ResolvesMethodDependenciesTest extends TestCase
                 return compact('operation', 'left', 'right');
             }
         };
-        
+
         $result = $action->run();
         $this->assertEquals('addition', $result['operation']);
         $this->assertEquals(3, $result['left']);
@@ -43,7 +43,7 @@ class ResolvesMethodDependenciesTest extends TestCase
                 return compact('dummySnakedCase', 'createdAt');
             }
         };
-        
+
         $result = $action->run();
         $this->assertEquals(42, $result['dummySnakedCase']);
         $this->assertEquals('2019-05-12', $result['createdAt']);
@@ -57,7 +57,7 @@ class ResolvesMethodDependenciesTest extends TestCase
                 return compact('operation', 'left');
             }
         };
-        
+
         $result = $action->run();
         $this->assertNull($result['operation']);
         $this->assertEquals(3, $result['left']);
@@ -71,7 +71,7 @@ class ResolvesMethodDependenciesTest extends TestCase
                 return compact('dummy', 'request');
             }
         };
-        
+
         $result = $action->run();
         $this->assertTrue($result['dummy'] instanceof Dummy);
         $this->assertTrue($result['request'] instanceof Request);
@@ -82,7 +82,7 @@ class ResolvesMethodDependenciesTest extends TestCase
     {
         $this->loadLaravelMigrations();
         $this->createUser([
-            'name' => 'John Doe', 
+            'name' => 'John Doe',
             'email' => 'john.doe@gmail.com',
         ]);
 
@@ -103,14 +103,14 @@ class ResolvesMethodDependenciesTest extends TestCase
     {
         $this->loadLaravelMigrations();
         $this->createUser([
-            'name' => 'John Doe', 
+            'name' => 'John Doe',
             'email' => 'john.doe@gmail.com',
         ]);
 
         $action = new class(['user' => 1]) extends Action {
             public function handle(User $user) {}
         };
-        
+
         $this->assertEquals(1, $action->user);
         $this->assertFalse($action->user instanceof User);
         $action->run();
@@ -125,7 +125,7 @@ class ResolvesMethodDependenciesTest extends TestCase
         $action = new class(['user' => 42]) extends Action {
             public function handle(User $user) {}
         };
-        
+
         $this->expectException(ModelNotFoundException::class);
         $action->run();
     }

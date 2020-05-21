@@ -54,7 +54,7 @@ trait ResolvesMethodDependencies
         $instance = app($class);
 
         if ($key && method_exists($instance, 'resolveRouteBinding')) {
-            $instance = $this->resolveRouteBinding($instance, $value);
+            $instance = $this->resolveRouteBinding($instance, $key, $value);
         }
 
         if ($key) {
@@ -64,9 +64,11 @@ trait ResolvesMethodDependencies
         return $instance;
     }
 
-    protected function resolveRouteBinding($instance, $value)
+    protected function resolveRouteBinding($instance, $key, $value)
     {
-        if (! $model = $instance->resolveRouteBinding($value)) {
+        $field = $this->runningAs('controller') ? $this->request->route()->bindingFieldFor($key) : null;
+
+        if (! $model = $instance->resolveRouteBinding($value, $field)) {
             throw (new ModelNotFoundException)->setModel(get_class($instance));
         }
 

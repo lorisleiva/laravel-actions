@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Facades\Actions;
+use Lorisleiva\Actions\Tests\Actions\ReadArticle;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithRoutes;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithValidation;
@@ -165,5 +166,22 @@ class RunsAsControllersTest extends TestCase
             ->assertSee('Left: 5')
             ->assertSee('Right: 3')
             ->assertSee('Result: 2');
+    }
+
+    /** @test */
+    public function it_supports_custom_implicit_bindings()
+    {
+        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+        $this->createArticle([
+            'title' => 'My Super Article',
+            'slug' => 'my-super-article',
+        ]);
+
+        $this->app->make('router')->get('articles/{article:slug}', ReadArticle::class);
+
+        $this->get('/articles/my-super-article')
+            ->assertOk()
+            ->assertSee('Article: My Super Article');
     }
 }

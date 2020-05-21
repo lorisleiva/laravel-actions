@@ -30,7 +30,7 @@ class RegistersActionsTest extends TestCase
         Actions::paths(__DIR__ . '/Actions');
         Actions::registerAllPaths();
 
-        $this->assertCount(9, Actions::getRegisteredActions());
+        $this->assertCount(10, Actions::getRegisteredActions());
     }
 
     /** @test */
@@ -40,7 +40,7 @@ class RegistersActionsTest extends TestCase
         Actions::registerAllPaths();
         Actions::registerAllPaths();
 
-        $this->assertCount(9, Actions::getRegisteredActions());
+        $this->assertCount(10, Actions::getRegisteredActions());
     }
 
     /** @test */

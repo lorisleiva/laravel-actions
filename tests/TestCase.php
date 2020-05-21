@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Lorisleiva\Actions\Tests\Stubs\Article;
 use Lorisleiva\Actions\Tests\Stubs\User;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
@@ -22,9 +23,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function createUser($data = [])
     {
         return User::create(array_merge([
-            'name' => 'John Doe', 
+            'name' => 'John Doe',
             'email' => rand() . '@gmail.com',
             'password' => bcrypt('secret'),
+        ], $data));
+    }
+
+    public function createArticle($data = [])
+    {
+        return Article::create(array_merge([
+            'title' => 'My Blog Post',
+            'slug' => 'my-blog-post',
+            'body' => 'Lorem ipsum',
         ], $data));
     }
 
