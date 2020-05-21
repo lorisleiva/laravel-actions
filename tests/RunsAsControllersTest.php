@@ -16,6 +16,8 @@ class RunsAsControllersTest extends TestCase
     {
         $app->make('router')->post('/calculator/{operation}', SimpleCalculator::class);
         $app->make('router')->post('/calculator/validated/{operation}', SimpleCalculatorWithValidation::class);
+        $app->make('router')->get('articles/{article:slug}', ReadArticle::class);
+        $app->make('router')->get('/users/{user}/articles/{article:slug}', ReadArticle::class);
     }
 
     /** @test */
@@ -173,15 +175,45 @@ class RunsAsControllersTest extends TestCase
     {
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
-        $this->createArticle([
+        $this->createArticle(null, [
             'title' => 'My Super Article',
             'slug' => 'my-super-article',
         ]);
 
-        $this->app->make('router')->get('articles/{article:slug}', ReadArticle::class);
-
         $this->get('/articles/my-super-article')
             ->assertOk()
             ->assertSee('Article: My Super Article');
+    }
+
+    /** @test */
+    public function it_supports_nested_implicit_bindings_by_allowing_articles_from_the_right_user()
+    {
+        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+        $user = $this->createUser(['name' => 'Alice']);
+        $this->createArticle($user, [
+            'title' => 'My Super Article',
+            'slug' => 'my-super-article',
+        ]);
+
+        $this->get("/users/{$user->id}/articles/my-super-article")
+            ->assertOk()
+            ->assertSee('Author: Alice')
+            ->assertSee('Article: My Super Article');
+    }
+
+    /** @test */
+    public function it_supports_nested_implicit_bindings_by_refusing_articles_from_the_wrong_user()
+    {
+        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+        $alice = $this->createUser(['name' => 'Alice']);
+        $bob = $this->createUser(['name' => 'Bob']);
+        $this->createArticle($alice, [
+            'title' => 'My Super Article',
+            'slug' => 'my-super-article',
+        ]);
+
+        $this->get("/users/{$bob->id}/articles/my-super-article")->assertNotFound();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 use ReflectionMethod;
@@ -66,11 +67,19 @@ trait ResolvesMethodDependencies
 
     protected function resolveRouteBinding($instance, $key, $value)
     {
-        $field = $this->runningAs('controller') ? $this->request->route()->bindingFieldFor($key) : null;
+        $route = $this->runningAs('controller') ? $this->request->route() : null;
+        $field = optional($route)->bindingFieldFor($key);
+        $parent = $route && method_exists($route, 'parentOfParameter') ? $route->parentOfParameter($key) : null;
 
-        if (! $model = $instance->resolveRouteBinding($value, $field)) {
-            throw (new ModelNotFoundException)->setModel(get_class($instance));
+        if ($parent && $field && $parent instanceof UrlRoutable) {
+            if (! $model = $parent->resolveChildRouteBinding($key, $value, $field)) {
+                throw (new ModelNotFoundException)->setModel(get_class($instance), [$value]);
+            }
+        } else if (! $model = $instance->resolveRouteBinding($value, $field)) {
+            throw (new ModelNotFoundException)->setModel(get_class($instance), [$value]);
         }
+
+        optional($route)->setParameter($key, $model);
 
         return $model;
     }

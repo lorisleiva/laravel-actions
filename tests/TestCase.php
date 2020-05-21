@@ -29,9 +29,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
         ], $data));
     }
 
-    public function createArticle($data = [])
+    public function createArticle($user = null, $data = [])
     {
         return Article::create(array_merge([
+            'user_id' => $user ? $user->id : $this->createUser()->id,
             'title' => 'My Blog Post',
             'slug' => 'my-blog-post',
             'body' => 'Lorem ipsum',
