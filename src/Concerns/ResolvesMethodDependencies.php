@@ -68,7 +68,7 @@ trait ResolvesMethodDependencies
     protected function resolveRouteBinding($instance, $key, $value)
     {
         $route = $this->runningAs('controller') ? $this->request->route() : null;
-        $field = optional($route)->bindingFieldFor($key);
+        $field = $route && method_exists($route, 'bindingFieldFor') ? $route->bindingFieldFor($key) : null;
         $parent = $route && method_exists($route, 'parentOfParameter') ? $route->parentOfParameter($key) : null;
 
         if ($parent && $field && $parent instanceof UrlRoutable) {
