@@ -63,7 +63,9 @@ trait RunsAsController
     {
         $middleware = [];
 
-        if (method_exists($this, 'middleware')) {
+        if (method_exists($this, 'controllerMiddleware')) {
+            $middleware = $this->controllerMiddleware();
+        } elseif (method_exists($this, 'middleware')) {
             $middleware = $this->middleware();
         }
 

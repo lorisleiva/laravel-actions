@@ -11,7 +11,7 @@ class SimpleCalculator extends Action
         return [
             function ($request, $next) {
                 if ($request->operation === 'middleware') {
-                    abort(400, 'Intercepted by a middleware');
+                    abort(400, 'Intercepted in the middleware() method.');
                 }
                 return $next($request);
             }

@@ -58,7 +58,38 @@ class RunsAsControllersTest extends TestCase
         $response = $this->post('/calculator/middleware');
 
         $this->assertEquals(400, $response->exception->getStatusCode());
-        $this->assertEquals('Intercepted by a middleware', $response->exception->getMessage());
+        $this->assertEquals('Intercepted in the middleware() method.', $response->exception->getMessage());
+    }
+
+    /** @test */
+    public function it_uses_the_middleware_method_by_default()
+    {
+        $action = new class extends Action {
+            public function middleware() {
+                return ['middleware'];
+            }
+        };
+
+        $result = $action->getMiddleware();
+        $this->assertCount(1, $result);
+        $this->assertEquals('middleware', $result[0]['middleware']);
+    }
+
+    /** @test */
+    public function it_prioritise_the_controller_middleware_method()
+    {
+        $action = new class extends Action {
+            public function controllerMiddleware() {
+                return ['controller-middleware'];
+            }
+            public function middleware() {
+                return ['middleware'];
+            }
+        };
+
+        $result = $action->getMiddleware();
+        $this->assertCount(1, $result);
+        $this->assertEquals('controller-middleware', $result[0]['middleware']);
     }
 
     /** @test */
