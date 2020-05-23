@@ -41,7 +41,7 @@ trait ResolvesMethodDependencies
             return $value;
         }
 
-        if ($key && is_subclass_of($class->name, UrlRoutable::class)) {
+        if ($key && $class && is_subclass_of($class->name, UrlRoutable::class)) {
             return $this->resolveRouteBinding($class->name, $key, $value, $parameter->allowsNull());
         }
 

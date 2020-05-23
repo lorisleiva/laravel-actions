@@ -158,7 +158,7 @@ class ResolvesMethodDependenciesTest extends TestCase
     {
         $this->loadLaravelMigrations();
 
-        $action = new class(['user' => null]) extends Action {
+        $action = new class(['user' => 42]) extends Action {
             public function handle(?User $user) {
                 return $user;
             }
