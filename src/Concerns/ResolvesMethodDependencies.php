@@ -41,8 +41,12 @@ trait ResolvesMethodDependencies
             return $value;
         }
 
+        if ($key && is_subclass_of($class->name, UrlRoutable::class)) {
+            return $this->resolveRouteBinding($class->name, $key, $value, $parameter->allowsNull());
+        }
+
         if ($class && ! $parameter->allowsNull()) {
-            return $this->resolveContainerDependency($class->name, $key, $value);
+            return $this->resolveContainerDependency($class->name, $key);
         }
 
         if ($parameter->isDefaultValueAvailable()) {
@@ -50,38 +54,38 @@ trait ResolvesMethodDependencies
         }
     }
 
-    protected function resolveContainerDependency($class, $key, $value)
+    protected function resolveRouteBinding($class, $key, $value, $nullable = false)
     {
         $instance = app($class);
+        $route = $this->runningAs('controller') ? $this->request->route() : null;
+        $field = $route && method_exists($route, 'bindingFieldFor') ? $route->bindingFieldFor($key) : null;
+        $parent = $route && method_exists($route, 'parentOfParameter') ? $route->parentOfParameter($key) : null;
 
-        if ($key && method_exists($instance, 'resolveRouteBinding')) {
-            $instance = $this->resolveRouteBinding($instance, $key, $value);
+        if ($parent && $field && $parent instanceof UrlRoutable) {
+            $model = $parent->resolveChildRouteBinding($key, $value, $field);
+        } else {
+            $model = $instance->resolveRouteBinding($value, $field);
         }
+
+        if (! $model && ! $nullable) {
+            throw (new ModelNotFoundException)->setModel(get_class($instance), [$value]);
+        }
+
+        optional($route)->setParameter($key, $model);
+        $this->updateAttributeWithResolvedInstance($key, $model);
+
+        return $model;
+    }
+
+    protected function resolveContainerDependency($class, $key)
+    {
+        $instance = app($class);
 
         if ($key) {
             $this->updateAttributeWithResolvedInstance($key, $instance);
         }
 
         return $instance;
-    }
-
-    protected function resolveRouteBinding($instance, $key, $value)
-    {
-        $route = $this->runningAs('controller') ? $this->request->route() : null;
-        $field = $route && method_exists($route, 'bindingFieldFor') ? $route->bindingFieldFor($key) : null;
-        $parent = $route && method_exists($route, 'parentOfParameter') ? $route->parentOfParameter($key) : null;
-
-        if ($parent && $field && $parent instanceof UrlRoutable) {
-            if (! $model = $parent->resolveChildRouteBinding($key, $value, $field)) {
-                throw (new ModelNotFoundException)->setModel(get_class($instance), [$value]);
-            }
-        } else if (! $model = $instance->resolveRouteBinding($value, $field)) {
-            throw (new ModelNotFoundException)->setModel(get_class($instance), [$value]);
-        }
-
-        optional($route)->setParameter($key, $model);
-
-        return $model;
     }
 
     protected function findAttributeFromParameter($name, $extras = []): array

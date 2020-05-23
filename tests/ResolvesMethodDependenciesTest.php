@@ -123,10 +123,7 @@ class ResolvesMethodDependenciesTest extends TestCase
     public function it_resolves_type_hinted_models_using_route_model_binding()
     {
         $this->loadLaravelMigrations();
-        $this->createUser([
-            'name' => 'John Doe',
-            'email' => 'john.doe@gmail.com',
-        ]);
+        $this->createUser(['name' => 'John Doe']);
 
         $action = new class(['user' => 1]) extends Action {
             public function handle(User $user) {
@@ -137,7 +134,37 @@ class ResolvesMethodDependenciesTest extends TestCase
         $user = $action->run();
         $this->assertTrue($user instanceof User);
         $this->assertEquals('John Doe', $user->name);
-        $this->assertEquals('john.doe@gmail.com', $user->email);
+    }
+
+    /** @test */
+    public function it_resolves_nullable_type_hinted_models()
+    {
+        $this->loadLaravelMigrations();
+        $this->createUser(['name' => 'John Doe']);
+
+        $action = new class(['user' => 1]) extends Action {
+            public function handle(?User $user) {
+                return $user;
+            }
+        };
+
+        $user = $action->run();
+        $this->assertTrue($user instanceof User);
+        $this->assertEquals('John Doe', $user->name);
+    }
+
+    /** @test */
+    public function it_returns_null_when_nullable_type_hinted_models_cannot_be_found()
+    {
+        $this->loadLaravelMigrations();
+
+        $action = new class(['user' => null]) extends Action {
+            public function handle(?User $user) {
+                return $user;
+            }
+        };
+
+        $this->assertNull($action->run());
     }
 
     /** @test */
