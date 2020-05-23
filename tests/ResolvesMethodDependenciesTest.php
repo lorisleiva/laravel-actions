@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Stubs\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ResolvesMethodDependenciesTest extends TestCase
 {
@@ -75,6 +75,48 @@ class ResolvesMethodDependenciesTest extends TestCase
         $result = $action->run();
         $this->assertTrue($result['dummy'] instanceof Dummy);
         $this->assertTrue($result['request'] instanceof Request);
+    }
+
+    /** @test */
+    public function it_does_not_resolves_attributes_from_the_container_that_are_already_of_that_typehint()
+    {
+        $dummy = new Dummy(42);
+        $attributes = [
+            'dummyA' => $dummy,
+            'dummyB' => $dummy,
+            'dummyC' => $dummy,
+        ];
+
+        $action = new class($attributes) extends Action {
+            public function handle(Dummy $dummyA, ?Dummy $dummyB, Dummy $dummyC = null) {
+                return compact('dummyA', 'dummyB', 'dummyC');
+            }
+        };
+
+        $result = $action->run();
+        $this->assertTrue($result['dummyA'] instanceof Dummy);
+        $this->assertTrue($result['dummyB'] instanceof Dummy);
+        $this->assertTrue($result['dummyC'] instanceof Dummy);
+        $this->assertEquals(42, $result['dummyA']->id);
+        $this->assertEquals(42, $result['dummyB']->id);
+        $this->assertEquals(42, $result['dummyC']->id);
+        $this->assertSame($result['dummyA'], $dummy);
+        $this->assertSame($result['dummyB'], $dummy);
+        $this->assertSame($result['dummyC'], $dummy);
+    }
+
+    /** @test */
+    public function it_does_not_resolve_nullable_typehints_from_the_container()
+    {
+        $action = new class() extends Action {
+            public function handle(?Dummy $dummy, Request $request = null) {
+                return compact('dummy', 'request');
+            }
+        };
+
+        $result = $action->run();
+        $this->assertNull($result['dummy']);
+        $this->assertNull($result['request']);
     }
 
     /** @test */
@@ -158,5 +200,10 @@ class ResolvesMethodDependenciesTest extends TestCase
 
 class Dummy
 {
-    //
+    public $id;
+
+    public function __construct($id = null)
+    {
+        $this->id = $id;
+    }
 }

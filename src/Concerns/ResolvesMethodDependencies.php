@@ -41,7 +41,7 @@ trait ResolvesMethodDependencies
             return $value;
         }
 
-        if ($class) {
+        if ($class && ! $parameter->allowsNull()) {
             return $this->resolveContainerDependency($class->name, $key, $value);
         }
 
