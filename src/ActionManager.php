@@ -22,7 +22,7 @@ class ActionManager
      */
     public function __construct()
     {
-        $this->paths('app/Actions');
+        $this->paths('app'.DIRECTORY_SEPARATOR.'Actions');
         $this->registeredActions = collect();
     }
 
