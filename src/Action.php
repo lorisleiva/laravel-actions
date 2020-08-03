@@ -14,6 +14,7 @@ use ReflectionMethod;
 
 /**
  * @method mixed run(...$mixed)
+ * @method static mixed run(...$mixed)
  */
 abstract class Action
 {
