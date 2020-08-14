@@ -28,11 +28,11 @@ trait RunsAsController
             return $this->response($result, $request);
         }
 
-        if (method_exists($this, 'jsonResponse') && $request->wantsJson()) {
+        if (method_exists($this, 'jsonResponse') && $request->expectsJson()) {
             return $this->jsonResponse($result, $request);
         }
 
-        if (method_exists($this, 'htmlResponse') && ! $request->wantsJson()) {
+        if (method_exists($this, 'htmlResponse') && ! $request->expectsJson()) {
             return $this->htmlResponse($result, $request);
         }
 
