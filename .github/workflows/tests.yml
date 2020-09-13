@@ -1,42 +1,32 @@
 name: Tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  phpunit73:
-    name: "Tests on PHP 7.3"
-    runs-on: ubuntu-latest
-    container: 
-      image: lorisleiva/laravel-docker:7.3
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        laravel: [8.*, 7.*, 6.*, 5.8]
+        php: [7.4, 7.3]
+        os: [ubuntu-latest]
+    name: Laravel ${{ matrix.laravel }} PHP${{ matrix.php }} on ${{ matrix.os }}
+    container:
+      image: lorisleiva/laravel-docker:${{ matrix.php }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-    - name: Cache dependencies
-      uses: actions/cache@v1
-      with:
-        path: /composer/cache/files
-        key: dependencies-composer-${{ hashFiles('composer.json') }}
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-    - name: Run tests
-      run: phpunit
-      
-  phpunit74:
-    name: "Tests on PHP 7.4"
-    runs-on: ubuntu-latest
-    container: 
-      image: lorisleiva/laravel-docker:7.4
-    steps:
-    - uses: actions/checkout@v2
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-    - name: Cache dependencies
-      uses: actions/cache@v1
-      with:
-        path: /composer/cache/files
-        key: dependencies-composer-${{ hashFiles('composer.json') }}
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-    - name: Run tests
-      run: phpunit
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Validate composer files
+        run: composer validate
+      - name: Cache dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+      - name: Install dependencies
+        run: |
+          composer require --prefer-dist --no-progress --no-suggest --no-interaction "illuminate/support:${{ matrix.laravel }}"
+          composer install --prefer-dist --no-progress --no-suggest --no-interaction
+      - name: Run tests
+        run: phpunit
