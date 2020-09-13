@@ -1,7 +1,7 @@
-# Laravel Actions
+# ⚡️ Laravel Actions
 [![Actions Status](https://github.com/lorisleiva/laravel-actions/workflows/Tests/badge.svg)](https://github.com/lorisleiva/laravel-actions/actions)
 
-⚡️ Laravel components that take care of one specific task
+**Laravel components that take care of one specific task.**
 
 This package introduces a new way of organising the logic of your Laravel applications by focusing on the actions your application provide.
 
