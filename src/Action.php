@@ -94,7 +94,7 @@ abstract class Action
      */
     public static function createFrom(Action $action)
     {
-        return (new static)->fill($action->all());
+        return (new static)->fill($action->all())->actingAs($action->user());
     }
 
     /**
