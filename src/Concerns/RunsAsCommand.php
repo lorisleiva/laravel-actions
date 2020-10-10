@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Console\ClosureCommand;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +16,6 @@ trait RunsAsCommand
 
     public static function registerCommand(): ?ClosureCommand
     {
-        /** @var Action $action */
         if (! static::canRunAsCommand()) {
             return null;
         }
