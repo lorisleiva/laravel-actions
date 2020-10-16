@@ -10,6 +10,8 @@ use ReflectionClass;
 
 class RegistersActionsTest extends TestCase
 {
+    const ACTION_COUNT = 11;
+
     protected function getEnvironmentSetUp($app)
     {
         $app->instance(ActionManager::class, new class() extends ActionManager {
@@ -30,7 +32,7 @@ class RegistersActionsTest extends TestCase
         Actions::paths(__DIR__ . '/Actions');
         Actions::registerAllPaths();
 
-        $this->assertCount(10, Actions::getRegisteredActions());
+        $this->assertCount(static::ACTION_COUNT, Actions::getRegisteredActions());
     }
 
     /** @test */
@@ -40,7 +42,7 @@ class RegistersActionsTest extends TestCase
         Actions::registerAllPaths();
         Actions::registerAllPaths();
 
-        $this->assertCount(10, Actions::getRegisteredActions());
+        $this->assertCount(static::ACTION_COUNT, Actions::getRegisteredActions());
     }
 
     /** @test */
