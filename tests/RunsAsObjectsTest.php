@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use BadMethodCallException;
 use Lorisleiva\Actions\Action;
 use Lorisleiva\Actions\Tests\Actions\SimpleCalculator;
+use Lorisleiva\Actions\Tests\Actions\SimpleCalculatorWithHandleDefaults;
 
 class RunsAsObjectsTest extends TestCase
 {
@@ -88,6 +89,19 @@ class RunsAsObjectsTest extends TestCase
         $this->assertEquals('addition', $action->operation);
         $this->assertEquals(3, $action->left);
         $this->assertEquals(5, $action->right);
+    }
+
+    /** @test */
+    public function it_can_fill_attributes_dynamically_from_handle()
+    {
+        $action = (new SimpleCalculatorWithHandleDefaults())->fill([
+            'operation' => 'addition',
+        ]);
+
+        $this->assertEquals('addition', $action->operation);
+        $this->assertEquals(50, $action->left);
+        $this->assertEquals(100, $action->right);
+        $this->assertEquals(150, $action->run());
     }
 
     /** @test */

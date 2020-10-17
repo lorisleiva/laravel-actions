@@ -54,9 +54,8 @@ abstract class Action
             $this->resolveAndCall($this, 'initialized');
         }
 
-        if (func_num_args() > 0) {
-            $this->resolveAttributesFromConstructor(...func_get_args());
-        }
+        $args = func_num_args() > 0 ? func_get_args() : [];
+        $this->resolveAttributesFromConstructor(...$args);
     }
 
     protected function resolveAttributesFromConstructor(...$arguments)
@@ -71,12 +70,18 @@ abstract class Action
 
         if ($attributes === true && method_exists($this, 'handle')) {
             $reflector = new ReflectionMethod($this, 'handle');
-            $attributes = collect($reflector->getParameters())->map->getName()->toArray();
+            foreach($reflector->getParameters() as $index => $param) {
+               $defaultValue = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
+               $this->set($param->getName(), Arr::get($arguments, $index, $defaultValue));
+            }
+            return $this;
         }
 
         foreach (Arr::wrap($attributes) as $index => $name) {
             $this->set($name, Arr::get($arguments, $index, null));
         }
+
+        return $this;
     }
 
     /**
