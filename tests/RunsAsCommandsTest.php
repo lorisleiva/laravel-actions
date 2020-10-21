@@ -156,4 +156,26 @@ class RunsAsCommandsTest extends TestCase
             ->expectsQuestion('What should we multiple the final result by?', 3)
             ->expectsOutput('24');
     }
+
+    /** @test */
+    public function it_outputs_nothing_when_result_is_null()
+    {
+        Actions::register(new class() extends SimpleCalculatorWithCommandSignature {
+            // don't output a result.
+            public function handle($operation, $left, $right)
+            {
+                return null;
+            }
+        });
+
+        $input = [
+            'operation' => 'addition',
+            'left' => '3',
+            'right' => '5',
+        ];
+
+        $this->artisan('calculate:simple', $input)
+            ->expectsOutput('')
+            ->assertExitCode(0);
+    }
 }

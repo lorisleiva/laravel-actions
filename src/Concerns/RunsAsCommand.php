@@ -62,7 +62,8 @@ trait RunsAsCommand
     public function consoleOutput($result, Command $command)
     {
         if ($output = $command->getOutput()) {
-            $command->getOutput()->write(var_export($result, true));
+            $outputValue = is_null($result) ? '' : var_export($result, true);
+            $output->write($outputValue);
         }
     }
 
