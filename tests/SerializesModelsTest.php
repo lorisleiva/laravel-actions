@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Queue\SerializesAndRestoresModelIdentifiers;
 use Lorisleiva\Actions\Tests\Actions\UpdateProfileDetails;
+use Lorisleiva\Actions\Tests\Stubs\User;
 
 class SerializesModelsTest extends TestCase
 {
@@ -37,11 +38,19 @@ class SerializesModelsTest extends TestCase
             'name' => 'Action San',
         ]);
 
+        // We want to be sure we have fetched the user from the DB
+        // rather than straight up unserializing into the class.
+        $hasBeenRetrieved = false;
+        User::retrieved(function () use (&$hasBeenRetrieved) {
+            $hasBeenRetrieved = true;
+        });
+
         $action = new UpdateProfileDetails(['user' => $user, 'name' => 'Laravel San']);
         $rehydratedAction = unserialize(serialize($action));
 
         $this->assertTrue(
             $user->is($rehydratedAction->get('user'))
         );
+        $this->assertTrue($hasBeenRetrieved);
     }
 }
