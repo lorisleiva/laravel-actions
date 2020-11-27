@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Concerns;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 
@@ -35,7 +36,9 @@ trait ResolvesMethodDependencies
     protected function resolveDependency(ReflectionParameter $parameter, $extras = [])
     {
         list($key, $value) = $this->findAttributeFromParameter($parameter->name, $extras);
-        $class = $parameter->getClass();
+        $class = $parameter->getType() && !$parameter->getType()->isBuiltin()
+            ? new ReflectionClass($parameter->getType()->getName())
+            : null;
 
         if ($key && (! $class || $value instanceof $class->name)) {
             return $value;
