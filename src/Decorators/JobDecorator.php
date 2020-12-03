@@ -2,11 +2,11 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Lorisleiva\Actions\Concerns\DecorateActions;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class JobDecorator implements ShouldQueue
 {
@@ -89,6 +89,7 @@ class JobDecorator implements ShouldQueue
     public function __sleep()
     {
         $this->serializeProperties();
+
         return $this->sleepFromSerializesModels();
     }
 
@@ -101,6 +102,7 @@ class JobDecorator implements ShouldQueue
     public function __serialize()
     {
         $this->serializeProperties();
+
         return $this->serializeFromSerializesModels();
     }
 

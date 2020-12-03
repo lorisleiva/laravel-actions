@@ -2,9 +2,9 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Lorisleiva\Actions\Concerns\DecorateActions;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\RouteDependencyResolverTrait;
+use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ListenerDecorator
 {
@@ -31,7 +31,9 @@ class ListenerDecorator
     protected function resolveFromArgumentsAndCall($method, $arguments)
     {
         $arguments = $this->resolveClassMethodDependencies(
-            $arguments, $this->action, $method
+            $arguments,
+            $this->action,
+            $method
         );
 
         return $this->action->{$method}(...array_values($arguments));

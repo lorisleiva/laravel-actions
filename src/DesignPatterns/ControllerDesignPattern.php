@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\DesignPatterns;
 
+use Illuminate\Routing\Route;
 use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Decorators\ControllerDecorator;
-use Illuminate\Routing\Route;
 
 class ControllerDesignPattern extends DesignPattern
 {

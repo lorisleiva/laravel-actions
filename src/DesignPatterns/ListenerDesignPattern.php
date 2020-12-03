@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\DesignPatterns;
 
+use Illuminate\Events\Dispatcher;
 use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsListener;
 use Lorisleiva\Actions\Decorators\ListenerDecorator;
-use Illuminate\Events\Dispatcher;
 
 class ListenerDesignPattern extends DesignPattern
 {

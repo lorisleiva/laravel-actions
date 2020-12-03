@@ -2,12 +2,12 @@
 
 namespace Lorisleiva\Actions;
 
-use Lorisleiva\Actions\Concerns\DecorateActions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ActionRequest extends FormRequest
 {

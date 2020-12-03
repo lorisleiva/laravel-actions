@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Lorisleiva\Actions\Concerns\DecorateActions;
-use Lorisleiva\Actions\ActionRequest;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\RouteDependencyResolverTrait;
+use Lorisleiva\Actions\ActionRequest;
+use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ControllerDecorator
 {
@@ -77,7 +77,9 @@ class ControllerDecorator
     protected function resolveFromRouteAndCall($method, ActionRequest $request)
     {
         $arguments = $this->resolveClassMethodDependencies(
-            $request->route()->parametersWithoutNulls(), $this->action, $method
+            $request->route()->parametersWithoutNulls(),
+            $this->action,
+            $method
         );
 
         return $this->action->{$method}(...array_values($arguments));
