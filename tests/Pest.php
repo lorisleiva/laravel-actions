@@ -1,5 +1,5 @@
 <?php
 
-use Lorisleiva\Skeleton\Tests\TestCase;
+use Lorisleiva\Actions\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

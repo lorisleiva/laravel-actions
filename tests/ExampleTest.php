@@ -1,16 +1,16 @@
 <?php
 
-use Lorisleiva\Skeleton\Skeleton;
+use Lorisleiva\Actions\ActionManager;
 
 it('resolves from the container', function () {
-    $skeleton = app(Skeleton::class);
+    $manager = app(ActionManager::class);
 
-    expect($skeleton instanceof Skeleton)->toBeTrue();
+    expect($manager instanceof ActionManager)->toBeTrue();
 });
 
 it('resolves as a singleton', function () {
-    $skeletonA = app(Skeleton::class);
-    $skeletonB = app(Skeleton::class);
+    $managerA = app(ActionManager::class);
+    $managerB = app(ActionManager::class);
 
-    expect($skeletonA)->toBe($skeletonB);
+    expect($managerA)->toBe($managerB);
 });

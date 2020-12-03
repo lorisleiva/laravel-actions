@@ -1,11 +1,16 @@
 {
-    "name": "lorisleiva/skeleton",
-    "description": "TODO",
+    "name": "lorisleiva/laravel-actions",
+    "description": "Laravel components that take care of one specific task",
     "keywords": [
         "laravel",
-        "skeleton"
+        "component",
+        "action",
+        "controller",
+        "job",
+        "object",
+        "command"
     ],
-    "homepage": "https://github.com/lorisleiva/skeleton",
+    "homepage": "https://github.com/lorisleiva/laravel-actions",
     "license": "MIT",
     "authors": [
         {
@@ -17,7 +22,7 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "illuminate/contracts": "^7.0|^8.0"
+        "illuminate/contracts": "^8.15"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
@@ -26,12 +31,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Lorisleiva\\Skeleton\\": "src"
+            "Lorisleiva\\Actions\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lorisleiva\\Skeleton\\Tests\\": "tests"
+            "Lorisleiva\\Actions\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -44,10 +49,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Lorisleiva\\Skeleton\\SkeletonServiceProvider"
+                "Lorisleiva\\Actions\\ActionServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "Lorisleiva\\Skeleton\\Facades\\Skeleton"
+                "Action": "Lorisleiva\\Actions\\Facades\\Actions"
             }
         }
     },

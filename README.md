@@ -1,18 +1,22 @@
 # 🦴 Laravel Skeleton
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/lorisleiva/skeleton.svg)](https://packagist.org/packages/lorisleiva/skeleton)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/lorisleiva/package-skeleton-laravel/Tests?label=tests)](https://github.com/lorisleiva/package-skeleton-laravel/actions?query=workflow%3ATests+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/lorisleiva/skeleton.svg)](https://packagist.org/packages/lorisleiva/skeleton)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/lorisleiva/laravel-actions/Tests?label=tests)](https://github.com/lorisleiva/laravel-actions/actions?query=workflow%3ATests+branch%3Anext)
+[![Total Downloads](https://img.shields.io/packagist/dt/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
 
-A skeleton repository for Laravel Packages.
+TODO
 
 ## Installation
 
 ```bash
-composer require lorisleiva/skeleton
+composer require lorisleiva/laravel-actions
 ```
 
-## Usage
+## Documentation
+
+:books: Read the full documentation at [laravelactions.com](https://laravelactions.com/)
+
+## Basic usage
 
 ``` php
 //
