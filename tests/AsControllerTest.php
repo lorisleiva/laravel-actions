@@ -70,6 +70,6 @@ it('constructs only once but runs the handle method once per request', function 
     // And the action was constructed only once.
     expect(AsControllerTest::$constructed)->toBe(1);
 
-    //But handled exactly twice.
+    // But handled exactly twice.
     expect(AsControllerTest::$handled)->toBe(2);
 });
