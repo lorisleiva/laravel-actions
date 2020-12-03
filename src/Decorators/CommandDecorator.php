@@ -2,9 +2,9 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Lorisleiva\Actions\Concerns\DecorateActions;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\Container;
+use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class CommandDecorator extends Command
 {

@@ -2,10 +2,10 @@
 
 namespace Lorisleiva\Actions\DesignPatterns;
 
+use Illuminate\Console\Application;
 use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Decorators\CommandDecorator;
-use Illuminate\Console\Application;
 
 class CommandDesignPattern extends DesignPattern
 {
