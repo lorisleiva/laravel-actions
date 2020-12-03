@@ -4,7 +4,6 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Lorisleiva\Actions\Commands\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
@@ -25,11 +24,7 @@ class ActionServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                MakeActionCommand::class,
-            ]);
-        }
+        //
     }
 
     protected function extendActions(ActionManager $manager)
