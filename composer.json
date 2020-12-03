@@ -1,48 +1,62 @@
 {
-    "name": "lorisleiva/laravel-actions",
-    "description": "Laravel components that take care of one specific task",
+    "name": "lorisleiva/skeleton",
+    "description": "TODO",
     "keywords": [
         "laravel",
-        "component",
-        "action",
-        "controller",
-        "job"
+        "skeleton"
     ],
-    "homepage": "https://github.com/lorisleiva/laravel-actions",
+    "homepage": "https://github.com/lorisleiva/skeleton",
     "license": "MIT",
     "authors": [
         {
-            "name": "Loris LEIVA",
+            "name": "Loris Leiva",
             "email": "loris.leiva@gmail.com",
-            "homepage": "https://lorisleiva.com"
+            "homepage": "https://lorisleiva.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "illuminate/support": "^5.7|^6.0|^7.0|^8.0"
+        "php": "^7.4|^8.0",
+        "illuminate/contracts": "^7.0|^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^5.0|^6.0"
+        "orchestra/testbench": "^6.0",
+        "pestphp/pest": "^0.3.14",
+        "phpunit/phpunit": "^9.3.10"
     },
     "autoload": {
         "psr-4": {
-            "Lorisleiva\\Actions\\": "src"
+            "Lorisleiva\\Skeleton\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lorisleiva\\Actions\\Tests\\": "tests"
+            "Lorisleiva\\Skeleton\\Tests\\": "tests"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Lorisleiva\\Actions\\ActionServiceProvider"
+                "Lorisleiva\\Skeleton\\SkeletonServiceProvider"
             ],
             "aliases": {
-                "Actions": "Lorisleiva\\Actions\\Facades\\Actions"
+                "Skeleton": "Lorisleiva\\Skeleton\\Facades\\Skeleton"
             }
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/lorisleiva"
+        }
+    ]
 }
