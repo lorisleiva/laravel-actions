@@ -5,19 +5,22 @@ namespace Lorisleiva\Actions;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Commands\MakeActionCommand;
+use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
+use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
+use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
 
 class ActionServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $designPatternManager = new DesignPatternManager([
+        $manager = new ActionManager([
             new ControllerDesignPattern(),
             new ListenerDesignPattern(),
             new CommandDesignPattern(),
         ]);
 
-        $this->app->instance(DesignPatternManager::class, $designPatternManager);
-        $this->extendActions($designPatternManager);
+        $this->app->instance(ActionManager::class, $manager);
+        $this->extendActions($manager);
     }
 
     public function boot()
@@ -29,7 +32,7 @@ class ActionServiceProvider extends ServiceProvider
         }
     }
 
-    protected function extendActions(DesignPatternManager $manager)
+    protected function extendActions(ActionManager $manager)
     {
         $this->app->beforeResolving(function ($abstract, $parameters, Application $app) use ($manager) {
             if (! class_exists($abstract) || $app->resolved($abstract)) {

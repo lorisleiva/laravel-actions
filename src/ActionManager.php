@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions;
 
-use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 
 class ActionManager
