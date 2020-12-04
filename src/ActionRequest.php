@@ -32,8 +32,8 @@ class ActionRequest extends FormRequest
 
         $factory = $this->container->make(ValidationFactory::class);
 
-        if ($this->hasMethod('getRequestValidator')) {
-            $validator = $this->resolveAndCall('getRequestValidator', compact('factory'));
+        if ($this->hasMethod('getValidator')) {
+            $validator = $this->resolveAndCall('getValidator', compact('factory'));
         } else {
             $validator = $this->createDefaultValidator($factory);
         }
@@ -65,8 +65,8 @@ class ActionRequest extends FormRequest
 
     public function validationData()
     {
-        return $this->hasMethod('getRequestValidationData')
-            ? $this->resolveAndCall('getRequestValidationData')
+        return $this->hasMethod('getValidationData')
+            ? $this->resolveAndCall('getValidationData')
             : $this->all();
     }
 
@@ -79,22 +79,22 @@ class ActionRequest extends FormRequest
 
     public function messages()
     {
-        return $this->hasMethod('getRequestMessages')
-            ? $this->resolveAndCall('getRequestMessages')
+        return $this->hasMethod('getValidationMessages')
+            ? $this->resolveAndCall('getValidationMessages')
             : [];
     }
 
     public function attributes()
     {
-        return $this->hasMethod('getRequestAttributes')
-            ? $this->resolveAndCall('getRequestAttributes')
+        return $this->hasMethod('getValidationAttributes')
+            ? $this->resolveAndCall('getValidationAttributes')
             : [];
     }
 
     protected function failedValidation(Validator $validator)
     {
-        if ($this->hasMethod('getRequestValidationFailure')) {
-            return $this->resolveAndCall('getRequestValidationFailure', compact('validator'));
+        if ($this->hasMethod('getValidationFailure')) {
+            return $this->resolveAndCall('getValidationFailure', compact('validator'));
         }
 
         throw (new ValidationException($validator))
@@ -106,15 +106,15 @@ class ActionRequest extends FormRequest
     {
         $url = $this->redirector->getUrlGenerator();
 
-        return $this->hasMethod('getRequestValidationRedirect')
-            ? $this->resolveAndCall('getRequestValidationRedirect', compact('url'))
+        return $this->hasMethod('getValidationRedirect')
+            ? $this->resolveAndCall('getValidationRedirect', compact('url'))
             : $url->previous();
     }
 
     protected function getErrorBag(Validator $validator)
     {
-        return $this->hasMethod('getRequestErrorBag')
-            ? $this->resolveAndCall('getRequestErrorBag', compact('validator'))
+        return $this->hasMethod('getValidationErrorBag')
+            ? $this->resolveAndCall('getValidationErrorBag', compact('validator'))
             : 'default';
     }
 
@@ -127,8 +127,8 @@ class ActionRequest extends FormRequest
 
     protected function failedAuthorization()
     {
-        if ($this->hasMethod('getRequestAuthorizationFailure')) {
-            return $this->resolveAndCall('getRequestAuthorizationFailure');
+        if ($this->hasMethod('getAuthorizationFailure')) {
+            return $this->resolveAndCall('getAuthorizationFailure');
         }
 
         throw new AuthorizationException;
