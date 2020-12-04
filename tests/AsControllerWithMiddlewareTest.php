@@ -18,8 +18,9 @@ class AsControllerWithMiddlewareTest
                 if ($request->get('operation') === 'middleware') {
                     return response()->json(['caught by middleware']);
                 }
+
                 return $next($request);
-            }
+            },
         ];
     }
 
