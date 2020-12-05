@@ -27,7 +27,11 @@ class JobDecorator implements ShouldQueue
     {
         $this->setAction(app($action));
         $this->parameters = $parameters;
+        $this->constructed();
+    }
 
+    protected function constructed()
+    {
         if ($this->hasMethod('configureJob')) {
             $this->callMethod('configureJob', [$this]);
         }

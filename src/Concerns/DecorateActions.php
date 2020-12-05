@@ -50,4 +50,17 @@ trait DecorateActions
     {
         return $this->container->call([$this->action, $method], $extraArguments);
     }
+
+    protected function fromActionMethodOrProperty(string $method, string $property, $default = null)
+    {
+        if ($this->hasMethod($method)) {
+            return $this->callMethod($method);
+        }
+
+        if ($this->hasProperty($property)) {
+            return $this->getProperty($property);
+        }
+
+        return $default;
+    }
 }

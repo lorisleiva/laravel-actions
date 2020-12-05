@@ -15,11 +15,11 @@ class CommandDecorator extends Command
         $this->setAction($action);
         $this->setContainer($container);
 
-        $this->signature = $this->fromAction('getCommandSignature', 'commandSignature');
-        $this->name = $this->fromAction('getCommandName', 'commandName');
-        $this->description = $this->fromAction('getCommandDescription', 'commandDescription');
-        $this->help = $this->fromAction('getCommandHelp', 'commandHelp');
-        $this->hidden = $this->fromAction('isCommandHidden', 'commandHidden', false);
+        $this->signature = $this->fromActionMethodOrProperty('getCommandSignature', 'commandSignature');
+        $this->name = $this->fromActionMethodOrProperty('getCommandName', 'commandName');
+        $this->description = $this->fromActionMethodOrProperty('getCommandDescription', 'commandDescription');
+        $this->help = $this->fromActionMethodOrProperty('getCommandHelp', 'commandHelp');
+        $this->hidden = $this->fromActionMethodOrProperty('isCommandHidden', 'commandHidden', false);
 
         if (! $this->signature) {
             // TODO: Proper exceptions.
@@ -41,18 +41,5 @@ class CommandDecorator extends Command
         if ($this->hasMethod('handle')) {
             return $this->resolveAndCall('handle', ['command' => $this]);
         }
-    }
-
-    protected function fromAction(string $method, string $property, $default = null)
-    {
-        if ($this->hasMethod($method)) {
-            return $this->callMethod($method);
-        }
-
-        if ($this->hasProperty($property)) {
-            return $this->getProperty($property);
-        }
-
-        return $default;
     }
 }
