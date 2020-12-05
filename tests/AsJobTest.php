@@ -130,3 +130,17 @@ it('uses the decorated action as display name by default', function () {
         return $job->displayName() === AsJobTest::class;
     });
 });
+
+it('can be dispatch conditionally', function () {
+    AsJobTest::dispatchIf(true);
+    Queue::assertPushed(JobDecorator::class, 1);
+
+    AsJobTest::dispatchIf(false);
+    Queue::assertPushed(JobDecorator::class, 1);
+
+    AsJobTest::dispatchUnless(true);
+    Queue::assertPushed(JobDecorator::class, 1);
+
+    AsJobTest::dispatchUnless(false);
+    Queue::assertPushed(JobDecorator::class, 2);
+});
