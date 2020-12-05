@@ -55,7 +55,8 @@ it('fails validation', function () {
     // When we provide invalid data.
     $reponse = $this->postJson('/controller');
 
-    // Then we receive a validation error with these custom messages.
+    // Then we receive a validation error with the messages
+    // and attributes defined in the custom validator.
     $reponse->assertStatus(422);
     $reponse->assertJsonValidationErrors([
         'left' => 'You forgot the left operand',
