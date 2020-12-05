@@ -38,10 +38,25 @@ class AsControllerWithValidationMessagesTest
     }
 }
 
-it('fails validation with custom messages and attributes', function () {
+beforeEach(function () {
     // Given an action with custom messages registered as a controller.
     Route::post('/controller', AsControllerWithValidationMessagesTest::class);
+});
 
+it('passes validation', function () {
+    // When we provide valid data.
+    $reponse = $this->postJson('/controller', [
+        'left' => 1,
+        'right' => 2,
+    ]);
+
+    // Then we receive a successful response.
+    $reponse->assertOk();
+    $reponse->assertExactJson([3]);
+});
+
+
+it('fails validation with custom messages and attributes', function () {
     // When we provide invalid data.
     $reponse = $this->postJson('/controller');
 

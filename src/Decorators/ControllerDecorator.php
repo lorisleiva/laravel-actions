@@ -71,7 +71,7 @@ class ControllerDecorator
             || $this->hasMethod('rules')
             || $this->hasMethod('withValidator')
             || $this->hasMethod('afterValidator')
-            || $this->hasMethod('getRequestValidator');
+            || $this->hasMethod('getValidator');
     }
 
     protected function resolveFromRouteAndCall($method, ActionRequest $request)
