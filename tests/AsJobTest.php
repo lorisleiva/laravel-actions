@@ -83,6 +83,25 @@ it('can be dispatched asynchronously with parameters', function () {
     assertJobPushedWith(AsJobTest::class, $parameters);
 });
 
+it('can make a job statically', function () {
+    // Given the following job parameters.
+    $parameters = [1, 'two', new Filesystem()];
+
+    // When we make a job from that action with these parameters.
+    $job = AsJobTest::makeJob(...$parameters);
+
+    // And dispatch that job.
+    dispatch($job);
+
+    // Then the created job is a JobDecorator that kept track of the action and its paremeters.
+    expect($job)->toBeInstanceOf(JobDecorator::class);
+    expect($job->getAction())->toBeInstanceOf(AsJobTest::class);
+    expect($job->getParameters())->toBe($parameters);
+
+    // And the job was dispatched to the queue.
+    assertJobPushed(AsJobTest::class);
+});
+
 it('can be dispatched with overridden configurations', function () {
     // When we dispatch a job with the following configurations.
     AsJobTest::dispatch()
