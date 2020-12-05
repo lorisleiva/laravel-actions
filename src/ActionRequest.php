@@ -33,18 +33,18 @@ class ActionRequest extends FormRequest
         $factory = $this->container->make(ValidationFactory::class);
 
         if ($this->hasMethod('getValidator')) {
-            $validator = $this->resolveAndCall('getValidator', compact('factory'));
+            $validator = $this->resolveAndCallMethod('getValidator', compact('factory'));
         } else {
             $validator = $this->createDefaultValidator($factory);
         }
 
         if ($this->hasMethod('withValidator')) {
-            $this->resolveAndCall('withValidator', compact('validator'));
+            $this->resolveAndCallMethod('withValidator', compact('validator'));
         }
 
         if ($this->hasMethod('afterValidator')) {
             $validator->after(function ($validator) {
-                $this->resolveAndCall('afterValidator', compact('validator'));
+                $this->resolveAndCallMethod('afterValidator', compact('validator'));
             });
         }
 
@@ -66,35 +66,35 @@ class ActionRequest extends FormRequest
     public function validationData()
     {
         return $this->hasMethod('getValidationData')
-            ? $this->resolveAndCall('getValidationData')
+            ? $this->resolveAndCallMethod('getValidationData')
             : $this->all();
     }
 
     public function rules()
     {
         return $this->hasMethod('rules')
-            ? $this->resolveAndCall('rules')
+            ? $this->resolveAndCallMethod('rules')
             : [];
     }
 
     public function messages()
     {
         return $this->hasMethod('getValidationMessages')
-            ? $this->resolveAndCall('getValidationMessages')
+            ? $this->resolveAndCallMethod('getValidationMessages')
             : [];
     }
 
     public function attributes()
     {
         return $this->hasMethod('getValidationAttributes')
-            ? $this->resolveAndCall('getValidationAttributes')
+            ? $this->resolveAndCallMethod('getValidationAttributes')
             : [];
     }
 
     protected function failedValidation(Validator $validator)
     {
         if ($this->hasMethod('getValidationFailure')) {
-            return $this->resolveAndCall('getValidationFailure', compact('validator'));
+            return $this->resolveAndCallMethod('getValidationFailure', compact('validator'));
         }
 
         throw (new ValidationException($validator))
@@ -107,28 +107,28 @@ class ActionRequest extends FormRequest
         $url = $this->redirector->getUrlGenerator();
 
         return $this->hasMethod('getValidationRedirect')
-            ? $this->resolveAndCall('getValidationRedirect', compact('url'))
+            ? $this->resolveAndCallMethod('getValidationRedirect', compact('url'))
             : $url->previous();
     }
 
     protected function getErrorBag(Validator $validator)
     {
         return $this->hasMethod('getValidationErrorBag')
-            ? $this->resolveAndCall('getValidationErrorBag', compact('validator'))
+            ? $this->resolveAndCallMethod('getValidationErrorBag', compact('validator'))
             : 'default';
     }
 
     protected function passesAuthorization()
     {
         return $this->hasMethod('authorize')
-            ? $this->resolveAndCall('authorize')
+            ? $this->resolveAndCallMethod('authorize')
             : true;
     }
 
     protected function failedAuthorization()
     {
         if ($this->hasMethod('getAuthorizationFailure')) {
-            return $this->resolveAndCall('getAuthorizationFailure');
+            return $this->resolveAndCallMethod('getAuthorizationFailure');
         }
 
         throw new AuthorizationException;
@@ -142,14 +142,14 @@ class ActionRequest extends FormRequest
     protected function prepareForValidation()
     {
         if ($this->hasMethod('prepareForValidation')) {
-            return $this->resolveAndCall('prepareForValidation');
+            return $this->resolveAndCallMethod('prepareForValidation');
         }
     }
 
     protected function passedValidation()
     {
         if ($this->hasMethod('passedValidation')) {
-            return $this->resolveAndCall('passedValidation');
+            return $this->resolveAndCallMethod('passedValidation');
         }
     }
 }

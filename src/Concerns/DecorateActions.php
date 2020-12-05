@@ -46,7 +46,7 @@ trait DecorateActions
         return call_user_func_array([$this->action, $method], $parameters);
     }
 
-    protected function resolveAndCall($method, $extraArguments = [])
+    protected function resolveAndCallMethod($method, $extraArguments = [])
     {
         return $this->container->call([$this->action, $method], $extraArguments);
     }

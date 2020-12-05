@@ -35,11 +35,11 @@ class CommandDecorator extends Command
     public function handle()
     {
         if ($this->hasMethod('asCommand')) {
-            return $this->resolveAndCall('asCommand', ['command' => $this]);
+            return $this->resolveAndCallMethod('asCommand', ['command' => $this]);
         }
 
         if ($this->hasMethod('handle')) {
-            return $this->resolveAndCall('handle', ['command' => $this]);
+            return $this->resolveAndCallMethod('handle', ['command' => $this]);
         }
     }
 }

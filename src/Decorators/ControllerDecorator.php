@@ -24,7 +24,7 @@ class ControllerDecorator
         $this->setContainer($container);
 
         if ($this->hasMethod('getControllerMiddleware')) {
-            $this->middleware = $this->resolveAndCall('getControllerMiddleware');
+            $this->middleware = $this->resolveAndCallMethod('getControllerMiddleware');
         }
     }
 
