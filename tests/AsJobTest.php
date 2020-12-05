@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Tests;
 
-use Faker\Provider\File;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
