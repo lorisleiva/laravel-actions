@@ -147,11 +147,11 @@ it('can be dispatch conditionally', function () {
 
 it('can be dispatched with a chain', function () {
     // When we dispatch a job with a chain.
-    AsJobTest::dispatch(1)->chain([
+    AsJobTest::withChain([
         AsJobTest::makeJob(2),
         AsJobTest::makeJob(3),
         AsJobTest::makeJob(4),
-    ]);
+    ], 1)->dispatch();
 
     // Then it has been dispatched with as a chain in the correct order.
     Queue::assertPushedWithChain(
