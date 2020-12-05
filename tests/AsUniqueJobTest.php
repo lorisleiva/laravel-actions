@@ -30,8 +30,8 @@ beforeEach(function () {
 
 it('dispatches multiple unique jobs once', function () {
     // When we dispatch two unique jobs with the same id.
-    AsUniqueJobTest::dispatch(1);
-    AsUniqueJobTest::dispatch(1);
+    AsUniqueJobTest::dispatch(42);
+    AsUniqueJobTest::dispatch(42);
 
     // Then we have dispatched it only once.
     Queue::assertPushed(UniqueJobDecorator::class, 1);
@@ -42,8 +42,8 @@ it('dispatches multiple unique jobs once', function () {
 
 it('dispatches unique jobs with different ids multiple times', function () {
     // When we dispatch two unique jobs with different ids.
-    AsUniqueJobTest::dispatch(1);
-    AsUniqueJobTest::dispatch(2);
+    AsUniqueJobTest::dispatch(10);
+    AsUniqueJobTest::dispatch(20);
 
     // Then we dispatched all two of them.
     Queue::assertPushed(UniqueJobDecorator::class, 2);

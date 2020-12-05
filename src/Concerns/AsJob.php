@@ -14,7 +14,7 @@ trait AsJob
     public static function makeJob(...$arguments)
     {
         if (static::jobShouldBeUnique()) {
-            return static::makeUniqueJob();
+            return static::makeUniqueJob(...$arguments);
         }
 
         return new JobDecorator(static::class, ...$arguments);
