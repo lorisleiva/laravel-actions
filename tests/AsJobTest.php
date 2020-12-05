@@ -42,9 +42,6 @@ it('can be dispatched synchronously', function () {
     // When we dispatch a job now.
     AsJobTest::dispatchNow();
 
-    // Then the handle method executed.
-    expect(AsJobTest::$handled)->toBe(1);
-
     // And it was pushed to the queue using the "sync" connection.
     assertJobPushed(AsJobTest::class, function (JobDecorator $job) {
         return $job->connection === 'sync';
@@ -170,7 +167,7 @@ it('can be dispatched with a chain', function () {
         AsJobTest::makeJob(2),
         AsJobTest::makeJob(3),
         AsJobTest::makeJob(4),
-    ], 1)->dispatch();
+    ])->dispatch(1);
 
     // Then it has been dispatched with as a chain in the correct order.
     Queue::assertPushedWithChain(

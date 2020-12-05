@@ -3,9 +3,9 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Contracts\Bus\Dispatcher;
-use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Fluent;
+use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 
 trait AsJob
@@ -45,8 +45,8 @@ trait AsJob
         return app(Dispatcher::class)->dispatchAfterResponse(static::makeJob(...$arguments));
     }
 
-    public static function withChain($chain, ...$arguments)
+    public static function withChain($chain)
     {
-        return new PendingChain(static::makeJob(...$arguments), $chain);
+        return new ActionPendingChain(static::class, $chain);
     }
 }
