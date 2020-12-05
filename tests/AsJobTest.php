@@ -144,3 +144,35 @@ it('can be dispatch conditionally', function () {
     AsJobTest::dispatchUnless(false);
     Queue::assertPushed(JobDecorator::class, 2);
 });
+
+it('can be dispatched with a chain', function () {
+    // When we dispatch a job with a chain.
+    AsJobTest::dispatch(1)->chain([
+        AsJobTest::makeJob(2),
+        AsJobTest::makeJob(3),
+        AsJobTest::makeJob(4),
+    ]);
+
+    // Then it has been dispatched with as a chain in the correct order.
+    Queue::assertPushedWithChain(
+        JobDecorator::class,
+        [
+            JobDecorator::class,
+            JobDecorator::class,
+            JobDecorator::class,
+        ],
+        function (JobDecorator $job) {
+            if (! $job->getAction() instanceof AsJobTest || $job->getParameters() !== [1]) {
+                return false;
+            }
+
+            foreach (array_map('unserialize', $job->chained) as $index => $chain) {
+                if (! $chain->getAction() instanceof AsJobTest || $chain->getParameters() !== [$index + 2]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    );
+});

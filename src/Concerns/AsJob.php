@@ -10,11 +10,14 @@ use Lorisleiva\Actions\Decorators\JobDecorator;
 
 trait AsJob
 {
+    public static function makeJob(...$arguments)
+    {
+        return new JobDecorator(static::class, ...$arguments);
+    }
+
     public static function dispatch(...$arguments)
     {
-        return new PendingDispatch(
-            new JobDecorator(static::class, ...$arguments)
-        );
+        return new PendingDispatch(static::makeJob(...$arguments));
     }
 
     public static function dispatchIf($boolean, ...$arguments)
@@ -29,9 +32,7 @@ trait AsJob
 
     public static function dispatchSync(...$arguments)
     {
-        return app(Dispatcher::class)->dispatchSync(
-            new JobDecorator(static::class, ...$arguments)
-        );
+        return app(Dispatcher::class)->dispatchSync(static::makeJob(...$arguments));
     }
 
     public static function dispatchNow(...$arguments)
@@ -41,16 +42,11 @@ trait AsJob
 
     public static function dispatchAfterResponse(...$arguments)
     {
-        return app(Dispatcher::class)->dispatchAfterResponse(
-            new JobDecorator(static::class, ...$arguments)
-        );
+        return app(Dispatcher::class)->dispatchAfterResponse(static::makeJob(...$arguments));
     }
 
     public static function withChain($chain, ...$arguments)
     {
-        return new PendingChain(
-            new JobDecorator(static::class, ...$arguments),
-            $chain
-        );
+        return new PendingChain(static::makeJob(...$arguments), $chain);
     }
 }
