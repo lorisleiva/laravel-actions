@@ -6,22 +6,20 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
+use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
 class AsUniqueJobTest
 {
     use AsJob;
 
-    /** @var int */
-    protected $id;
-
-    public function handle(int $id)
+    public function handle(int $id = 1)
     {
-        $this->id = $id;
+        //
     }
 
-    public function getJobUniqueId()
+    public function getJobUniqueId(int $id = 1)
     {
-        return $this->id;
+        return $id;
     }
 }
 
@@ -30,14 +28,23 @@ beforeEach(function () {
     Queue::fake();
 });
 
-it('todo', function () {
-    // When
-    AsUniqueJobTest::dispatchNow(1);
-    AsUniqueJobTest::dispatchNow(1);
+it('dispatches multiple unique jobs once', function () {
+    // When we dispatch two unique jobs with the same id.
+    AsUniqueJobTest::dispatch(1);
+    AsUniqueJobTest::dispatch(1);
 
-    // Then
-    Queue::assertPushed(JobDecorator::class, 1);
-    Queue::assertPushed(JobDecorator::class, function (JobDecorator $job) {
+    // Then we have dispatched it only once.
+    Queue::assertPushed(UniqueJobDecorator::class, 1);
+    Queue::assertPushed(UniqueJobDecorator::class, function (JobDecorator $job) {
         return $job instanceof ShouldBeUnique;
     });
+});
+
+it('dispatches unique jobs with different ids multiple times', function () {
+    // When we dispatch two unique jobs with different ids.
+    AsUniqueJobTest::dispatch(1);
+    AsUniqueJobTest::dispatch(2);
+
+    // Then we dispatched all two of them.
+    Queue::assertPushed(UniqueJobDecorator::class, 2);
 });
