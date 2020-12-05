@@ -2,11 +2,12 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 
-class AsJobWithUniqueIdTest
+class AsUniqueJobTest
 {
     use AsJob;
 
@@ -31,9 +32,12 @@ beforeEach(function () {
 
 it('todo', function () {
     // When
-    AsJobWithUniqueIdTest::dispatchNow(1);
-    AsJobWithUniqueIdTest::dispatchNow(1);
+    AsUniqueJobTest::dispatchNow(1);
+    AsUniqueJobTest::dispatchNow(1);
 
     // Then
     Queue::assertPushed(JobDecorator::class, 1);
+    Queue::assertPushed(JobDecorator::class, function (JobDecorator $job) {
+        return $job instanceof ShouldBeUnique;
+    });
 });

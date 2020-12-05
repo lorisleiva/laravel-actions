@@ -7,12 +7,28 @@ use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Fluent;
 use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\Decorators\JobDecorator;
+use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
 trait AsJob
 {
     public static function makeJob(...$arguments)
     {
+        if (static::jobShouldBeUnique()) {
+            return static::makeUniqueJob();
+        }
+
         return new JobDecorator(static::class, ...$arguments);
+    }
+
+    public static function makeUniqueJob(...$arguments)
+    {
+        return new UniqueJobDecorator(static::class, ...$arguments);
+    }
+
+    protected static function jobShouldBeUnique()
+    {
+        return method_exists(static::class, 'getJobUniqueId')
+            || property_exists(static::class, 'jobUniqueId');
     }
 
     public static function dispatch(...$arguments)
