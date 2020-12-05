@@ -3,10 +3,12 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
+use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
 class AsJobTest
 {
@@ -95,8 +97,20 @@ it('can make a job statically', function () {
     expect($job->getAction())->toBeInstanceOf(AsJobTest::class);
     expect($job->getParameters())->toBe($parameters);
 
+    // And it is not unique by default.
+    expect($job)->not()->toBeInstanceOf(ShouldBeUnique::class);
+
     // And the job was dispatched to the queue.
     assertJobPushed(AsJobTest::class);
+});
+
+it('can make a unique job statically', function () {
+    // When we make a unique job from the action.
+    $job = AsJobTest::makeUniqueJob();
+
+    // Then it returns a UniqueJobDecorator.
+    expect($job)->toBeInstanceOf(UniqueJobDecorator::class);
+    expect($job)->toBeInstanceOf(ShouldBeUnique::class);
 });
 
 it('can be dispatched with overridden configurations', function () {

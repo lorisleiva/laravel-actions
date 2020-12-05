@@ -48,3 +48,12 @@ it('dispatches unique jobs with different ids multiple times', function () {
     // Then we dispatched all two of them.
     Queue::assertPushed(UniqueJobDecorator::class, 2);
 });
+
+it('makes unique jobs by default when a unique id is provided', function () {
+    // When we make a job from the action.
+    $job = AsUniqueJobTest::makeJob();
+
+    // Then it returns a UniqueJobDecorator.
+    expect($job)->toBeInstanceOf(UniqueJobDecorator::class);
+    expect($job)->toBeInstanceOf(ShouldBeUnique::class);
+});
