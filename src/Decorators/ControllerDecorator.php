@@ -44,11 +44,17 @@ class ControllerDecorator
             $request->resolve();
         }
 
-        $result = $this->run($request);
+        $response = $this->run($request);
+
+        if ($this->hasMethod('jsonResponse') && $request->expectsJson()) {
+            $response = $this->callMethod('jsonResponse', [$response, $request]);
+        } elseif ($this->hasMethod('htmlResponse') && ! $request->expectsJson()) {
+            $response = $this->callMethod('htmlResponse', [$response, $request]);
+        }
 
         $this->container->forgetInstance(ActionRequest::class);
 
-        return $result;
+        return $response;
     }
 
     protected function run(ActionRequest $request)
