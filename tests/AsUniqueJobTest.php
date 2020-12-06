@@ -16,8 +16,7 @@ class AsUniqueJobTest
 {
     use AsJob;
 
-    /** @var Repository */
-    public static $cache;
+    public static ?Repository $cache;
 
     public function handle(int $id = 1)
     {

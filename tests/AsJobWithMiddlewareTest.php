@@ -9,6 +9,7 @@ class AsJobWithMiddlewareTest
 {
     use AsJob;
 
+    /** @var null|int|string */
     public static $latestResult;
 
     public function getJobMiddleware(): array

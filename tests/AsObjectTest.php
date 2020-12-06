@@ -9,8 +9,7 @@ class AsObjectTest
 {
     use AsObject;
 
-    /** @var Filesystem */
-    public $filesystem;
+    public Filesystem $filesystem;
 
     public function __construct(Filesystem $filesystem)
     {

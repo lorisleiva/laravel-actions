@@ -13,9 +13,8 @@ class AsUniqueJobUsingPropertiesTest
 {
     use AsJob;
 
-    public $jobUniqueId = 'my_job_id';
-
-    public $jobUniqueFor = 120; // 2 minutes.
+    public string $jobUniqueId = 'my_job_id';
+    public int $jobUniqueFor = 120; // 2 minutes.
 
     public function handle()
     {

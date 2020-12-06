@@ -10,11 +10,8 @@ class AsControllerTest
 {
     use AsController;
 
-    /** @var int */
-    public static $constructed = 0;
-
-    /** @var int */
-    public static $handled = 0;
+    public static int $constructed = 0;
+    public static int $handled = 0;
 
     public function __construct()
     {
