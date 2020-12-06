@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Carbon\Carbon;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,6 +32,11 @@ class AsUniqueJobTest
     public function getJobUniqueVia()
     {
         return static::$cache = Cache::driver('array');
+    }
+
+    public function getJobUniqueFor()
+    {
+        return 60; // 60 seconds.
     }
 }
 
@@ -79,4 +85,17 @@ it('caches job unique ids using the driver provided in getJobUniqueVia', functio
     // Then we used a ArrayStore under the hood to cache the job ids.
     expect(AsUniqueJobTest::$cache->getStore())
         ->toBeInstanceOf(ArrayStore::class);
+});
+
+it('caches job unique ids for the amount of seconds provided in getJobUniqueFor', function () {
+    // When we dispatch a job that caches job unique ids for 1 minute.
+    Carbon::setTestNow($now = now());
+    AsUniqueJobTest::dispatch(42);
+
+    // And another one 2 minutes later.
+    Carbon::setTestNow($now->addMinutes(2));
+    AsUniqueJobTest::dispatch(42);
+
+    // Then we have dispatched both of these jobs.
+    Queue::assertPushed(UniqueJobDecorator::class, 2);
 });
