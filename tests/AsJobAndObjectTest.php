@@ -10,7 +10,7 @@ class AsJobAndObjectTest
     use AsObject;
     use AsJob;
 
-    public static $latestResult;
+    public static ?int $latestResult;
 
     public function handle(int $left, int $right, bool $addition = true): int
     {
@@ -24,7 +24,7 @@ class AsJobAndObjectTest
 }
 
 beforeEach(function () {
-    // Given we reset the latest result.
+    // Given we reset the latest result between tests.
     AsJobAndObjectTest::$latestResult = null;
 });
 
