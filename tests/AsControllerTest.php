@@ -73,3 +73,9 @@ it('constructs only once but runs the handle method once per request', function 
     // But handled exactly twice.
     expect(AsControllerTest::$handled)->toBe(2);
 });
+
+it('provides a magic invoke method to enable the action to be registered as a route', function () {
+    // When an action uses the `AsController` trait.
+    // Then it has the `__invoke` method.
+    expect(method_exists(AsControllerTest::class, '__invoke'))->toBeTrue();
+});
