@@ -3,17 +3,19 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Closure;
+use Illuminate\Console\Application;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\User;
 
-function loadMigrations()
+function loadMigrations(): void
 {
     test()->loadLaravelMigrations();
 }
 
-function createUser(array $data = [])
+function createUser(array $data = []): User
 {
     return User::create(array_merge([
         'name' => 'John Doe',
@@ -35,7 +37,14 @@ function parseSerializedData(string $serialized): array
         ->toArray();
 }
 
-function assertJobPushed(string $class, ?Closure $callback = null)
+function registerCommands(array $commands): void
+{
+    $artisan = new Application(app(), app('events'), app()->version());
+
+    Artisan::setArtisan($artisan->resolveCommands($commands));
+}
+
+function assertJobPushed(string $class, ?Closure $callback = null): void
 {
     Queue::assertPushed(JobDecorator::class, function (JobDecorator $job) use ($class, $callback) {
         if (! $job->getAction() instanceof $class) {
@@ -46,7 +55,7 @@ function assertJobPushed(string $class, ?Closure $callback = null)
     });
 }
 
-function assertJobPushedWith(string $class, array $parameters = [])
+function assertJobPushedWith(string $class, array $parameters = []): void
 {
     assertJobPushed($class, function (JobDecorator $job) use ($class, $parameters) {
         return $job->getParameters() === $parameters;
