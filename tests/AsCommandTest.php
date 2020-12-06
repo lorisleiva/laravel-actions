@@ -4,7 +4,6 @@ namespace Lorisleiva\Actions\Tests;
 
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Decorators\CommandDecorator;
-use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
 
 class AsCommandTest
 {
