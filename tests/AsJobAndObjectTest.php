@@ -24,7 +24,7 @@ class AsJobAndObjectTest
 }
 
 beforeEach(function () {
-   // Given we reset the latest result.
+    // Given we reset the latest result.
     AsJobAndObjectTest::$latestResult = null;
 });
 
