@@ -6,7 +6,8 @@ use Illuminate\Contracts\Container\Container;
 
 trait DecorateActions
 {
-    protected ?Container $container;
+    /** @var Container|null */
+    protected $container;
 
     /** @var mixed */
     protected $action;
