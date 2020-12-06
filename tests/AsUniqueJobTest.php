@@ -2,7 +2,10 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
@@ -11,6 +14,9 @@ use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 class AsUniqueJobTest
 {
     use AsJob;
+
+    /** @var Repository */
+    public static $cache;
 
     public function handle(int $id = 1)
     {
@@ -21,11 +27,19 @@ class AsUniqueJobTest
     {
         return $id;
     }
+
+    public function getJobUniqueVia()
+    {
+        return static::$cache = Cache::driver('array');
+    }
 }
 
 beforeEach(function () {
     // Given we mock the queue driver.
     Queue::fake();
+
+    // And reset the cache.
+    AsUniqueJobTest::$cache = null;
 });
 
 it('dispatches multiple unique jobs once', function () {
@@ -56,4 +70,13 @@ it('makes unique jobs by default when a unique id is provided', function () {
     // Then it returns a UniqueJobDecorator.
     expect($job)->toBeInstanceOf(UniqueJobDecorator::class);
     expect($job)->toBeInstanceOf(ShouldBeUnique::class);
+});
+
+it('caches job unique ids using the driver provided in getJobUniqueVia', function () {
+    // When we dispatch a job that uses an array driver to cache job ids.
+    AsUniqueJobTest::dispatch();
+
+    // Then we used a ArrayStore under the hood to cache the job ids.
+    expect(AsUniqueJobTest::$cache->getStore())
+        ->toBeInstanceOf(ArrayStore::class);
 });
