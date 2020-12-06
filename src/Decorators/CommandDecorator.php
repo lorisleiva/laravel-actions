@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Decorators;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\Container;
 use Lorisleiva\Actions\Concerns\DecorateActions;
+use Lorisleiva\Actions\Exceptions\MissingCommandSignatureException;
 
 class CommandDecorator extends Command
 {
@@ -22,11 +23,7 @@ class CommandDecorator extends Command
         $this->hidden = $this->fromActionMethodOrProperty('isCommandHidden', 'commandHidden', false);
 
         if (! $this->signature) {
-            // TODO: Proper exceptions.
-            throw new \Exception(sprintf(
-                'The command signature is missing from your [%s] action. Use `public $commandSignature` to set it up. ',
-                get_class($this->action)
-            ));
+            throw new MissingCommandSignatureException($this->action);
         }
 
         parent::__construct();
