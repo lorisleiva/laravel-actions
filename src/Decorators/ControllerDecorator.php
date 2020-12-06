@@ -12,9 +12,6 @@ class ControllerDecorator
     use RouteDependencyResolverTrait;
     use DecorateActions;
 
-    /** @var Container */
-    protected $container;
-
     /** @var array */
     protected $middleware = [];
 

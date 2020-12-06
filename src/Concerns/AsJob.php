@@ -11,7 +11,11 @@ use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
 trait AsJob
 {
-    public static function makeJob(...$arguments)
+    /**
+     * @param mixed ...$arguments
+     * @return JobDecorator|UniqueJobDecorator
+     */
+    public static function makeJob(...$arguments): JobDecorator
     {
         if (static::jobShouldBeUnique()) {
             return static::makeUniqueJob(...$arguments);
@@ -20,48 +24,85 @@ trait AsJob
         return new JobDecorator(static::class, ...$arguments);
     }
 
-    public static function makeUniqueJob(...$arguments)
+    /**
+     * @param mixed ...$arguments
+     * @return UniqueJobDecorator
+     */
+    public static function makeUniqueJob(...$arguments): UniqueJobDecorator
     {
         return new UniqueJobDecorator(static::class, ...$arguments);
     }
 
-    protected static function jobShouldBeUnique()
+    /**
+     * @return bool
+     */
+    protected static function jobShouldBeUnique(): bool
     {
         return method_exists(static::class, 'getJobUniqueId')
             || property_exists(static::class, 'jobUniqueId');
     }
 
-    public static function dispatch(...$arguments)
+    /**
+     * @param mixed ...$arguments
+     * @return PendingDispatch
+     */
+    public static function dispatch(...$arguments): PendingDispatch
     {
         return new PendingDispatch(static::makeJob(...$arguments));
     }
 
+    /**
+     * @param $boolean
+     * @param mixed ...$arguments
+     * @return PendingDispatch|Fluent
+     */
     public static function dispatchIf($boolean, ...$arguments)
     {
         return $boolean ? static::dispatch(...$arguments) : new Fluent;
     }
 
+    /**
+     * @param $boolean
+     * @param mixed ...$arguments
+     * @return PendingDispatch|Fluent
+     */
     public static function dispatchUnless($boolean, ...$arguments)
     {
         return static::dispatchIf(! $boolean, ...$arguments);
     }
 
+    /**
+     * @param mixed ...$arguments
+     * @return mixed
+     */
     public static function dispatchSync(...$arguments)
     {
         return app(Dispatcher::class)->dispatchSync(static::makeJob(...$arguments));
     }
 
+    /**
+     * @param mixed ...$arguments
+     * @return mixed
+     */
     public static function dispatchNow(...$arguments)
     {
         return static::dispatchSync(...$arguments);
     }
 
-    public static function dispatchAfterResponse(...$arguments)
+    /**
+     * @param mixed ...$arguments
+     * @return void
+     */
+    public static function dispatchAfterResponse(...$arguments): void
     {
-        return app(Dispatcher::class)->dispatchAfterResponse(static::makeJob(...$arguments));
+        app(Dispatcher::class)->dispatchAfterResponse(static::makeJob(...$arguments));
     }
 
-    public static function withChain($chain)
+    /**
+     * @param $chain
+     * @return ActionPendingChain
+     */
+    public static function withChain($chain): ActionPendingChain
     {
         return new ActionPendingChain(static::class, $chain);
     }

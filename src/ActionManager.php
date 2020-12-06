@@ -7,7 +7,7 @@ use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 class ActionManager
 {
     /** @var DesignPattern[] */
-    protected $designPatterns;
+    protected array $designPatterns;
 
     public function __construct(array $designPatterns = [])
     {

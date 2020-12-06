@@ -8,12 +8,11 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class UniqueJobDecorator extends JobDecorator implements ShouldBeUnique
 {
-    /** @var int */
-    public $uniqueFor = 0;
+    public int $uniqueFor = 0;
 
     protected function constructed()
     {
-        $this->uniqueFor = $this->fromActionWithParameters('getJobUniqueFor', 'jobUniqueFor', 0);
+        $this->uniqueFor = (int) $this->fromActionWithParameters('getJobUniqueFor', 'jobUniqueFor', 0);
 
         parent::constructed();
     }

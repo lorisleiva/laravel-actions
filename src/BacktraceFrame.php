@@ -6,14 +6,9 @@ use Illuminate\Support\Arr;
 
 class BacktraceFrame
 {
-    /** @var string|null */
-    public $class;
-
-    /** @var string|null */
-    public $function;
-
-    /** @var bool */
-    public $isStatic;
+    public ?string $class;
+    public ?string $function;
+    public bool $isStatic;
 
     public function __construct(array $frame)
     {

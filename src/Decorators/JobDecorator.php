@@ -20,8 +20,7 @@ class JobDecorator implements ShouldQueue
         __unserialize as protected unserializeFromSerializesModels;
     }
 
-    /** @var array */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     public function __construct(string $action, ...$parameters)
     {
