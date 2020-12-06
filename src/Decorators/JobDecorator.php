@@ -58,17 +58,24 @@ class JobDecorator implements ShouldQueue
         return $this->parameters;
     }
 
+    public function middleware()
+    {
+        return $this->hasMethod('getJobMiddleware')
+            ? $this->callMethod('getJobMiddleware', $this->parameters)
+            : [];
+    }
+
     public function displayName(): string
     {
         return $this->hasMethod('getJobDisplayName')
-            ? $this->callMethod('getJobDisplayName')
+            ? $this->callMethod('getJobDisplayName', $this->parameters)
             : get_class($this->action);
     }
 
     public function tags()
     {
         return $this->hasMethod('getJobTags')
-            ? $this->callMethod('getJobTags')
+            ? $this->callMethod('getJobTags', $this->parameters)
             : [];
     }
 
