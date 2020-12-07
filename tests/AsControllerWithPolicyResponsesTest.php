@@ -14,7 +14,7 @@ class AsControllerWithPolicyResponsesTest
     public function authorize(ActionRequest $request): Response
     {
         if ($request->get('operation') === 'unauthorized') {
-            return Response::deny('My custom authorization message.', 418);
+            return Response::deny('My custom authorization message.');
         }
 
         return Response::allow();
@@ -45,8 +45,8 @@ it('fails authorization', function () {
         'operation' => 'unauthorized',
     ]);
 
-    // Then we receive a forbidden error with our custom message and status.
-    $reponse->assertStatus(418);
+    // Then we receive a forbidden error with our custom message.
+    $reponse->assertForbidden();
     $reponse->assertExactJson([
         'message' => 'My custom authorization message.',
     ]);
