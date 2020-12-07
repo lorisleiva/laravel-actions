@@ -23,14 +23,14 @@ class AsFakeTest
     {
         switch ($operation) {
             case 'substraction':
-                return fn(int $left, int $right) => $left - $right;
+                return fn (int $left, int $right) => $left - $right;
             case 'multiplication':
-                return fn(int $left, int $right) => $left * $right;
+                return fn (int $left, int $right) => $left * $right;
             case 'modulo':
-                return fn(int $left, int $right) => $left % $right;
+                return fn (int $left, int $right) => $left % $right;
             case 'addition':
             default:
-                return fn(int $left, int $right) => $left + $right;
+                return fn (int $left, int $right) => $left + $right;
         }
     }
 }
