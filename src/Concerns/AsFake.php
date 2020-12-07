@@ -13,7 +13,7 @@ trait AsFake
     /** @var mixed|null */
     protected static $originalResolvedInstance = null;
 
-    /** @var MockInterface|null  */
+    /** @var MockInterface|null */
     protected static ?MockInterface $fakeResolvedInstance = null;
 
     /**
