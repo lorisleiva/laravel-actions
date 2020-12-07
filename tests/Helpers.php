@@ -10,11 +10,6 @@ use Illuminate\Support\Str;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\User;
 
-function loadMigrations(): void
-{
-    test()->loadLaravelMigrations();
-}
-
 function createUser(array $data = []): User
 {
     return User::create(array_merge([

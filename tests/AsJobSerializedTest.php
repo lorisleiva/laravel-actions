@@ -47,7 +47,7 @@ it('unserialises the action from the container', function () {
 
 it('serialises Eloquent models within the parameters', function () {
     // Given an persisted model.
-    loadMigrations();
+    $this->loadLaravelMigrations();
     $model = createUser();
 
     // When we serialise a JobDecorator that has a model as a parameter.
@@ -67,7 +67,7 @@ it('serialises Eloquent models within the parameters', function () {
 
 it('unserialises Eloquent models within the parameters', function () {
     // Given an persisted model.
-    loadMigrations();
+    $this->loadLaravelMigrations();
     $model = createUser();
 
     // When we serialise and unserialise a JobDecorator that has a model as a parameter.
@@ -82,7 +82,7 @@ it('unserialises Eloquent models within the parameters', function () {
 
 it('serialises Eloquent collections within the parameters', function () {
     // Given an persisted collection of models.
-    loadMigrations();
+    $this->loadLaravelMigrations();
     $modelA = createUser();
     $modelB = createUser();
     $collection = Collection::make([$modelA, $modelB]);
@@ -104,7 +104,7 @@ it('serialises Eloquent collections within the parameters', function () {
 
 it('unserialises Eloquent collections within the parameters', function () {
     // Given an persisted collection of models.
-    loadMigrations();
+    $this->loadLaravelMigrations();
     $modelA = createUser();
     $modelB = createUser();
     $collection = Collection::make([$modelA, $modelB]);
