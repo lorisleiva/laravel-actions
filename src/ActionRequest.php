@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,8 +21,18 @@ class ActionRequest extends FormRequest
 
     public function resolve()
     {
-        // Manually resolve authorization and validation.
-        parent::validateResolved();
+        $this->prepareForValidation();
+        $response = $this->inspectAuthorization();
+
+        if (! $response->allowed()) {
+            $this->deniedAuthorization($response);
+        }
+
+        $instance = $this->getValidatorInstance();
+
+        if ($instance->fails()) {
+            $this->failedValidation($instance);
+        }
     }
 
     protected function getValidatorInstance()
@@ -118,20 +129,31 @@ class ActionRequest extends FormRequest
             : 'default';
     }
 
-    protected function passesAuthorization()
+    protected function inspectAuthorization(): Response
     {
-        return $this->hasMethod('authorize')
-            ? $this->resolveAndCallMethod('authorize')
-            : true;
-    }
-
-    protected function failedAuthorization()
-    {
-        if ($this->hasMethod('getAuthorizationFailure')) {
-            return $this->resolveAndCallMethod('getAuthorizationFailure');
+        try {
+            $response = $this->hasMethod('authorize')
+                ? $this->resolveAndCallMethod('authorize')
+                : true;
+        } catch (AuthorizationException $e) {
+            return $e->toResponse();
         }
 
-        throw new AuthorizationException;
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        return $response ? Response::allow() : Response::deny();
+    }
+
+    protected function deniedAuthorization(Response $response): void
+    {
+        if ($this->hasMethod('getAuthorizationFailure')) {
+            $this->resolveAndCallMethod('getAuthorizationFailure', compact('response'));
+            return;
+        }
+
+        $response->authorize();
     }
 
     public function validated()
