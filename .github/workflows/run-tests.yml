@@ -15,6 +15,7 @@ jobs:
         include:
           - laravel: "^8.15"
             testbench: "^6.5"
+            dependency-version: prefer-stable
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
