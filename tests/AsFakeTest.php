@@ -8,6 +8,7 @@ use Lorisleiva\Actions\Concerns\AsObject;
 use Mockery;
 use Mockery\Exception\InvalidCountException;
 use Mockery\MockInterface;
+use stdClass;
 
 class AsFakeTest
 {
@@ -141,4 +142,56 @@ it('can spy an action allowing it to run the handle method', function () {
     AsFakeTest::spy()
         ->shouldHaveReceived('handle')
         ->with('addition', 1, 2);
+});
+
+it('provides a helper method to know if the action is faked or not', function () {
+    // Given an action that has not been mocked.
+    expect(AsFakeTest::isFake())->toBeFalse();
+
+    // When we mock the action.
+    AsFakeTest::mock();
+
+    // Then it is now fake.
+    expect(AsFakeTest::isFake())->toBeTrue();
+});
+
+it('can clear the fake instance from an action', function () {
+    // Given an action that has been mocked.
+    AsFakeTest::mock();
+    expect(AsFakeTest::isFake())->toBeTrue();
+
+    // When we clear the fake instance.
+    AsFakeTest::clearFake();
+
+    // Then it is no longer faked.
+    expect(AsFakeTest::isFake())->toBeFalse();
+
+    // And resolves itself from the container.
+    $resolvedA = app(AsFakeTest::class);
+    expect($resolvedA)->toBeInstanceOf(AsFakeTest::class);
+
+    // And each resolution creates its own instance.
+    $resolvedB = app(AsFakeTest::class);
+    expect($resolvedA)->not()->toBe($resolvedB);
+});
+
+it('keeps the original shared instance if any when clearing the fake instance', function () {
+    // Given an action that is shared within the container.
+    app()->instance(AsFakeTest::class, $originalInstance = new stdClass());
+
+    // And then mocked later on.
+    AsFakeTest::mock();
+    expect(AsFakeTest::isFake())->toBeTrue();
+
+    // When we clear the fake instance.
+    AsFakeTest::clearFake();
+
+    // Then it is no longer faked.
+    expect(AsFakeTest::isFake())->toBeFalse();
+
+    // And the original shared binding has been restored.
+    $resolvedA = app(AsFakeTest::class);
+    $resolvedB = app(AsFakeTest::class);
+    expect($resolvedA)->toBe($originalInstance);
+    expect($resolvedB)->toBe($originalInstance);
 });
