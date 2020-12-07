@@ -128,5 +128,17 @@ it('uses the same spy instance when spied multiple times', function () {
 });
 
 it('can spy an action allowing it to run the handle method', function () {
-    //
+    // Given we spy the action by providing a mocked return value.
+    AsFakeTest::allowToRun()->andReturn(3);
+
+    // When we run the action with same arguments.
+    $result = AsFakeTest::run('addition', 1, 2);
+
+    // Then we receive the mocked return value.
+    expect($result)->toBe(3);
+
+    // And we can make additional expectations afterwards.
+    AsFakeTest::spy()
+        ->shouldHaveReceived('handle')
+        ->with('addition', 1, 2);
 });
