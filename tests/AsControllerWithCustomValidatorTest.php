@@ -50,7 +50,6 @@ it('passes validation', function () {
     $reponse->assertExactJson([3]);
 });
 
-
 it('fails validation', function () {
     // When we provide invalid data.
     $reponse = $this->postJson('/controller');
