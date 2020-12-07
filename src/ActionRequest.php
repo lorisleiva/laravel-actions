@@ -150,6 +150,7 @@ class ActionRequest extends FormRequest
     {
         if ($this->hasMethod('getAuthorizationFailure')) {
             $this->resolveAndCallMethod('getAuthorizationFailure', compact('response'));
+
             return;
         }
 
