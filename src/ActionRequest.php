@@ -145,11 +145,4 @@ class ActionRequest extends FormRequest
             return $this->resolveAndCallMethod('prepareForValidation');
         }
     }
-
-    protected function passedValidation()
-    {
-        if ($this->hasMethod('passedValidation')) {
-            return $this->resolveAndCallMethod('passedValidation');
-        }
-    }
 }
