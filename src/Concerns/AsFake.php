@@ -8,7 +8,7 @@ use Mockery\MockInterface;
 
 trait AsFake
 {
-    protected static ?MockInterface $resolvedFakeInstance;
+    protected static ?MockInterface $resolvedFakeInstance = null;
 
     public static function mock(): MockInterface
     {
@@ -42,22 +42,12 @@ trait AsFake
 
     public static function shouldRun(): Expectation
     {
-        return static::shouldReceive('handle');
+        return static::mock()->shouldReceive('handle');
     }
 
     public static function shouldNotRun(): Expectation
     {
-        return static::shouldNotReceive('handle');
-    }
-
-    public static function shouldReceive(): Expectation
-    {
-        return static::mock()->shouldReceive(...func_get_args());
-    }
-
-    public static function shouldNotReceive(): Expectation
-    {
-        return static::mock()->shouldNotReceive(...func_get_args());
+        return static::mock()->shouldNotReceive('handle');
     }
 
     public static function isFake(): bool
