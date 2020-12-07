@@ -52,6 +52,18 @@ it('can mock an action', function () {
     expect($resolved)->toBeInstanceOf(MockInterface::class);
 });
 
+it('uses the same mock instance when mocked multiple times', function () {
+    // When we create a mock from the action twice.
+    $mockA = AsFakeTest::mock();
+    $mockB = AsFakeTest::mock();
+
+    // Then they are the same mock instance.
+    expect($mockA)->toBe($mockB);
+
+    // And the action resolves to that same instance.
+    expect(app(AsFakeTest::class))->toBe($mockA);
+});
+
 it('can mock an action expecting for it to run', function () {
     // Given we mock the action with some expectations.
     AsFakeTest::shouldRun()
@@ -83,6 +95,18 @@ it('can spy an action', function () {
     // Then the resolved instance is a spy.
     expect($resolved)->toBe($spy);
     expect($resolved)->toBeInstanceOf(MockInterface::class);
+});
+
+it('uses the same spy instance when spied multiple times', function () {
+    // When we create a spy from the action twice.
+    $spyA = AsFakeTest::spy();
+    $spyB = AsFakeTest::spy();
+
+    // Then they are the same spy instance.
+    expect($spyA)->toBe($spyB);
+
+    // And the action resolves to that same instance.
+    expect(app(AsFakeTest::class))->toBe($spyA);
 });
 
 it('can spy an action allowing it to run the handle method', function () {
