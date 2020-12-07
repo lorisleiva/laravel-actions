@@ -68,6 +68,7 @@ it('throws a validation exception with the custom redirect url and error bag', f
     catch (ValidationException $exception) {
         expect($exception->redirectTo)->toBe(url('/my-custom-redirect-url'));
         expect($exception->errorBag)->toBe('my_custom_error_bag');
+
         return;
     }
 
