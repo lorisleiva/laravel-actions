@@ -5,6 +5,8 @@ namespace Lorisleiva\Actions\Tests;
 use Closure;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
+use Mockery;
+use Mockery\Exception\InvalidCountException;
 use Mockery\MockInterface;
 
 class AsFakeTest
@@ -26,8 +28,6 @@ class AsFakeTest
                 return fn (int $left, int $right) => $left - $right;
             case 'multiplication':
                 return fn (int $left, int $right) => $left * $right;
-            case 'modulo':
-                return fn (int $left, int $right) => $left % $right;
             case 'addition':
             default:
                 return fn (int $left, int $right) => $left + $right;
@@ -70,7 +70,7 @@ it('can mock an action expecting for it to run', function () {
         ->with('addition', 1, 2)
         ->andReturn(3);
 
-    // When we run the action with the expected arguments
+    // When we run the action with the expected arguments.
     $result = AsFakeTest::run('addition', 1, 2);
 
     // Then we receive the expected return value.
@@ -78,11 +78,29 @@ it('can mock an action expecting for it to run', function () {
 });
 
 it('can mock an action expecting for it not to run', function () {
-    //
-});
+    // Given we mock the action with the
+    // expectation that it should not run.
+    AsFakeTest::shouldNotRun();
+
+    // When we run the action.
+    AsFakeTest::run('addition', 1, 2);
+
+    // Then we expect a mocking exception.
+    Mockery::close();
+})->throws(InvalidCountException::class);
 
 it('can partionally mock an action', function () {
-    //
+    // Given we partially mock one method of the action.
+    AsFakeTest::partialMock()
+        ->shouldReceive('getStrategyFromOperation')
+        ->with('modulo')
+        ->andReturn(fn (int $left, int $right) => $left % $right);
+
+    // When we run the action with the expected arguments.
+    $result = AsFakeTest::run('modulo', 15, 7);
+
+    // Then we receive the expected return value.
+    expect($result)->toBe(1);
 });
 
 it('can spy an action', function () {
