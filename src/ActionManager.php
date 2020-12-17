@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Contracts\Foundation\Application;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 
 class ActionManager
@@ -51,7 +52,9 @@ class ActionManager
             return;
         }
 
-        if (empty($this->getDesignPatternsFor($abstract))) {
+        $usesAsFakeTrait = in_array(AsFake::class, class_uses_recursive($abstract));
+
+        if (empty($this->getDesignPatternsFor($abstract)) && ! $usesAsFakeTrait) {
             return;
         }
 
@@ -69,11 +72,13 @@ class ActionManager
 
     public function identifyAndDecorate($instance, $limit = 10)
     {
+        $instanceOrFake = (method_exists($instance, 'isFake') && $instance::isFake()) ? $instance::mock() : $instance;
+
         if (! $designPattern = $this->identifyFromBacktrace($instance, $limit)) {
-            return $instance;
+            return $instanceOrFake;
         }
 
-        return $designPattern->decorate($instance);
+        return $designPattern->decorate($instanceOrFake);
     }
 
     public function identifyFromBacktrace($instance, $limit = 10): ?DesignPattern

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Lorisleiva\Actions\Concerns\DecorateActions;
+use Mockery\MockInterface;
 
 class JobDecorator implements ShouldQueue
 {
@@ -20,10 +21,13 @@ class JobDecorator implements ShouldQueue
         __unserialize as protected unserializeFromSerializesModels;
     }
 
+    protected string $actionClass;
+
     protected array $parameters = [];
 
     public function __construct(string $action, ...$parameters)
     {
+        $this->actionClass = $action;
         $this->setAction(app($action));
         $this->parameters = $parameters;
         $this->constructed();
@@ -80,7 +84,7 @@ class JobDecorator implements ShouldQueue
 
     protected function serializeProperties()
     {
-        $this->action = get_class($this->action);
+        $this->action = $this->actionClass;
 
         array_walk($this->parameters, function (&$value) {
             $value = $this->getSerializedPropertyValue($value);
@@ -89,7 +93,7 @@ class JobDecorator implements ShouldQueue
 
     protected function unserializeProperties()
     {
-        $this->action = app($this->action);
+        $this->setAction(app($this->actionClass));
 
         array_walk($this->parameters, function (&$value) {
             $value = $this->getRestoredPropertyValue($value);

@@ -10,9 +10,6 @@ use Mockery\MockInterface;
 
 trait AsFake
 {
-    /** @var mixed|null */
-    protected static $originalResolvedInstance = null;
-
     /** @var MockInterface|null */
     protected static ?MockInterface $fakeResolvedInstance = null;
 
@@ -89,13 +86,6 @@ trait AsFake
     public static function clearFake(): void
     {
         static::$fakeResolvedInstance = null;
-
-        if (is_null(static::$originalResolvedInstance)) {
-            app()->forgetInstance(static::class);
-        } else {
-            app()->instance(static::class, static::$originalResolvedInstance);
-            static::$originalResolvedInstance = null;
-        }
     }
 
     /**
@@ -104,12 +94,6 @@ trait AsFake
      */
     protected static function setFakeResolvedInstance(MockInterface $fake): MockInterface
     {
-        if (app()->isShared(static::class)) {
-            static::$originalResolvedInstance = app(static::class);
-        }
-
-        app()->instance(static::class, $fake);
-
         return static::$fakeResolvedInstance = $fake;
     }
 }
