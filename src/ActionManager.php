@@ -55,9 +55,7 @@ class ActionManager
             return;
         }
 
-        $this->app->extend($abstract, function ($instance) use ($abstract) {
-            $this->extended[$abstract] = true;
-
+        $this->app->extend($abstract, function ($instance) {
             return $this->identifyAndDecorate($instance);
         });
 
