@@ -35,10 +35,8 @@ class ActionManager
         return $this->designPatterns;
     }
 
-    public function getDesignPatternsFor($instance): array
+    public function getDesignPatternsMatching(array $usedTraits): array
     {
-        $usedTraits = class_uses_recursive($instance);
-
         $filter = function (DesignPattern $designPattern) use ($usedTraits) {
             return in_array($designPattern->getTrait(), $usedTraits);
         };
@@ -52,9 +50,7 @@ class ActionManager
             return;
         }
 
-        $usesAsFakeTrait = in_array(AsFake::class, class_uses_recursive($abstract));
-
-        if (empty($this->getDesignPatternsFor($abstract)) && ! $usesAsFakeTrait) {
+        if (! $this->shouldExtend($abstract)) {
             return;
         }
 
@@ -70,20 +66,32 @@ class ActionManager
         return isset($this->extended[$abstract]);
     }
 
-    public function identifyAndDecorate($instance, $limit = 10)
+    public function shouldExtend(string $abstract): bool
     {
-        $instanceOrFake = (method_exists($instance, 'isFake') && $instance::isFake()) ? $instance::mock() : $instance;
+        $usedTraits = class_uses_recursive($abstract);
 
-        if (! $designPattern = $this->identifyFromBacktrace($instance, $limit)) {
-            return $instanceOrFake;
-        }
-
-        return $designPattern->decorate($instanceOrFake);
+        return ! empty($this->getDesignPatternsMatching($usedTraits))
+            || in_array(AsFake::class, $usedTraits);
     }
 
-    public function identifyFromBacktrace($instance, $limit = 10): ?DesignPattern
+    public function identifyAndDecorate($instance, $limit = 10)
     {
-        $designPatterns = $this->getDesignPatternsFor($instance);
+        $usedTraits = class_uses_recursive($instance);
+
+        if (in_array(AsFake::class, $usedTraits) && $instance::isFake()) {
+            $instance = $instance::mock();
+        }
+
+        if (! $designPattern = $this->identifyFromBacktrace($usedTraits, $limit)) {
+            return $instance;
+        }
+
+        return $designPattern->decorate($instance);
+    }
+
+    public function identifyFromBacktrace($usedTraits, $limit = 10): ?DesignPattern
+    {
+        $designPatterns = $this->getDesignPatternsMatching($usedTraits);
 
         foreach (debug_backtrace(2, $limit) as $frame) {
             $frame = new BacktraceFrame($frame);
