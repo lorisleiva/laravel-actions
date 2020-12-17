@@ -12,7 +12,7 @@ class ActionServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $manager = new ActionManager([
+        $manager = new ActionManager($this->app, [
             new ControllerDesignPattern(),
             new ListenerDesignPattern(),
             new CommandDesignPattern(),
@@ -34,13 +34,7 @@ class ActionServiceProvider extends ServiceProvider
                 return;
             }
 
-            if (empty($manager->getDesignPatternsFor($abstract))) {
-                return;
-            }
-
-            $this->app->extend($abstract, function ($instance) use ($manager) {
-                return $manager->identifyAndDecorate($instance);
-            });
+            $manager->extend($abstract);
         });
     }
 }

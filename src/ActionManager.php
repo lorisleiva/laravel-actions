@@ -2,15 +2,23 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Contracts\Foundation\Application;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 
 class ActionManager
 {
-    /** @var DesignPattern[] */
-    protected array $designPatterns;
+    /** @var Application */
+    protected Application $app;
 
-    public function __construct(array $designPatterns = [])
+    /** @var DesignPattern[] */
+    protected array $designPatterns = [];
+
+    /** @var bool[] */
+    protected array $extended = [];
+
+    public function __construct(Application $app, array $designPatterns = [])
     {
+        $this->app = $app;
         $this->setDesignPatterns($designPatterns);
     }
 
@@ -37,6 +45,29 @@ class ActionManager
         return array_filter($this->getDesignPatterns(), $filter);
     }
 
+    public function extend(string $abstract): void
+    {
+        if ($this->isExtending($abstract)) {
+            return;
+        }
+
+        if (empty($this->getDesignPatternsFor($abstract))) {
+            return;
+        }
+
+        $this->app->extend($abstract, function ($instance) use ($abstract) {
+            $this->extended[$abstract] = true;
+            return $this->identifyAndDecorate($instance);
+        });
+
+        $this->extended[$abstract] = true;
+    }
+
+    public function isExtending(string $abstract): bool
+    {
+        return isset($this->extended[$abstract]);
+    }
+
     public function identifyAndDecorate($instance, $limit = 10)
     {
         if (! $designPattern = $this->identifyFromBacktrace($instance, $limit)) {
@@ -53,6 +84,7 @@ class ActionManager
         foreach (debug_backtrace(2, $limit) as $frame) {
             $frame = new BacktraceFrame($frame);
 
+            /** @var DesignPattern $designPattern */
             foreach ($designPatterns as $designPattern) {
                 if ($designPattern->recognizeFrame($frame)) {
                     return $designPattern;
