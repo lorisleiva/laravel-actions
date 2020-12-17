@@ -17,7 +17,7 @@ class AsFakeAndEverythingTest
         static::$constructed++;
     }
 
-    public function handle(int $left, int $right): int
+    public function handle($left, $right)
     {
         static::$handled++;
 
@@ -31,20 +31,38 @@ beforeEach(function () {
     AsFakeAndEverythingTest::$handled = 0;
 });
 
-it('dummy', function () {
-    $this->withoutExceptionHandling();
-
-    // Given
-    // Route::get('/controller/{left}/{right}', AsFakeAndEverythingTest::class);
-
-    // Then
+it('can mock actions as controllers', function () {
+    // Given we have the following mock expectations.
     AsFakeAndEverythingTest::shouldRun()
         ->once()
         ->with(1, 2)
-        ->andReturn(42);
+        ->andReturn('Forty-two');
 
-    // When
-    // $this->getJson('controller/1/2')
-    //     ->assertOk();
+    // And a route registered.
+    Route::get('/controller/{left}/{right}', AsFakeAndEverythingTest::class);
+
+    // When we call the route with the expected arguments.
+    $response = $this->get('controller/1/2');
+
+    // Then we get the expected response.
+    $response->assertOk();
+    $response->assertSee('Forty-two');
+
+    // And the handle method did not run.
+    expect(AsFakeAndEverythingTest::$constructed)->toBe(1);
+    expect(AsFakeAndEverythingTest::$handled)->toBe(0);
+});
+
+it('can mock actions as jobs', function () {
+    // Given we have the following mock expectations.
+    AsFakeAndEverythingTest::shouldRun()
+        ->once()
+        ->with(1, 2);
+
+    // When we dispatch the mocked aciton as a job.
     AsFakeAndEverythingTest::dispatchNow(1, 2);
+
+    // Then the handle method did not run.
+    expect(AsFakeAndEverythingTest::$constructed)->toBe(2);
+    expect(AsFakeAndEverythingTest::$handled)->toBe(0);
 });
