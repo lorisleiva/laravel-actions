@@ -139,3 +139,16 @@ it('runs as a command', function () {
     $command->run();
     expect(AsActionTest::$latestResult)->toBe(42);
 });
+
+it('runs as a mock', function () {
+    // Given we mock the action with some expectations.
+    AsActionTest::shouldRun()
+        ->with('substraction', 1, 2)
+        ->andReturn(42);
+
+    // When we run the action with the expected arguments.
+    $result = AsActionTest::run('substraction', 1, 2);
+
+    // Then we get the expected result.
+    expect($result)->toBe(42);
+});
