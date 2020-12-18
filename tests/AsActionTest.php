@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Closure;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\ActionRequest;
@@ -12,6 +13,8 @@ use Lorisleiva\Actions\Tests\Stubs\OperationRequestedEvent;
 class AsActionTest
 {
     use AsAction;
+
+    public string $commandSignature = 'my:command {operation} {left} {right}';
 
     public static ?int $latestResult;
 
@@ -60,9 +63,15 @@ class AsActionTest
         );
     }
 
-    public function asCommand()
+    public function asCommand(Command $command)
     {
-        //
+        $result = $this->handle(
+            $command->argument('operation'),
+            $command->argument('left'),
+            $command->argument('right'),
+        );
+
+        $command->line('Result: ' . $result);
     }
 }
 
@@ -113,5 +122,20 @@ it('runs as a listener', function () {
 
     // Then we get the expected result.
     expect($results[0])->toBe(42);
+    expect(AsActionTest::$latestResult)->toBe(42);
+});
+
+it('runs as a command', function () {
+    // Given we registered the action as a command.
+    registerCommands([AsActionTest::class]);
+
+    // When we run the action as a command.
+    $command = $this->artisan('my:command multiplication 21 2');
+
+    // Then we get the expected output.
+    $command->expectsOutput('Result: 42');
+
+    // And the expected result.
+    $command->run();
     expect(AsActionTest::$latestResult)->toBe(42);
 });
