@@ -93,7 +93,7 @@ class ActionManager
     {
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
 
-        foreach (debug_backtrace(2, $limit) as $frame) {
+        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit) as $frame) {
             $frame = new BacktraceFrame($frame);
 
             /** @var DesignPattern $designPattern */

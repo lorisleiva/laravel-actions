@@ -3,14 +3,19 @@
 namespace Lorisleiva\Actions\Decorators;
 
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
 use Lorisleiva\Actions\ActionRequest;
+use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ControllerDecorator
 {
     use RouteDependencyResolverTrait;
     use DecorateActions;
+
+    /** @var Route */
+    protected Route $route;
 
     /** @var array */
     protected $middleware = [];
@@ -19,6 +24,7 @@ class ControllerDecorator
     {
         $this->setAction($action);
         $this->setContainer($container);
+        $this->route = $this->findRouteFromBacktrace();
 
         if ($this->hasMethod('getControllerMiddleware')) {
             $this->middleware = $this->resolveAndCallMethod('getControllerMiddleware');
@@ -86,5 +92,19 @@ class ControllerDecorator
         );
 
         return $this->action->{$method}(...array_values($arguments));
+    }
+
+    protected function findRouteFromBacktrace(): Route
+    {
+        $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
+            | DEBUG_BACKTRACE_IGNORE_ARGS;
+
+        foreach (debug_backtrace($backtraceOptions, 20) as $frame) {
+            $frame = new BacktraceFrame($frame);
+
+            if ($frame->instanceOf(Route::class)) {
+                return $frame->getObject();
+            }
+        }
     }
 }

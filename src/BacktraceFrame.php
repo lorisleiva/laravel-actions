@@ -10,11 +10,15 @@ class BacktraceFrame
     public ?string $function;
     public bool $isStatic;
 
+    /** @var mixed|null */
+    public $object;
+
     public function __construct(array $frame)
     {
         $this->class = Arr::get($frame, 'class');
         $this->function = Arr::get($frame, 'function');
         $this->isStatic = Arr::get($frame, 'type') === '::';
+        $this->object = Arr::get($frame, 'object');
     }
 
     public function fromClass(): bool
@@ -39,5 +43,10 @@ class BacktraceFrame
         return $this->instanceOf($class)
             && $this->function === $method
             && $matchesStatic;
+    }
+
+    public function getObject()
+    {
+        return $this->object;
     }
 }
