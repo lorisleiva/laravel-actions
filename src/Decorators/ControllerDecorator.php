@@ -5,8 +5,8 @@ namespace Lorisleiva\Actions\Decorators;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
+use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
-use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ControllerDecorator
@@ -20,15 +20,21 @@ class ControllerDecorator
     /** @var array */
     protected $middleware = [];
 
-    public function __construct($action, Container $container)
+    public function __construct($action, Container $container, Route $route)
     {
         $this->setAction($action);
         $this->setContainer($container);
-        $this->route = $this->findRouteFromBacktrace();
+        $this->route = $route;
+        $this->replaceRouteMethod();
 
         if ($this->hasMethod('getControllerMiddleware')) {
             $this->middleware = $this->resolveAndCallMethod('getControllerMiddleware');
         }
+    }
+
+    public function getRoute(): Route
+    {
+        return $this->route;
     }
 
     public function getMiddleware()
@@ -41,8 +47,15 @@ class ControllerDecorator
         }, $this->middleware);
     }
 
-    public function __invoke(ActionRequest $request)
+    public function callAction($method, $parameters)
     {
+        return $this->__invoke();
+    }
+
+    public function __invoke()
+    {
+        /** @var ActionRequest $request */
+        $request = app(ActionRequest::class);
         $this->container->instance(ActionRequest::class, $request);
         $request->setAction($this->action);
 
@@ -61,6 +74,33 @@ class ControllerDecorator
         $this->container->forgetInstance(ActionRequest::class);
 
         return $response;
+    }
+
+    protected function replaceRouteMethod()
+    {
+        if (! isset($this->route->action['uses'])) {
+            return;
+        }
+
+        $currentMethod = Str::afterLast($this->route->action['uses'], '@');
+        $newMethod = $this->getRouteMethod();
+
+        if ($currentMethod !== '__invoke' || $currentMethod === $newMethod) {
+            return;
+        }
+
+        $this->route->action['uses'] = (string) Str::of($this->route->action['uses'])
+            ->beforeLast('@')
+            ->append('@' . $newMethod);
+    }
+
+    protected function getRouteMethod()
+    {
+        if ($this->hasMethod('asController')) {
+            return 'asController';
+        }
+
+        return $this->hasMethod('handle') ? 'handle' : '__invoke';
     }
 
     protected function run(ActionRequest $request)
@@ -92,19 +132,5 @@ class ControllerDecorator
         );
 
         return $this->action->{$method}(...array_values($arguments));
-    }
-
-    protected function findRouteFromBacktrace(): Route
-    {
-        $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
-            | DEBUG_BACKTRACE_IGNORE_ARGS;
-
-        foreach (debug_backtrace($backtraceOptions, 20) as $frame) {
-            $frame = new BacktraceFrame($frame);
-
-            if ($frame->instanceOf(Route::class)) {
-                return $frame->getObject();
-            }
-        }
     }
 }

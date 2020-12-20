@@ -82,18 +82,20 @@ class ActionManager
             $instance = $instance::mock();
         }
 
-        if (! $designPattern = $this->identifyFromBacktrace($usedTraits, $limit)) {
+        if (! $designPattern = $this->identifyFromBacktrace($usedTraits, $limit, $frame)) {
             return $instance;
         }
 
-        return $designPattern->decorate($instance);
+        return $designPattern->decorate($instance, $frame);
     }
 
-    public function identifyFromBacktrace($usedTraits, $limit = 10): ?DesignPattern
+    public function identifyFromBacktrace($usedTraits, $limit = 10, BacktraceFrame &$frame = null): ?DesignPattern
     {
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
+        $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
+            | DEBUG_BACKTRACE_IGNORE_ARGS;
 
-        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit) as $frame) {
+        foreach (debug_backtrace($backtraceOptions, $limit) as $frame) {
             $frame = new BacktraceFrame($frame);
 
             /** @var DesignPattern $designPattern */

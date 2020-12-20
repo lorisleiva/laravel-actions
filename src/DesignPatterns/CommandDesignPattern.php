@@ -19,7 +19,7 @@ class CommandDesignPattern extends DesignPattern
         return $frame->matches(Application::class, 'resolve');
     }
 
-    public function decorate($instance)
+    public function decorate($instance, BacktraceFrame $frame)
     {
         return app(CommandDecorator::class, ['action' => $instance]);
     }

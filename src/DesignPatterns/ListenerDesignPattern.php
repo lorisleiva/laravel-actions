@@ -19,7 +19,7 @@ class ListenerDesignPattern extends DesignPattern
         return $frame->matches(Dispatcher::class, 'dispatch');
     }
 
-    public function decorate($instance)
+    public function decorate($instance, BacktraceFrame $frame)
     {
         return app(ListenerDecorator::class, ['action' => $instance]);
     }

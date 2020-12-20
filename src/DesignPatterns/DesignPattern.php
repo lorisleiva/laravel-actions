@@ -10,5 +10,5 @@ abstract class DesignPattern
 
     abstract public function recognizeFrame(BacktraceFrame $frame): bool;
 
-    abstract public function decorate($instance);
+    abstract public function decorate($instance, BacktraceFrame $frame);
 }
