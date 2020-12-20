@@ -130,7 +130,7 @@ trait AsJob
                 return true;
             }
 
-            return $callback($job->getAction(), $job, $queue);
+            return $callback($job->getAction(), $job->getParameters(), $job, $queue);
         })->count();
 
         $job = static::class;
@@ -174,7 +174,7 @@ trait AsJob
             $times = null;
         }
 
-        static::assertPushed($times, function ($action, $job, $pushedQueue) use ($callback, $queue) {
+        static::assertPushed($times, function ($action, $parameters, $job, $pushedQueue) use ($callback, $queue) {
             if ($pushedQueue !== $queue) {
                 return false;
             }
