@@ -7,11 +7,13 @@ use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Routing\RouteDependencyResolverTrait;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 
 class ActionRequest extends FormRequest
 {
+    use RouteDependencyResolverTrait;
     use DecorateActions;
 
     public function validateResolved()
@@ -44,18 +46,18 @@ class ActionRequest extends FormRequest
         $factory = $this->container->make(ValidationFactory::class);
 
         if ($this->hasMethod('getValidator')) {
-            $validator = $this->resolveAndCallMethod('getValidator', compact('factory'));
+            $validator = $this->resolveFromRouteAndCall('getValidator', compact('factory'));
         } else {
             $validator = $this->createDefaultValidator($factory);
         }
 
         if ($this->hasMethod('withValidator')) {
-            $this->resolveAndCallMethod('withValidator', compact('validator'));
+            $this->resolveFromRouteAndCall('withValidator', compact('validator'));
         }
 
         if ($this->hasMethod('afterValidator')) {
             $validator->after(function ($validator) {
-                $this->resolveAndCallMethod('afterValidator', compact('validator'));
+                $this->resolveFromRouteAndCall('afterValidator', compact('validator'));
             });
         }
 
@@ -77,35 +79,35 @@ class ActionRequest extends FormRequest
     public function validationData()
     {
         return $this->hasMethod('getValidationData')
-            ? $this->resolveAndCallMethod('getValidationData')
+            ? $this->resolveFromRouteAndCall('getValidationData')
             : $this->all();
     }
 
     public function rules()
     {
         return $this->hasMethod('rules')
-            ? $this->resolveAndCallMethod('rules')
+            ? $this->resolveFromRouteAndCall('rules')
             : [];
     }
 
     public function messages()
     {
         return $this->hasMethod('getValidationMessages')
-            ? $this->resolveAndCallMethod('getValidationMessages')
+            ? $this->resolveFromRouteAndCall('getValidationMessages')
             : [];
     }
 
     public function attributes()
     {
         return $this->hasMethod('getValidationAttributes')
-            ? $this->resolveAndCallMethod('getValidationAttributes')
+            ? $this->resolveFromRouteAndCall('getValidationAttributes')
             : [];
     }
 
     protected function failedValidation(Validator $validator)
     {
         if ($this->hasMethod('getValidationFailure')) {
-            return $this->resolveAndCallMethod('getValidationFailure', compact('validator'));
+            return $this->resolveFromRouteAndCall('getValidationFailure', compact('validator'));
         }
 
         throw (new ValidationException($validator))
@@ -118,14 +120,14 @@ class ActionRequest extends FormRequest
         $url = $this->redirector->getUrlGenerator();
 
         return $this->hasMethod('getValidationRedirect')
-            ? $this->resolveAndCallMethod('getValidationRedirect', compact('url'))
+            ? $this->resolveFromRouteAndCall('getValidationRedirect', compact('url'))
             : $url->previous();
     }
 
     protected function getErrorBag(Validator $validator)
     {
         return $this->hasMethod('getValidationErrorBag')
-            ? $this->resolveAndCallMethod('getValidationErrorBag', compact('validator'))
+            ? $this->resolveFromRouteAndCall('getValidationErrorBag', compact('validator'))
             : 'default';
     }
 
@@ -133,7 +135,7 @@ class ActionRequest extends FormRequest
     {
         try {
             $response = $this->hasMethod('authorize')
-                ? $this->resolveAndCallMethod('authorize')
+                ? $this->resolveFromRouteAndCall('authorize')
                 : true;
         } catch (AuthorizationException $e) {
             return $e->toResponse();
@@ -149,7 +151,7 @@ class ActionRequest extends FormRequest
     protected function deniedAuthorization(Response $response): void
     {
         if ($this->hasMethod('getAuthorizationFailure')) {
-            $this->resolveAndCallMethod('getAuthorizationFailure', compact('response'));
+            $this->resolveFromRouteAndCall('getAuthorizationFailure', compact('response'));
 
             return;
         }
@@ -165,7 +167,21 @@ class ActionRequest extends FormRequest
     protected function prepareForValidation()
     {
         if ($this->hasMethod('prepareForValidation')) {
-            return $this->resolveAndCallMethod('prepareForValidation');
+            return $this->resolveFromRouteAndCall('prepareForValidation');
         }
+    }
+
+    protected function resolveFromRouteAndCall($method, $extraParameters = [])
+    {
+        $parameters = array_merge(
+            $this->route()->parametersWithoutNulls(),
+            $extraParameters,
+        );
+
+        $arguments = $this->resolveClassMethodDependencies(
+            $parameters, $this->action, $method
+        );
+
+        return $this->action->{$method}(...array_values($arguments));
     }
 }
