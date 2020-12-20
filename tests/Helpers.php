@@ -47,7 +47,7 @@ function registerCommands(array $commands): void
 function assertJobPushed(string $class, ?Closure $callback = null): void
 {
     Queue::assertPushed(JobDecorator::class, function (JobDecorator $job) use ($class, $callback) {
-        if (! $job->getAction() instanceof $class) {
+        if (! $job->decorates($class)) {
             return false;
         }
 

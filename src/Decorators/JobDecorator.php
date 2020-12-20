@@ -60,6 +60,11 @@ class JobDecorator implements ShouldQueue
         return $this->parameters;
     }
 
+    public function decorates(string $actionClass): bool
+    {
+        return $this->getAction() instanceof $actionClass;
+    }
+
     public function middleware()
     {
         return $this->hasMethod('getJobMiddleware')
