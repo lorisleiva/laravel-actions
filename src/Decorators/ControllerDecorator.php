@@ -63,7 +63,7 @@ class ControllerDecorator
             $request->resolve();
         }
 
-        $response = $this->run($request);
+        $response = $this->run();
 
         if ($this->hasMethod('jsonResponse') && $request->expectsJson()) {
             $response = $this->callMethod('jsonResponse', [$response, $request]);
@@ -103,14 +103,14 @@ class ControllerDecorator
         return $this->hasMethod('handle') ? 'handle' : '__invoke';
     }
 
-    protected function run(ActionRequest $request)
+    protected function run()
     {
         if ($this->hasMethod('asController')) {
-            return $this->resolveFromRouteAndCall('asController', $request);
+            return $this->resolveFromRouteAndCall('asController');
         }
 
         if ($this->hasMethod('handle')) {
-            return $this->resolveFromRouteAndCall('handle', $request);
+            return $this->resolveFromRouteAndCall('handle');
         }
     }
 
@@ -123,10 +123,10 @@ class ControllerDecorator
             || $this->hasMethod('getValidator');
     }
 
-    protected function resolveFromRouteAndCall($method, ActionRequest $request)
+    protected function resolveFromRouteAndCall($method)
     {
         $arguments = $this->resolveClassMethodDependencies(
-            $request->route()->parametersWithoutNulls(),
+            $this->route->parametersWithoutNulls(),
             $this->action,
             $method
         );
