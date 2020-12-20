@@ -147,7 +147,8 @@ trait AsJob
             );
         } else {
             PHPUnit::assertSame(
-                $times, $count,
+                $times,
+                $count,
                 "The expected [{$job}] job was pushed {$count} times instead of {$times} times."
             );
         }
