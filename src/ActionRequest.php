@@ -181,7 +181,7 @@ class ActionRequest extends FormRequest
         $arguments = $this->resolveClassMethodDependencies(
             $parameters,
             $this->action,
-            $method
+            $method,
         );
 
         return $this->action->{$method}(...array_values($arguments));
