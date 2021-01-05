@@ -9,7 +9,7 @@ use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
-class AsUniqueJobUsingPropertiesTest
+class AsUniqueJobUsingPropertiesTest implements ShouldBeUnique
 {
     use AsJob;
 

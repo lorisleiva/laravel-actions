@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions\Concerns;
 
 use Closure;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
@@ -41,8 +42,7 @@ trait AsJob
      */
     protected static function jobShouldBeUnique(): bool
     {
-        return method_exists(static::class, 'getJobUniqueId')
-            || property_exists(static::class, 'jobUniqueId');
+        return is_subclass_of(static::class, ShouldBeUnique::class);
     }
 
     /**

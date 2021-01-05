@@ -12,7 +12,7 @@ use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
-class AsUniqueJobTest
+class AsUniqueJobTest implements ShouldBeUnique
 {
     use AsJob;
 
