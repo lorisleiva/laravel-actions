@@ -34,17 +34,30 @@ class MakeActionCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/action.stub';
+        return $this->resolveStubPath('/stubs/action.stub');
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param string $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__ . $stub;
     }
 
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param string $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Actions';
+        return $rootNamespace . '\Actions';
     }
 }
