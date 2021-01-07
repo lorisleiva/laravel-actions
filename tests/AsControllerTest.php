@@ -54,7 +54,7 @@ it('does not construct the action when registering the route', function () {
     expect(AsControllerTest::$constructed)->toBe(0);
 });
 
-it('constructs only once but runs the handle method once per request', function () {
+it('constructs the action and runs the handle method exactly once per request', function () {
     // Given the action is registered as a controller.
     Route::get('/calculator/{left}/plus/{right}', AsControllerTest::class);
 
@@ -67,7 +67,7 @@ it('constructs only once but runs the handle method once per request', function 
     $reponseB->assertOk()->assertExactJson(['addition' => 5]);
 
     // And the action was constructed only once.
-    expect(AsControllerTest::$constructed)->toBe(1);
+    expect(AsControllerTest::$constructed)->toBe(2);
 
     // But handled exactly twice.
     expect(AsControllerTest::$handled)->toBe(2);

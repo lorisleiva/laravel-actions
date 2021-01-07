@@ -20,6 +20,9 @@ class ControllerDecorator
     /** @var array */
     protected $middleware = [];
 
+    /** @var bool */
+    protected bool $executedAtLeastOne = false;
+
     public function __construct($action, Container $container, Route $route)
     {
         $this->setAction($action);
@@ -37,7 +40,7 @@ class ControllerDecorator
         return $this->route;
     }
 
-    public function getMiddleware()
+    public function getMiddleware(): array
     {
         return array_map(function ($middleware) {
             return [
@@ -54,10 +57,8 @@ class ControllerDecorator
 
     public function __invoke()
     {
-        /** @var ActionRequest $request */
-        $request = app(ActionRequest::class);
-        $this->container->instance(ActionRequest::class, $request);
-        $request->setAction($this->action);
+        $this->refreshAction();
+        $request = $this->refreshRequest();
 
         if ($this->shouldValidate()) {
             $request->resolve();
@@ -76,7 +77,26 @@ class ControllerDecorator
         return $response;
     }
 
-    protected function replaceRouteMethod()
+    protected function refreshAction(): void
+    {
+        if ($this->executedAtLeastOne) {
+            $this->setAction(app(get_class($this->action)));
+        }
+
+        $this->executedAtLeastOne = true;
+    }
+
+    protected function refreshRequest(): ActionRequest
+    {
+        /** @var ActionRequest $request */
+        $request = app(ActionRequest::class);
+        $this->container->instance(ActionRequest::class, $request);
+        $request->setAction($this->action);
+
+        return $request;
+    }
+
+    protected function replaceRouteMethod(): void
     {
         if (! isset($this->route->action['uses'])) {
             return;
@@ -94,7 +114,7 @@ class ControllerDecorator
             ->append('@' . $newMethod);
     }
 
-    protected function getRouteMethod()
+    protected function getRouteMethod(): string
     {
         if ($this->hasMethod('asController')) {
             return 'asController';
