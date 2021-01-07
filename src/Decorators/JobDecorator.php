@@ -34,6 +34,14 @@ class JobDecorator implements ShouldQueue
 
     protected function constructed()
     {
+        if ($this->hasProperty('jobConnection')) {
+            $this->onConnection($this->getProperty('jobConnection'));
+        }
+
+        if ($this->hasProperty('jobQueue')) {
+            $this->onQueue($this->getProperty('jobQueue'));
+        }
+
         if ($this->hasMethod('configureJob')) {
             $this->callMethod('configureJob', [$this]);
         }
