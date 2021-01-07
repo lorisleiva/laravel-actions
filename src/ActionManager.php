@@ -3,8 +3,14 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
+use ReflectionMethod;
+use Symfony\Component\Finder\Finder;
 
 class ActionManager
 {
@@ -107,5 +113,54 @@ class ActionManager
         }
 
         return null;
+    }
+
+    public function registerRoutes($paths = 'app/Actions'): void
+    {
+        $paths = Collection::wrap($paths)
+            ->map(function (string $path) {
+                return Str::startsWith($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
+            })
+            ->unique()
+            ->filter(function (string $path) {
+                return is_dir($path);
+            })
+            ->values();
+
+        if ($paths->isEmpty()) {
+            return;
+        }
+
+        foreach ((new Finder)->in($paths->toArray())->files() as $file) {
+            $this->registerRoutesForAction(
+                $this->getClassnameFromPathname($file->getPathname())
+            );
+        }
+    }
+
+    public function registerRoutesForAction(string $className): void
+    {
+        if (! in_array(AsController::class, class_uses_recursive($className))) {
+            return;
+        }
+
+        if (! method_exists($className, 'routes')) {
+            return;
+        }
+
+        if (! (new ReflectionMethod($className, 'routes'))->isStatic()) {
+            return;
+        }
+
+        $className::routes($this->app->make(Router::class));
+    }
+
+    protected function getClassnameFromPathname(string $pathname): string
+    {
+        return $this->app->getNamespace() . str_replace(
+                ['/', '.php'],
+                ['\\', ''],
+                Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
+            );
     }
 }

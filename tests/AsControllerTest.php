@@ -34,8 +34,6 @@ beforeEach(function () {
 });
 
 it('can be run as a controller', function () {
-    $this->withoutExceptionHandling();
-
     // Given the action is registered as a controller.
     Route::get('/calculator/{left}/plus/{right}', AsControllerTest::class);
 
