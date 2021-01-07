@@ -41,13 +41,14 @@ class ActionServiceProvider extends ServiceProvider
             $this->namespace('\App\Actions')->group($group);
         });
 
-        // Register the make:action generator command.
-        if ($this->app->runningInConsole()) {
 
+        if ($this->app->runningInConsole()) {
+            // publish Stubs File
             $this->publishes([
                 __DIR__ . '/Commands/stubs/action.stub' => base_path('stubs/action.stub'),
             ], 'stubs');
 
+            // Register the make:action generator command.
             $this->commands([
                 MakeActionCommand::class,
             ]);
