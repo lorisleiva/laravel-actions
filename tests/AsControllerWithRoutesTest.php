@@ -12,7 +12,7 @@ class AsControllerWithRoutesTest
 
     public static function routes(Router $router)
     {
-        $router->get('/controller/with/routes', AsControllerWithRoutesTest::class);
+        $router->get('/controller/with/routes', static::class);
     }
 
     public function handle()
