@@ -103,4 +103,4 @@ event(new NewProductReleased($manager, 'Product title', 'Product description'));
 
 On top of running your actions as objects, controllers and listeners, Laravel Actions also supports jobs, commands and even mocking your actions in tests.
 
-📚 [Checkout the full documentation to learn everything that Laravel Actions has to offer](https://laravelactions.com/).
+📚 [Check out the full documentation to learn everything that Laravel Actions has to offer](https://laravelactions.com/).
