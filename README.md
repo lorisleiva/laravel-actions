@@ -35,7 +35,7 @@ composer require lorisleiva/laravel-actions
 Create your own PHP class, then add the `AsAction` trait and define the `asX` methods when you want your action to be running as `X`. E.g. `asController`, `asJob`, `asListener` and/or `asCommand`.
 
 ``` php
-class CreateNewArticle
+class PublishANewArticle
 {
     use AsAction;
 
@@ -69,8 +69,38 @@ class CreateNewArticle
 }
 ```
 
-Finally, register your PHP class as you normally would for each of these patterns. In the example above, we'll need to:
-- Add `CreateNewArticle::class` as an invokable controller in our routes files
-- And register `CreateNewArticle::class` as an event listener of `NewProductReleased::class` in our `EventServiceProvider`.
+### As an object
 
-<sub>_Full documentation available at [laravelactions.com](https://laravelactions.com/)_</sub>
+Now, you can run your action as an object by using the `run` method like so:
+
+```php
+PublishANewArticle::run($author, 'My title', 'My content');
+```
+
+### As a controller
+
+Simply register your action as an invokable controller in a routes file.
+
+```php
+Route::post('articles', PublishANewArticle::class)->middleware('auth');
+```
+
+### As a listener
+
+Simply register your action as a listener of the `NewProductReleased` event.
+
+```php
+Event::listen(NewProductReleased::class, PublishANewArticle::class);
+```
+
+Then, the `asListener` method of your action will be called whenever the `NewProductReleased` event is dispatched.
+
+```php
+event(new NewProductReleased($manager, 'Product title', 'Product description'));
+```
+
+### And more...
+
+On top of running your actions as objects, controllers and listeners, Laravel Actions also supports jobs, commands and even mocking your actions in tests.
+
+📚 [Checkout the full documentation to learn everything that Laravel Actions has to offer](https://laravelactions.com/).
