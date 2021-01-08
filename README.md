@@ -1,17 +1,28 @@
 # ⚡️ Laravel Actions
-[![Actions Status](https://github.com/lorisleiva/laravel-actions/workflows/Tests/badge.svg)](https://github.com/lorisleiva/laravel-actions/actions)
 
-**Laravel components that take care of one specific task.**
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/lorisleiva/laravel-actions/Tests?label=tests)](https://github.com/lorisleiva/laravel-actions/actions?query=workflow%3ATests+branch%3Anext)
+[![Total Downloads](https://img.shields.io/packagist/dt/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
+
+![hero](https://user-images.githubusercontent.com/3642397/104024620-4e572400-51bb-11eb-97fc-c2692b16eaa7.png)
+
+⚡ **Classes that take care of one specific task.**
 
 This package introduces a new way of organising the logic of your Laravel applications by focusing on the actions your application provide.
 
-Similarly to how VueJS components regroup HTML, JavaScript and CSS together, Laravel Actions regroup the authorisation, validation and execution of a task in one class that can be used as an **invokable controller**, as a **plain object**, as a **dispatchable job**, as an **event listener** and as an **artisan command**.
+Instead of creating controllers, jobs, listeners and so on, it allows you to create a PHP class that handles a specific task and run that class as anything you want.
 
-![Cover picture](https://user-images.githubusercontent.com/3642397/58073806-87342680-7b9b-11e9-9669-df35fba71f6b.png)
+Therefore it encourages you to switch your focus from:
+
+> "What controllers do I need?", "should I make a FormRequest for this?", "should this run asynchronously in a job instead?", ect.
+
+to:
+
+> "What does my application actually do?"
 
 ## Installation
 
-```sh
+```bash
 composer require lorisleiva/laravel-actions
 ```
 
@@ -21,105 +32,75 @@ composer require lorisleiva/laravel-actions
 
 ## Basic usage
 
-Create your first action using `php artisan make:action PublishANewArticle` and fill the authorisation logic, the validation rules and the handle method. Note that the `authorize` and `rules` methods are optional and default to `true` and `[]` respectively.
+Create your own PHP class, then add the `AsAction` trait and define the `asX` methods when you want your action to be running as `X`. E.g. `asController`, `asJob`, `asListener` and/or `asCommand`.
 
-```php
-// app/Actions/PublishANewArticle.php
-class PublishANewArticle extends Action
+``` php
+class PublishANewArticle
 {
-    public function authorize()
+    use AsAction;
+
+    public function handle(User $author, string $title, string $body): Article
     {
-        return $this->user()->hasRole('author');
+        return $author->articles()->create([
+            'title' => $title,
+            'body' => $body,
+        ]);
     }
-    
-    public function rules()
+
+    public function asController(Request $request): ArticleResource
     {
-        return [
-            'title' => ['required'],
-            'body' => ['required', 'min:10'],
-        ];
+        $article = $this->handle(
+            $request->user(),
+            $request->get('title'),
+            $request->get('body'),
+        );
+
+        return new ArticleResource($article);
     }
-    
-    public function handle()
+
+    public function asListener(NewProductReleased $event): void
     {
-        return Article::create($this->validated());
+        $this->handle(
+            $event->product->manager,
+            $event->product->name . ' Released!',
+            $event->product->description,
+        );
     }
 }
 ```
 
-You can now start using that action in multiple ways:
+### As an object
 
-#### As a plain object.
-
-```php
-$action = new PublishANewArticle([
-    'title' => 'My blog post',
-    'body' => 'Lorem ipsum.',
-]);
-
-$article = $action->run();
-```
-
-#### As a dispatchable job.
+Now, you can run your action as an object by using the `run` method like so:
 
 ```php
-PublishANewArticle::dispatch([
-    'title' => 'My blog post',
-    'body' => 'Lorem ipsum.',
-]);
+PublishANewArticle::run($author, 'My title', 'My content');
 ```
 
-#### As an event listener.
+### As a controller
+
+Simply register your action as an invokable controller in a routes file.
 
 ```php
-class ProductCreated
-{
-    public $title;
-    public $body;
-    
-    public function __construct($title, $body)
-    {
-        $this->title = $title;
-        $this->body = $body;
-    }
-}
-
-Event::listen(ProductCreated::class, PublishANewArticle::class);
-
-event(new ProductCreated('My new SaaS application', 'Lorem Ipsum.'));
+Route::post('articles', PublishANewArticle::class)->middleware('auth');
 ```
 
-#### As an invokable controller.
+### As a listener
+
+Simply register your action as a listener of the `NewProductReleased` event.
 
 ```php
-// routes/web.php
-Route::post('articles', '\App\Actions\PublishANewArticle');
+Event::listen(NewProductReleased::class, PublishANewArticle::class);
 ```
-If you need to specify an explicit HTTP response for when an action is used as a controller, you can define the `response` method which provides the result of the `handle` method as the first argument.
+
+Then, the `asListener` method of your action will be called whenever the `NewProductReleased` event is dispatched.
 
 ```php
-class PublishANewArticle extends Action
-{
-    // ...
-    
-    public function response($article)
-    {
-        return redirect()->route('article.show', $article);
-    }
-}
+event(new NewProductReleased($manager, 'Product title', 'Product description'));
 ```
 
-#### As an artisan command.
+### And more...
 
-```php
-class PublishANewArticle extends Action
-{
-    protected static $commandSignature = 'make:article {title} {body}';
-    protected static $commandDescription = 'Publishes a new article';
+On top of running your actions as objects, controllers and listeners, Laravel Actions also supports jobs, commands and even mocking your actions in tests.
 
-    // ...
-}
-```
-
-
-<sub>_Full documentation available at [laravelactions.com](https://laravelactions.com/)_</sub>
+📚 [Check out the full documentation to learn everything that Laravel Actions has to offer](https://laravelactions.com/).

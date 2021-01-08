@@ -2,39 +2,122 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use ReflectionClass;
-use ReflectionException;
+use Lorisleiva\Actions\Concerns\AsController;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\DesignPatterns\DesignPattern;
+use ReflectionMethod;
 use Symfony\Component\Finder\Finder;
 
 class ActionManager
 {
-    /** @var Collection */
-    protected $paths;
+    /** @var Application */
+    protected Application $app;
 
-    /** @var Collection */
-    protected $registeredActions;
+    /** @var DesignPattern[] */
+    protected array $designPatterns = [];
 
-    /**
-     * Define the default path to use when registering actions.
-     */
-    public function __construct()
+    /** @var bool[] */
+    protected array $extended = [];
+
+    public function __construct(Application $app, array $designPatterns = [])
     {
-        $this->paths('app'.DIRECTORY_SEPARATOR.'Actions');
-        $this->registeredActions = collect();
+        $this->app = $app;
+        $this->setDesignPatterns($designPatterns);
     }
 
-    /**
-     * Define the paths to use when registering actions.
-     *
-     * @param array|string $paths
-     * @return $this
-     */
-    public function paths($paths): ActionManager
+    public function setDesignPatterns(array $designPatterns): ActionManager
     {
-        $this->paths = Collection::wrap($paths)
+        $this->designPatterns = $designPatterns;
+
+        return $this;
+    }
+
+    public function getDesignPatterns(): array
+    {
+        return $this->designPatterns;
+    }
+
+    public function getDesignPatternsMatching(array $usedTraits): array
+    {
+        $filter = function (DesignPattern $designPattern) use ($usedTraits) {
+            return in_array($designPattern->getTrait(), $usedTraits);
+        };
+
+        return array_filter($this->getDesignPatterns(), $filter);
+    }
+
+    public function extend(string $abstract): void
+    {
+        if ($this->isExtending($abstract)) {
+            return;
+        }
+
+        if (! $this->shouldExtend($abstract)) {
+            return;
+        }
+
+        $this->app->extend($abstract, function ($instance) {
+            return $this->identifyAndDecorate($instance);
+        });
+
+        $this->extended[$abstract] = true;
+    }
+
+    public function isExtending(string $abstract): bool
+    {
+        return isset($this->extended[$abstract]);
+    }
+
+    public function shouldExtend(string $abstract): bool
+    {
+        $usedTraits = class_uses_recursive($abstract);
+
+        return ! empty($this->getDesignPatternsMatching($usedTraits))
+            || in_array(AsFake::class, $usedTraits);
+    }
+
+    public function identifyAndDecorate($instance, $limit = 10)
+    {
+        $usedTraits = class_uses_recursive($instance);
+
+        if (in_array(AsFake::class, $usedTraits) && $instance::isFake()) {
+            $instance = $instance::mock();
+        }
+
+        if (! $designPattern = $this->identifyFromBacktrace($usedTraits, $limit, $frame)) {
+            return $instance;
+        }
+
+        return $designPattern->decorate($instance, $frame);
+    }
+
+    public function identifyFromBacktrace($usedTraits, $limit = 10, BacktraceFrame &$frame = null): ?DesignPattern
+    {
+        $designPatterns = $this->getDesignPatternsMatching($usedTraits);
+        $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
+            | DEBUG_BACKTRACE_IGNORE_ARGS;
+
+        foreach (debug_backtrace($backtraceOptions, $limit) as $frame) {
+            $frame = new BacktraceFrame($frame);
+
+            /** @var DesignPattern $designPattern */
+            foreach ($designPatterns as $designPattern) {
+                if ($designPattern->recognizeFrame($frame)) {
+                    return $designPattern;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function registerRoutes($paths = 'app/Actions'): void
+    {
+        $paths = Collection::wrap($paths)
             ->map(function (string $path) {
                 return Str::startsWith($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
             })
@@ -44,98 +127,37 @@ class ActionManager
             })
             ->values();
 
-        return $this;
-    }
-
-    /**
-     * Forbid the action manager to register any actions automatically.
-     *
-     * @return $this
-     */
-    public function dontRegister(): ActionManager
-    {
-        $this->paths = collect();
-
-        return $this;
-    }
-
-    /**
-     * Register all actions found in the provided paths.
-     */
-    public function registerAllPaths(): void
-    {
-        if ($this->paths->isEmpty()) {
+        if ($paths->isEmpty()) {
             return;
         }
 
-        foreach ((new Finder)->in($this->paths->toArray())->files() as $file) {
-            $this->register(
+        foreach ((new Finder)->in($paths->toArray())->files() as $file) {
+            $this->registerRoutesForAction(
                 $this->getClassnameFromPathname($file->getPathname())
             );
         }
     }
 
-    /**
-     * Register one action either through an object or its classname.
-     *
-     * @param Action|string $action
-     * @throws ReflectionException
-     */
-    public function register($action): void
+    public function registerRoutesForAction(string $className): void
     {
-        if (! $this->isAction($action) || $this->isRegistered($action)) {
+        if (! in_array(AsController::class, class_uses_recursive($className))) {
             return;
         }
 
-        $action::register();
-        $this->registeredActions->push(is_string($action) ? $action : get_class($action));
+        if (! method_exists($className, 'routes')) {
+            return;
+        }
+
+        if (! (new ReflectionMethod($className, 'routes'))->isStatic()) {
+            return;
+        }
+
+        $className::routes($this->app->make(Router::class));
     }
 
-    /**
-     * Determine if an object or its classname is an Action.
-     *
-     * @param Action|string $action
-     * @return bool
-     * @throws ReflectionException
-     */
-    public function isAction($action): bool
-    {
-        return is_subclass_of($action, Action::class) &&
-            ! (new ReflectionClass($action))->isAbstract();
-    }
-
-    /**
-     * Determine if an action has already been loaded.
-     *
-     * @param Action|string $action
-     * @return bool
-     */
-    public function isRegistered($action): bool
-    {
-        $class = is_string($action) ? $action : get_class($action);
-
-        return $this->registeredActions->contains($class);
-    }
-
-    /**
-     * Returns a collection of all actions that have been registered.
-     *
-     * @return Collection
-     */
-    public function getRegisteredActions(): Collection
-    {
-        return $this->registeredActions;
-    }
-
-    /**
-     * Get the fully-qualified name of a class from its pathname.
-     *
-     * @param string $pathname
-     * @return string
-     */
     protected function getClassnameFromPathname(string $pathname): string
     {
-        return App::getNamespace() . str_replace(
+        return $this->app->getNamespace() . str_replace(
             ['/', '.php'],
             ['\\', ''],
             Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
