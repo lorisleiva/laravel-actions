@@ -46,15 +46,15 @@ class JobDecorator implements ShouldQueue
         }
 
         if ($this->hasProperty('jobTries')) {
-            $this->tries = $this->getProperty('jobTries');
+            $this->setTries($this->getProperty('jobTries'));
         }
 
         if ($this->hasProperty('jobMaxExceptions')) {
-            $this->maxExceptions = $this->getProperty('jobMaxExceptions');
+            $this->setMaxExceptions($this->getProperty('jobMaxExceptions'));
         }
 
         if ($this->hasProperty('jobTimeout')) {
-            $this->timeout = $this->getProperty('jobTimeout');
+            $this->setTimeout($this->getProperty('jobTimeout'));
         }
 
         if ($this->hasMethod('configureJob')) {
@@ -81,6 +81,39 @@ class JobDecorator implements ShouldQueue
     public function getParameters(): array
     {
         return $this->parameters;
+    }
+
+    /**
+     * @param int $tries
+     * @return $this
+     */
+    public function setTries(int $tries)
+    {
+        $this->tries = $tries;
+
+        return $this;
+    }
+
+    /**
+     * @param int $maxException
+     * @return $this
+     */
+    public function setMaxExceptions(int $maxException)
+    {
+        $this->maxExceptions = $maxException;
+
+        return $this;
+    }
+
+    /**
+     * @param int $timeout
+     * @return $this
+     */
+    public function setTimeout(int $timeout)
+    {
+        $this->timeout = $timeout;
+
+        return $this;
     }
 
     public function decorates(string $actionClass): bool
