@@ -20,8 +20,11 @@ class JobDecorator implements ShouldQueue
         __unserialize as protected unserializeFromSerializesModels;
     }
 
-    protected string $actionClass;
+    public int $tries;
+    public int $maxExceptions;
+    public int $timeout;
 
+    protected string $actionClass;
     protected array $parameters = [];
 
     public function __construct(string $action, ...$parameters)
@@ -40,6 +43,18 @@ class JobDecorator implements ShouldQueue
 
         if ($this->hasProperty('jobQueue')) {
             $this->onQueue($this->getProperty('jobQueue'));
+        }
+
+        if ($this->hasProperty('jobTries')) {
+            $this->tries = $this->getProperty('jobTries');
+        }
+
+        if ($this->hasProperty('jobMaxExceptions')) {
+            $this->maxExceptions = $this->getProperty('jobMaxExceptions');
+        }
+
+        if ($this->hasProperty('jobTimeout')) {
+            $this->timeout = $this->getProperty('jobTimeout');
         }
 
         if ($this->hasMethod('configureJob')) {
@@ -71,6 +86,26 @@ class JobDecorator implements ShouldQueue
     public function decorates(string $actionClass): bool
     {
         return $this->getAction() instanceof $actionClass;
+    }
+
+    public function backoff()
+    {
+        return $this->fromActionMethodOrProperty(
+            'getJobBackoff',
+            'jobBackoff',
+            null,
+            $this->parameters
+        );
+    }
+
+    public function retryUntil()
+    {
+        return $this->fromActionMethodOrProperty(
+            'getJobRetryUntil',
+            'jobRetryUntil',
+            null,
+            $this->parameters
+        );
     }
 
     public function middleware()
