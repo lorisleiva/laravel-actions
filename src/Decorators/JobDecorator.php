@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -13,6 +14,7 @@ class JobDecorator implements ShouldQueue
     use DecorateActions;
     use InteractsWithQueue;
     use Queueable;
+    use Batchable;
     use SerializesModels {
         __sleep as protected sleepFromSerializesModels;
         __wakeup as protected wakeupFromSerializesModels;

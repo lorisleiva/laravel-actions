@@ -5,7 +5,9 @@ namespace Lorisleiva\Actions\Tests;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Schema;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
@@ -158,7 +160,7 @@ it('uses the decorated action as display name by default', function () {
     });
 });
 
-it('can be dispatch conditionally', function () {
+it('can be dispatched conditionally', function () {
     AsJobTest::dispatchIf(true);
     Queue::assertPushed(JobDecorator::class, 1);
 
@@ -202,4 +204,31 @@ it('can be dispatched with a chain', function () {
             return true;
         }
     );
+});
+
+it('can be dispatched in a batch', function () {
+    // Given we have a `job_batches` table.
+    $this->artisan('migrate')->run();
+    if (! Schema::hasTable('job_batches')) {
+        $this->artisan('queue:batches-table')->run();
+        $this->artisan('migrate')->run();
+    }
+
+    // When we dispatch jobs in a batch.
+    Bus::batch([
+        AsJobTest::makeJob(),
+        AsJobTest::makeJob(),
+        AsJobTest::makeJob(),
+    ])->then(function () {
+
+        // Then they all reached the handle method when the batch is completed.
+        expect(AsJobTest::$handled)->toBe(3);
+    })->dispatch();
+
+    // And all three jobs inside that batch have been dispatched.
+    Queue::assertPushed(JobDecorator::class, 3);
+
+    // And they've been constructed but not handled until the batch is completed.
+    expect(AsJobTest::$constructed)->toBe(3);
+    expect(AsJobTest::$handled)->toBe(0);
 });
