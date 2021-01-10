@@ -28,11 +28,9 @@ class UniqueJobDecorator extends JobDecorator implements ShouldBeUnique
 
     public function uniqueVia()
     {
-        if ($this->hasMethod('getJobUniqueVia')) {
-            return $this->callMethod('getJobUniqueVia', $this->parameters);
-        }
-
-        return Container::getInstance()->make(Cache::class);
+        return $this->fromActionMethod('getJobUniqueVia', $this->parameters, function () {
+            return Container::getInstance()->make(Cache::class);
+        });
     }
 
     protected function fromActionWithParameters(string $method, string $property, $default = null)

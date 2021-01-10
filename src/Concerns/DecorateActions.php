@@ -55,14 +55,14 @@ trait DecorateActions
     {
         return $this->hasMethod($method)
             ? $this->callMethod($method, $methodParameters)
-            : $default;
+            : value($default);
     }
 
     protected function fromActionProperty(string $property, $default = null)
     {
         return $this->hasProperty($property)
             ? $this->getProperty($property)
-            : $default;
+            : value($default);
     }
 
     protected function fromActionMethodOrProperty(string $method, string $property, $default = null, array $methodParameters = [])
@@ -75,6 +75,6 @@ trait DecorateActions
             return $this->getProperty($property);
         }
 
-        return $default;
+        return value($default);
     }
 }
