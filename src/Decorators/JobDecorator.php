@@ -2,12 +2,17 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
+use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Reflector;
 use Lorisleiva\Actions\Concerns\DecorateActions;
+use ReflectionMethod;
+use ReflectionParameter;
 
 class JobDecorator implements ShouldQueue
 {
@@ -67,11 +72,11 @@ class JobDecorator implements ShouldQueue
     public function handle()
     {
         if ($this->hasMethod('asJob')) {
-            return $this->callMethod('asJob', $this->parameters);
+            return $this->callMethod('asJob', $this->getPrependedParameters('asJob'));
         }
 
         if ($this->hasMethod('handle')) {
-            return $this->callMethod('handle', $this->parameters);
+            return $this->callMethod('handle', $this->getPrependedParameters('handle'));
         }
     }
 
@@ -145,23 +150,46 @@ class JobDecorator implements ShouldQueue
 
     public function middleware()
     {
-        return $this->hasMethod('getJobMiddleware')
-            ? $this->callMethod('getJobMiddleware', $this->parameters)
-            : [];
+        return $this->fromActionMethod('getJobMiddleware', $this->parameters, []);
     }
 
     public function displayName(): string
     {
-        return $this->hasMethod('getJobDisplayName')
-            ? $this->callMethod('getJobDisplayName', $this->parameters)
-            : get_class($this->action);
+        return $this->fromActionMethod(
+            'getJobDisplayName',
+            $this->parameters,
+            get_class($this->action)
+        );
     }
 
     public function tags()
     {
-        return $this->hasMethod('getJobTags')
-            ? $this->callMethod('getJobTags', $this->parameters)
-            : [];
+        return $this->fromActionMethod('getJobTags', $this->parameters, []);
+    }
+
+    protected function getPrependedParameters(string $method): array
+    {
+        $reflectionMethod = new ReflectionMethod($this->action, $method);
+        $numberOfParameters = $reflectionMethod->getNumberOfParameters();
+
+        if (! $reflectionMethod->isVariadic() && $numberOfParameters <= count($this->parameters)) {
+            return $this->parameters;
+        }
+
+        /** @var ReflectionParameter $firstParameter */
+        if(! $firstParameter = Arr::first($reflectionMethod->getParameters())) {
+            return $this->parameters;
+        }
+
+        $firstParameterClass = Reflector::getParameterClassName($firstParameter);
+
+        if ($firstParameter->allowsNull() && $firstParameterClass === Batch::class) {
+            return [$this->batch(), ...$this->parameters];
+        } elseif ($firstParameterClass === static::class) {
+            return [$this, ...$this->parameters];
+        } else {
+            return $this->parameters;
+        }
     }
 
     protected function serializeProperties()
