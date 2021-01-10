@@ -27,9 +27,9 @@ class JobDecorator implements ShouldQueue
         __unserialize as protected unserializeFromSerializesModels;
     }
 
-    public int $tries;
-    public int $maxExceptions;
-    public int $timeout;
+    public ?int $tries;
+    public ?int $maxExceptions;
+    public ?int $timeout;
 
     protected string $actionClass;
     protected array $parameters = [];
@@ -44,29 +44,12 @@ class JobDecorator implements ShouldQueue
 
     protected function constructed()
     {
-        if ($this->hasProperty('jobConnection')) {
-            $this->onConnection($this->getProperty('jobConnection'));
-        }
-
-        if ($this->hasProperty('jobQueue')) {
-            $this->onQueue($this->getProperty('jobQueue'));
-        }
-
-        if ($this->hasProperty('jobTries')) {
-            $this->setTries($this->getProperty('jobTries'));
-        }
-
-        if ($this->hasProperty('jobMaxExceptions')) {
-            $this->setMaxExceptions($this->getProperty('jobMaxExceptions'));
-        }
-
-        if ($this->hasProperty('jobTimeout')) {
-            $this->setTimeout($this->getProperty('jobTimeout'));
-        }
-
-        if ($this->hasMethod('configureJob')) {
-            $this->callMethod('configureJob', [$this]);
-        }
+        $this->onConnection($this->fromActionProperty('jobConnection'));
+        $this->onQueue($this->fromActionProperty('jobQueue'));
+        $this->setTries($this->fromActionProperty('jobTries'));
+        $this->setMaxExceptions($this->fromActionProperty('jobMaxExceptions'));
+        $this->setTimeout($this->fromActionProperty('jobTimeout'));
+        $this->fromActionMethod('configureJob', [$this]);
     }
 
     public function handle()
@@ -91,10 +74,10 @@ class JobDecorator implements ShouldQueue
     }
 
     /**
-     * @param int $tries
+     * @param int|null $tries
      * @return $this
      */
-    public function setTries(int $tries)
+    public function setTries(?int $tries)
     {
         $this->tries = $tries;
 
@@ -102,10 +85,10 @@ class JobDecorator implements ShouldQueue
     }
 
     /**
-     * @param int $maxException
+     * @param int|null $maxException
      * @return $this
      */
-    public function setMaxExceptions(int $maxException)
+    public function setMaxExceptions(?int $maxException)
     {
         $this->maxExceptions = $maxException;
 
@@ -113,10 +96,10 @@ class JobDecorator implements ShouldQueue
     }
 
     /**
-     * @param int $timeout
+     * @param int|null $timeout
      * @return $this
      */
-    public function setTimeout(int $timeout)
+    public function setTimeout(?int $timeout)
     {
         $this->timeout = $timeout;
 
