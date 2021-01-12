@@ -72,8 +72,6 @@ class ControllerDecorator
             $response = $this->callMethod('htmlResponse', [$response, $request]);
         }
 
-        $this->container->forgetInstance(ActionRequest::class);
-
         return $response;
     }
 
@@ -88,10 +86,12 @@ class ControllerDecorator
 
     protected function refreshRequest(): ActionRequest
     {
+        $this->container->forgetInstance(ActionRequest::class);
+
         /** @var ActionRequest $request */
         $request = app(ActionRequest::class);
-        $this->container->instance(ActionRequest::class, $request);
         $request->setAction($this->action);
+        $this->container->instance(ActionRequest::class, $request);
 
         return $request;
     }

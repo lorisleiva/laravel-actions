@@ -37,7 +37,7 @@ beforeEach(function () {
     Route::post('/calculator', AsControllerWithAuthorizeAndRulesTest::class);
 });
 
-it('passes validation', function () {
+it('passes authorization and validation', function () {
     // When we call that route with the right request.
     $reponse = $this->postJson('/calculator', [
         'operation' => 'substraction',
@@ -76,4 +76,17 @@ it('fails validation', function () {
         'left' => 'The left must be an integer.',
         'right' => 'The right field is required.',
     ]);
+});
+
+it('uses a new validator at every request', function () {
+    $this->post('/calculator', ['operation' => 'addition', 'left' => 5])
+        ->assertSessionHasErrors('right')
+        ->assertSessionDoesntHaveErrors(['operation', 'left']);
+
+    $this->post('/calculator', ['operation' => 'addition', 'right' => 5])
+        ->assertSessionHasErrors('left')
+        ->assertSessionDoesntHaveErrors(['operation', 'right']);
+
+    $this->post('/calculator', ['operation' => 'invalid'])
+        ->assertSessionHasErrors(['operation', 'right', 'left']);
 });
