@@ -10,16 +10,13 @@ use Mockery\MockInterface;
 
 trait AsFake
 {
-    /** @var MockInterface|null */
-    protected static ?MockInterface $fakeResolvedInstance = null;
-
     /**
      * @return MockInterface
      */
     public static function mock(): MockInterface
     {
         if (static::isFake()) {
-            return static::$fakeResolvedInstance;
+            return static::getFakeResolvedInstance();
         }
 
         $mock = Mockery::mock(static::class);
@@ -34,7 +31,7 @@ trait AsFake
     public static function spy(): MockInterface
     {
         if (static::isFake()) {
-            return static::$fakeResolvedInstance;
+            return static::getFakeResolvedInstance();
         }
 
         return static::setFakeResolvedInstance(Mockery::spy(static::class));
@@ -77,15 +74,15 @@ trait AsFake
      */
     public static function isFake(): bool
     {
-        return ! is_null(static::$fakeResolvedInstance);
+        return app()->isShared(static::getFakeResolvedInstanceKey());
     }
 
     /**
-     * Removes the fake instance from the action.
+     * Removes the fake instance from the container.
      */
     public static function clearFake(): void
     {
-        static::$fakeResolvedInstance = null;
+        app()->forgetInstance(static::getFakeResolvedInstanceKey());
     }
 
     /**
@@ -94,6 +91,22 @@ trait AsFake
      */
     protected static function setFakeResolvedInstance(MockInterface $fake): MockInterface
     {
-        return static::$fakeResolvedInstance = $fake;
+        return app()->instance(static::getFakeResolvedInstanceKey(), $fake);
+    }
+
+    /**
+     * @return MockInterface|null
+     */
+    protected static function getFakeResolvedInstance(): ?MockInterface
+    {
+        return app(static::getFakeResolvedInstanceKey());
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getFakeResolvedInstanceKey(): string
+    {
+        return 'LaravelActions:AsFake:' . static::class;
     }
 }
