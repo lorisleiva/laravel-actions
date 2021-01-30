@@ -1,0 +1,15 @@
+<?php
+
+namespace DummyNamespace;
+
+use Lorisleiva\Actions\Concerns\AsAction;
+
+class DummyClass
+{
+    use AsAction;
+
+    public function handle()
+    {
+        // ...
+    }
+}

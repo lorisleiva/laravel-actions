@@ -32,7 +32,7 @@ composer require lorisleiva/laravel-actions
 
 ## Basic usage
 
-Create your own PHP class, then add the `AsAction` trait and define the `asX` methods when you want your action to be running as `X`. E.g. `asController`, `asJob`, `asListener` and/or `asCommand`.
+Create your first action using `php artisan make:action PublishANewArticle` and define the `asX` methods when you want your action to be running as `X`. E.g. `asController`, `asJob`, `asListener` and/or `asCommand`.
 
 ``` php
 class PublishANewArticle
