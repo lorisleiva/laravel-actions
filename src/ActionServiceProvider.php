@@ -6,8 +6,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
-use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
+use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
 
 class ActionServiceProvider extends ServiceProvider
 {
