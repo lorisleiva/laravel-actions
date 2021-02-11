@@ -132,9 +132,13 @@ class ActionManager
         }
 
         foreach ((new Finder)->in($paths->toArray())->files() as $file) {
-            $this->registerRoutesForAction(
-                $this->getClassnameFromPathname($file->getPathname())
-            );
+            $isView = Str::endsWith($file->getPathname(), ['blade.php', 'twig', 'html']) ;
+
+            if(!$isView){
+                $this->registerRoutesForAction(
+                    $this->getClassnameFromPathname($file->getPathname())
+                );
+            }
         }
     }
 
