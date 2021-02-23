@@ -56,7 +56,7 @@ class ActionManager
             return;
         }
 
-        if (! $this->shouldExtend($abstract)) {
+        if (!$this->shouldExtend($abstract)) {
             return;
         }
 
@@ -76,7 +76,7 @@ class ActionManager
     {
         $usedTraits = class_uses_recursive($abstract);
 
-        return ! empty($this->getDesignPatternsMatching($usedTraits))
+        return !empty($this->getDesignPatternsMatching($usedTraits))
             || in_array(AsFake::class, $usedTraits);
     }
 
@@ -88,7 +88,7 @@ class ActionManager
             $instance = $instance::mock();
         }
 
-        if (! $designPattern = $this->identifyFromBacktrace($usedTraits, $limit, $frame)) {
+        if (!$designPattern = $this->identifyFromBacktrace($usedTraits, $limit, $frame)) {
             return $instance;
         }
 
@@ -140,15 +140,15 @@ class ActionManager
 
     public function registerRoutesForAction(string $className): void
     {
-        if (! in_array(AsController::class, class_uses_recursive($className))) {
+        if (!in_array(AsController::class, class_uses_recursive($className))) {
             return;
         }
 
-        if (! method_exists($className, 'routes')) {
+        if (!method_exists($className, 'routes')) {
             return;
         }
 
-        if (! (new ReflectionMethod($className, 'routes'))->isStatic()) {
+        if (!(new ReflectionMethod($className, 'routes'))->isStatic()) {
             return;
         }
 
@@ -157,10 +157,12 @@ class ActionManager
 
     protected function getClassnameFromPathname(string $pathname): string
     {
+        $pathname = str_replace('/', '\\', $pathname);
+
         return $this->app->getNamespace() . str_replace(
             ['/', '.php'],
             ['\\', ''],
-            Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
+            Str::after($pathname, realpath(app_path()) . DIRECTORY_SEPARATOR)
         );
     }
 }

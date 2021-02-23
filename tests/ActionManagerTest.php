@@ -21,3 +21,33 @@ it('resolves as a singleton', function () {
 
     expect($managerA)->toBe($managerB);
 });
+
+it('returns the classname frontslash', function () {
+    $path = app_path() . '/Actions/CustomAction.php';
+
+    $manager = app(ActionManager::class);
+
+    $class = new ReflectionClass($manager);
+
+    $method = $class->getMethod('getClassnameFromPathname');
+    $method->setAccessible(true);
+
+    $className = $method->invokeArgs($manager, [$path]);
+
+    expect($className)->toEqual('App\Actions\CustomAction');
+});
+
+it('returns the classname backslash', function () {
+    $path = app_path() . '\\Actions\\CustomAction.php';
+
+    $manager = app(ActionManager::class);
+
+    $class = new ReflectionClass($manager);
+
+    $method = $class->getMethod('getClassnameFromPathname');
+    $method->setAccessible(true);
+
+    $className = $method->invokeArgs($manager, [$path]);
+
+    expect($className)->toEqual('App\Actions\CustomAction');
+});
