@@ -157,12 +157,12 @@ class ActionManager
 
     protected function getClassnameFromPathname(string $pathname): string
     {
-        $pathname = str_replace('/', '\\', $pathname);
-
         return $this->app->getNamespace() . str_replace(
             ['/', '.php'],
             ['\\', ''],
-            Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
+            Str::substr(
+                Str::after($pathname, realpath(app_path()))
+            , 1)
         );
     }
 }
