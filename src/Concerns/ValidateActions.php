@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
@@ -18,16 +19,6 @@ trait ValidateActions
 
     /** @var Redirector|null */
     protected $redirector = null;
-
-    /** @var array */
-    protected array $defaultValidationData = [];
-
-    public function setDefaultValidationData(array $defaultValidationData): self
-    {
-        $this->defaultValidationData = $defaultValidationData;
-
-        return $this;
-    }
 
     public function validate()
     {
@@ -86,7 +77,7 @@ trait ValidateActions
     {
         return $this->hasMethod('getValidationData')
             ? $this->resolveAndCallMethod('getValidationData')
-            : $this->defaultValidationData;
+            : $this->getDefaultValidationData();
     }
 
     public function rules(): array

@@ -16,7 +16,11 @@ class ActionRequest extends FormRequest
 
     public function resolve()
     {
-        $this->setDefaultValidationData($this->all());
         $this->validate();
+    }
+
+    public function getDefaultValidationData(): array
+    {
+        return $this->all();
     }
 }

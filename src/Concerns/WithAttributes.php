@@ -3,7 +3,7 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Support\Arr;
-use Lorisleiva\Actions\ActionValidator;
+use Lorisleiva\Actions\AttributeValidator;
 
 trait WithAttributes
 {
@@ -85,8 +85,7 @@ trait WithAttributes
 
     public function validateAttributes(): array
     {
-        $validator = new ActionValidator($this);
-        $validator->setDefaultValidationData($this->all());
+        $validator = AttributeValidator::for($this);
         $validator->validate();
 
         return $validator->validated();
