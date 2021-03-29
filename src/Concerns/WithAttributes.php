@@ -2,6 +2,8 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Support\Arr;
+
 trait WithAttributes
 {
     protected array $attributes = [];
@@ -33,17 +35,17 @@ trait WithAttributes
         return $this->attributes;
     }
 
-    public function only($keys)
+    public function only($keys): array
     {
         return Arr::only($this->attributes, is_array($keys) ? $keys : func_get_args());
     }
 
-    public function except($keys)
+    public function except($keys): array
     {
         return Arr::except($this->attributes, is_array($keys) ? $keys : func_get_args());
     }
 
-    public function has($key)
+    public function has($key): bool
     {
         return Arr::has($this->attributes, $key);
     }
