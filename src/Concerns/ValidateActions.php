@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
-use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
