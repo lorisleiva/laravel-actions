@@ -35,7 +35,7 @@ class ActionRequest extends FormRequest
         }
     }
 
-    protected function getValidatorInstance()
+    protected function getValidatorInstance(): Validator
     {
         if ($this->validator) {
             return $this->validator;
@@ -64,7 +64,7 @@ class ActionRequest extends FormRequest
         return $this->validator;
     }
 
-    protected function createDefaultValidator(ValidationFactory $factory)
+    protected function createDefaultValidator(ValidationFactory $factory): Validator
     {
         return $factory->make(
             $this->validationData(),
@@ -74,28 +74,28 @@ class ActionRequest extends FormRequest
         );
     }
 
-    public function validationData()
+    public function validationData(): array
     {
         return $this->hasMethod('getValidationData')
             ? $this->resolveAndCallMethod('getValidationData')
             : $this->all();
     }
 
-    public function rules()
+    public function rules(): array
     {
         return $this->hasMethod('rules')
             ? $this->resolveAndCallMethod('rules')
             : [];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return $this->hasMethod('getValidationMessages')
             ? $this->resolveAndCallMethod('getValidationMessages')
             : [];
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return $this->hasMethod('getValidationAttributes')
             ? $this->resolveAndCallMethod('getValidationAttributes')
@@ -122,7 +122,7 @@ class ActionRequest extends FormRequest
             : $url->previous();
     }
 
-    protected function getErrorBag(Validator $validator)
+    protected function getErrorBag(Validator $validator): string
     {
         return $this->hasMethod('getValidationErrorBag')
             ? $this->resolveAndCallMethod('getValidationErrorBag', compact('validator'))
@@ -157,7 +157,7 @@ class ActionRequest extends FormRequest
         $response->authorize();
     }
 
-    public function validated()
+    public function validated(): array
     {
         return $this->validator->validated();
     }

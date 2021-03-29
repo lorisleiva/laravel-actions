@@ -134,7 +134,7 @@ class ControllerDecorator
         }
     }
 
-    protected function shouldValidate()
+    protected function shouldValidate(): bool
     {
         return $this->hasMethod('authorize')
             || $this->hasMethod('rules')
