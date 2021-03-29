@@ -3,6 +3,8 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Support\Arr;
+use Lorisleiva\Actions\ActionRequest;
+use Lorisleiva\Actions\ActionValidator;
 
 trait WithAttributes
 {
@@ -80,5 +82,14 @@ trait WithAttributes
     public function __isset($key): bool
     {
         return ! is_null($this->get($key));
+    }
+
+    public function validateAttributes(): array
+    {
+        $validator = new ActionValidator($this);
+        $validator->setDefaultValidationData($this->all());
+        $validator->validate();
+
+        return $validator->validated();
     }
 }

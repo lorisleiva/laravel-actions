@@ -12,21 +12,21 @@ trait DecorateActions
     /** @var mixed */
     protected $action;
 
-    public function setContainer($container)
+    public function setContainer($container): self
     {
         $this->container = $container;
 
         return $this;
     }
 
-    public function setAction($action)
+    public function setAction($action): self
     {
         $this->action = $action;
 
         return $this;
     }
 
-    protected function hasProperty($property)
+    protected function hasProperty($property): bool
     {
         return property_exists($this->action, $property);
     }
@@ -36,7 +36,7 @@ trait DecorateActions
         return $this->action->{$property};
     }
 
-    protected function hasMethod($method)
+    protected function hasMethod($method): bool
     {
         return method_exists($this->action, $method);
     }
