@@ -3,7 +3,6 @@
 namespace Lorisleiva\Actions\Concerns;
 
 use Illuminate\Support\Arr;
-use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\ActionValidator;
 
 trait WithAttributes
