@@ -4,8 +4,6 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;

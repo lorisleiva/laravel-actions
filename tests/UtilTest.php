@@ -10,7 +10,7 @@ it('parses relative paths into absolute directories that exists', function () {
     // - one directory that does not exists,
     // - and one file.
     $result = Util::getAbsoluteDirectories([
-        'app/Models', 'app/IDontExists', 'composer.json'
+        'app/Models', 'app/IDontExists', 'composer.json',
     ]);
 
     // Then we only receive the absolute path of the first directory.
