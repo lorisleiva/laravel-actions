@@ -26,27 +26,32 @@ trait DecorateActions
         return $this;
     }
 
-    protected function hasProperty($property): bool
+    protected function hasTrait(string $trait): bool
+    {
+        return in_array($trait, class_uses_recursive($this->action));
+    }
+
+    protected function hasProperty(string $property): bool
     {
         return property_exists($this->action, $property);
     }
 
-    protected function getProperty($property)
+    protected function getProperty(string $property)
     {
         return $this->action->{$property};
     }
 
-    protected function hasMethod($method): bool
+    protected function hasMethod(string $method): bool
     {
         return method_exists($this->action, $method);
     }
 
-    protected function callMethod($method, $parameters = [])
+    protected function callMethod(string $method, array $parameters = [])
     {
         return call_user_func_array([$this->action, $method], $parameters);
     }
 
-    protected function resolveAndCallMethod($method, $extraArguments = [])
+    protected function resolveAndCallMethod(string $method, array $extraArguments = [])
     {
         return $this->container->call([$this->action, $method], $extraArguments);
     }

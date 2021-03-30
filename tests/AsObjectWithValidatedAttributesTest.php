@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsObject;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 
-class AsObjectWithAuthorizeAndRulesTest
+class AsObjectWithValidatedAttributesTest
 {
     use AsObject;
     use WithAttributes;
@@ -38,7 +38,7 @@ class AsObjectWithAuthorizeAndRulesTest
 
 it('passes authorization and validation', function () {
     // When we pass the right arguments.
-    $result = AsObjectWithAuthorizeAndRulesTest::run([
+    $result = AsObjectWithValidatedAttributesTest::run([
         'operation' => 'substraction',
         'left' => 8,
         'right' => 3,
@@ -50,7 +50,7 @@ it('passes authorization and validation', function () {
 
 it('fails authorization', function () {
     // When we pass an unauthorized operation.
-    AsObjectWithAuthorizeAndRulesTest::run([
+    AsObjectWithValidatedAttributesTest::run([
         'operation' => 'unauthorized',
     ]);
 
@@ -59,7 +59,7 @@ it('fails authorization', function () {
 
 it('fails validation', function () {
     // When we pass a invalid data.
-    AsObjectWithAuthorizeAndRulesTest::run([
+    AsObjectWithValidatedAttributesTest::run([
         'operation' => 'invalid_operation',
         'left' => 'one',
         'right' => 'two',
