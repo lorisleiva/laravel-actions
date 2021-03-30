@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Tests;
 
-use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
