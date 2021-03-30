@@ -58,11 +58,8 @@ class AsActionWithValidatedAttributesTest
 
     public function asController(ActionRequest $request): array
     {
-        $this->fill([
-            'operation' => $request->route('operation'),
-            'left' => (int) $request->get('left'),
-            'right' => (int) $request->get('right'),
-        ]);
+        $this->fill($request->all());
+        $this->set('operation', $request->route('operation'));
 
         return ['result' => $this->handle()];
     }
@@ -117,7 +114,7 @@ it('fails authorization as an object', function () {
         'operation' => 'unauthorized',
     ]);
 
-    // Then we expect an authorizaion exception.
+    // Then we expect an authorization exception.
 })->expectException(AuthorizationException::class);
 
 it('fails validation as an object', function () {
@@ -162,15 +159,22 @@ it('fails authorization as a controller', function () {
 });
 
 it('fails validation as a controller', function () {
-    // Given we pass invalid data.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'invalid_operation',
+    // Given we have a route registered for that action.
+    Route::post('compute/{operation}', AsActionWithValidatedAttributesTest::class);
+
+    // When we run that endpoint with invalid data.
+    $response = $this->postJson('compute/invalid_operation', [
         'left' => 'one',
-        'right' => 'two',
     ]);
 
-    // Then we expect a validation exception.
-})->expectException(ValidationException::class);
+    // Then we expect a forbidden response.
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors([
+        'operation' => 'The selected operation is invalid.',
+        'left' => 'The left must be an integer.',
+        'right' => 'The right field is required.',
+    ]);
+});
 
 it('runs as a job', function () {
     // When we dispatch the action as a job.
@@ -181,21 +185,15 @@ it('runs as a job', function () {
 });
 
 it('fails authorization as a job', function () {
-    // Given we pass an unauthorized operation.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'unauthorized',
-    ]);
+    // When we dispatch the action as a job with an unauthorized operation.
+    AsActionWithValidatedAttributesTest::dispatch(6, 'unauthorized', 7);
 
-    // Then we expect an authorizaion exception.
+    // Then we expect an authorization exception.
 })->expectException(AuthorizationException::class);
 
 it('fails validation as a job', function () {
-    // Given we pass invalid data.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'invalid_operation',
-        'left' => 'one',
-        'right' => 'two',
-    ]);
+    // When we dispatch the action as a job with invalid data.
+    AsActionWithValidatedAttributesTest::dispatch(1, 'invalid_operation', 2);
 
     // Then we expect a validation exception.
 })->expectException(ValidationException::class);
@@ -213,21 +211,21 @@ it('runs as a listener', function () {
 });
 
 it('fails authorization as a listener', function () {
-    // Given we pass an unauthorized operation.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'unauthorized',
-    ]);
+    // Given we are listening for the OperationRequestedEvent.
+    Event::listen(OperationRequestedEvent::class, AsActionWithValidatedAttributesTest::class);
 
-    // Then we expect an authorizaion exception.
+    // When we dispatch the OperationRequestedEvent with an unauthorized operation.
+    Event::dispatch(new OperationRequestedEvent('unauthorized', 21, 21));
+
+    // Then we expect an authorization exception.
 })->expectException(AuthorizationException::class);
 
 it('fails validation as a listener', function () {
-    // Given we pass invalid data.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'invalid_operation',
-        'left' => 'one',
-        'right' => 'two',
-    ]);
+    // Given we are listening for the OperationRequestedEvent.
+    Event::listen(OperationRequestedEvent::class, AsActionWithValidatedAttributesTest::class);
+
+    // When we dispatch the OperationRequestedEvent with invalid data.
+    Event::dispatch(new OperationRequestedEvent('invalid_operation', 21, 21));
 
     // Then we expect a validation exception.
 })->expectException(ValidationException::class);
@@ -248,21 +246,21 @@ it('runs as a command', function () {
 });
 
 it('fails authorization as a command', function () {
-    // Given we pass an unauthorized operation.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'unauthorized',
-    ]);
+    // Given we registered the action as a command.
+    registerCommands([AsActionWithValidatedAttributesTest::class]);
 
-    // Then we expect an authorizaion exception.
+    // When we run the action as a command with an unauthorized operation.
+    $this->artisan('my:command unauthorized 21 2');
+
+    // Then we expect an authorization exception.
 })->expectException(AuthorizationException::class);
 
 it('fails validation as a command', function () {
-    // Given we pass invalid data.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'invalid_operation',
-        'left' => 'one',
-        'right' => 'two',
-    ]);
+    // Given we registered the action as a command.
+    registerCommands([AsActionWithValidatedAttributesTest::class]);
+
+    // When we run the action as a command with an unauthorized operation.
+    $this->artisan('my:command invalid_operation one two');
 
     // Then we expect a validation exception.
 })->expectException(ValidationException::class);
@@ -287,22 +285,38 @@ it('runs as a mock', function () {
     expect($result)->toBe(42);
 });
 
-it('fails authorization as a mock', function () {
-    // Given we pass an unauthorized operation.
-    AsActionWithValidatedAttributesTest::run([
-        'operation' => 'unauthorized',
-    ]);
+it('doesnt fail authorization as a mock', function () {
+    // Given the following unauthorized attributes.
+    $attributes = ['operation' => 'unauthorized'];
 
-    // Then we expect an authorizaion exception.
-})->expectException(AuthorizationException::class);
+    // And given we mock the action with some expectations.
+    AsActionWithValidatedAttributesTest::shouldRun()
+        ->with($attributes)
+        ->andReturn(42);
 
-it('fails validation as a mock', function () {
-    // Given we pass invalid data.
-    AsActionWithValidatedAttributesTest::run([
+    // When we run the action with the expected unauthorized arguments.
+    $result = AsActionWithValidatedAttributesTest::run($attributes);
+
+    // Then we still get a successful result.
+    expect($result)->toBe(42);
+});
+
+it('doesnt fail validation as a mock', function () {
+    // Given the following invalid attributes.
+    $attributes = [
         'operation' => 'invalid_operation',
         'left' => 'one',
         'right' => 'two',
-    ]);
+    ];
 
-    // Then we expect a validation exception.
-})->expectException(ValidationException::class);
+    // And given we mock the action with some expectations.
+    AsActionWithValidatedAttributesTest::shouldRun()
+        ->with($attributes)
+        ->andReturn(42);
+
+    // When we run the action with the expected invalid arguments.
+    $result = AsActionWithValidatedAttributesTest::run($attributes);
+
+    // Then we still get a successful result.
+    expect($result)->toBe(42);
+});
