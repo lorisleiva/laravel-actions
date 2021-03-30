@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Lorisleiva\Actions\AttributeValidator;
 
@@ -27,6 +28,23 @@ trait WithAttributes
     public function fill(array $attributes): self
     {
         $this->attributes = array_merge($this->attributes, $attributes);
+
+        return $this;
+    }
+
+    /**
+     * @param Request $request
+     * @return static
+     */
+    public function fillFromRequest(Request $request): self
+    {
+        $route = $request->route();
+
+        $this->attributes = array_merge(
+            $this->attributes,
+            $route ? $route->parametersWithoutNulls() : [],
+            $request->all(),
+        );
 
         return $this;
     }
