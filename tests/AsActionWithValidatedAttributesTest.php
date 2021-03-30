@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Tests;
 
-use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
