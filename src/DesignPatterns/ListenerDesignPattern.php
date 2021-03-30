@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\DesignPatterns;
 
+use Illuminate\Events\CallQueuedListener;
 use Illuminate\Events\Dispatcher;
 use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsListener;
@@ -16,7 +17,10 @@ class ListenerDesignPattern extends DesignPattern
 
     public function recognizeFrame(BacktraceFrame $frame): bool
     {
-        return $frame->matches(Dispatcher::class, 'dispatch');
+        return $frame->matches(Dispatcher::class, 'dispatch')
+            || $frame->matches(Dispatcher::class, 'handlerWantsToBeQueued')
+            || $frame->matches(CallQueuedListener::class, 'handle')
+            || $frame->matches(CallQueuedListener::class, 'failed');
     }
 
     public function decorate($instance, BacktraceFrame $frame)
