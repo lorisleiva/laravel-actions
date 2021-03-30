@@ -38,10 +38,10 @@ it('can be run as a controller', function () {
     Route::get('/calculator/{left}/plus/{right}', AsControllerTest::class);
 
     // When we call that route.
-    $reponse = $this->getJson('/calculator/5/plus/3');
+    $response = $this->getJson('/calculator/5/plus/3');
 
     // Then we receive a successful response.
-    $reponse->assertOk()->assertExactJson(['addition' => 8]);
+    $response->assertOk()->assertExactJson(['addition' => 8]);
 });
 
 it('does not construct the action when registering the route', function () {
@@ -57,12 +57,12 @@ it('constructs the action and runs the handle method exactly once per request', 
     Route::get('/calculator/{left}/plus/{right}', AsControllerTest::class);
 
     // When we call that same route twice.
-    $reponseA = $this->getJson('/calculator/1/plus/2');
-    $reponseB = $this->getJson('/calculator/2/plus/3');
+    $responseA = $this->getJson('/calculator/1/plus/2');
+    $responseB = $this->getJson('/calculator/2/plus/3');
 
     // Then both response were successful
-    $reponseA->assertOk()->assertExactJson(['addition' => 3]);
-    $reponseB->assertOk()->assertExactJson(['addition' => 5]);
+    $responseA->assertOk()->assertExactJson(['addition' => 3]);
+    $responseB->assertOk()->assertExactJson(['addition' => 5]);
 
     // And the action was constructed only once.
     expect(AsControllerTest::$constructed)->toBe(2);

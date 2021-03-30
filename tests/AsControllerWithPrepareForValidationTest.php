@@ -45,21 +45,21 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide a raw expression
-    $reponse = $this->getJson('/controller/1+2');
+    $response = $this->getJson('/controller/1+2');
 
     // Then that expression was parsed as attributes
     // by the prepareForValidation method.
-    $reponse->assertOk()->assertExactJson([3]);
+    $response->assertOk()->assertExactJson([3]);
 });
 
 it('fails validation', function () {
     // When we provide a raw expression with the missing right operand.
-    $reponse = $this->getJson('/controller/4-');
+    $response = $this->getJson('/controller/4-');
 
     // Then that expression was parsed with a missing
     // right operand and results in a validation error.
-    $reponse->assertStatus(422);
-    $reponse->assertJsonValidationErrors([
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors([
         'right' => 'The right field is required.',
     ]);
 });

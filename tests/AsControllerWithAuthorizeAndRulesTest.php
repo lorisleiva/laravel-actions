@@ -39,39 +39,39 @@ beforeEach(function () {
 
 it('passes authorization and validation', function () {
     // When we call that route with the right request.
-    $reponse = $this->postJson('/calculator', [
+    $response = $this->postJson('/calculator', [
         'operation' => 'substraction',
         'left' => 5,
         'right' => 3,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk()->assertExactJson([2]);
+    $response->assertOk()->assertExactJson([2]);
 });
 
 it('fails authorization', function () {
     // When we call that route with an unauthorized request.
-    $reponse = $this->postJson('/calculator', [
+    $response = $this->postJson('/calculator', [
         'operation' => 'unauthorized',
     ]);
 
     // Then we receive a forbidden error.
-    $reponse->assertForbidden();
-    $reponse->assertExactJson([
+    $response->assertForbidden();
+    $response->assertExactJson([
         'message' => 'This action is unauthorized.',
     ]);
 });
 
 it('fails validation', function () {
     // When we call that route with an invalid request.
-    $reponse = $this->postJson('/calculator', [
+    $response = $this->postJson('/calculator', [
         'operation' => 'multiplication',
         'left' => 'five',
     ]);
 
     // Then we receive a validation error.
-    $reponse->assertStatus(422);
-    $reponse->assertJsonValidationErrors([
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors([
         'operation' => 'The selected operation is invalid.',
         'left' => 'The left must be an integer.',
         'right' => 'The right field is required.',

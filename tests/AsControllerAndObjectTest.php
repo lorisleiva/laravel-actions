@@ -38,8 +38,8 @@ it('works as a controller', function () {
     Route::post('/add/{left}', AsControllerAndObjectTest::class);
 
     // When we call that route.
-    $reponse = $this->postJson('/add/1', ['right' => 2]);
+    $response = $this->postJson('/add/1', ['right' => 2]);
 
     // Then we receive a successful response.
-    $reponse->assertOk()->assertExactJson(['addition' => 3]);
+    $response->assertOk()->assertExactJson(['addition' => 3]);
 });

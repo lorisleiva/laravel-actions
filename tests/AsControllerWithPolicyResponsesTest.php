@@ -33,21 +33,21 @@ beforeEach(function () {
 
 it('passes authorization', function () {
     // When we make an authorised request.
-    $reponse = $this->postJson('/controller');
+    $response = $this->postJson('/controller');
 
     // Then we receive a successful response.
-    $reponse->assertOk();
+    $response->assertOk();
 });
 
 it('fails authorization', function () {
     // When we make an unauthorised request.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'operation' => 'unauthorized',
     ]);
 
     // Then we receive a forbidden error with our custom message.
-    $reponse->assertForbidden();
-    $reponse->assertExactJson([
+    $response->assertForbidden();
+    $response->assertExactJson([
         'message' => 'My custom authorization message.',
     ]);
 });

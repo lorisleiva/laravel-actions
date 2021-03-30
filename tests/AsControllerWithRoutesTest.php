@@ -26,8 +26,8 @@ it('can register its routes directly in the action', function () {
     Actions::registerRoutesForAction(AsControllerWithRoutesTest::class);
 
     // When we call the route defined on the action.
-    $reponse = $this->getJson('/controller/with/routes');
+    $response = $this->getJson('/controller/with/routes');
 
     // Then we receive the expected response.
-    $reponse->assertOk()->assertExactJson(['Ok']);
+    $response->assertOk()->assertExactJson(['Ok']);
 });
