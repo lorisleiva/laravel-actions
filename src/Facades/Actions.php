@@ -7,7 +7,7 @@ use Lorisleiva\Actions\ActionManager;
 
 /**
  * @see ActionManager
- * @method void registerRoutes($paths = 'app/Actions')
+ * @method static void registerRoutes($paths = 'app/Actions')
  */
 class Actions extends Facade
 {
