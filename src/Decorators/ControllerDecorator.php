@@ -61,8 +61,8 @@ class ControllerDecorator
         $this->refreshAction();
         $request = $this->refreshRequest();
 
-        if ($this->shouldValidate()) {
-            $request->resolve();
+        if ($this->shouldValidateRequest()) {
+            $request->validate();
         }
 
         $response = $this->run();
@@ -135,7 +135,7 @@ class ControllerDecorator
         }
     }
 
-    protected function shouldValidate(): bool
+    protected function shouldValidateRequest(): bool
     {
         return $this->hasAnyValidationMethod()
             && ! $this->hasTrait(WithAttributes::class);
