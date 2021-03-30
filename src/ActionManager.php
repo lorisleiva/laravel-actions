@@ -126,6 +126,10 @@ class ActionManager
 
     public function registerRoutesForAction(string $className): void
     {
+        if (! class_exists($className)) {
+            return;
+        }
+
         if (! in_array(AsController::class, class_uses_recursive($className))) {
             return;
         }
