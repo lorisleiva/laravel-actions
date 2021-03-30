@@ -168,7 +168,7 @@ class JobDecorator implements ShouldQueue
 
         if ($firstParameter->allowsNull() && $firstParameterClass === Batch::class) {
             return [$this->batch(), ...$this->parameters];
-        } elseif ($firstParameterClass === static::class) {
+        } elseif (in_array($firstParameterClass, [static::class, UniqueJobDecorator::class], true)) {
             return [$this, ...$this->parameters];
         } else {
             return $this->parameters;
