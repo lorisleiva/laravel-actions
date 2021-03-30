@@ -46,36 +46,36 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide valid data.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'left' => 1,
         'right' => 2,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk();
-    $reponse->assertExactJson([3]);
+    $response->assertOk();
+    $response->assertExactJson([3]);
 });
 
 it('fails authorization with a custom failure', function () {
     // When we make an unauthorized request.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'operation' => 'unauthorized',
     ]);
 
     // Then we receive a custom authorization error.
-    $reponse->assertStatus(400);
-    $reponse->assertExactJson([
+    $response->assertStatus(400);
+    $response->assertExactJson([
         'message' => 'Custom authorization failure.',
     ]);
 });
 
 it('fails validation with a custom failure', function () {
     // When we provide invalid data.
-    $reponse = $this->postJson('/controller');
+    $response = $this->postJson('/controller');
 
     // Then we receive a custom validation error.
-    $reponse->assertStatus(400);
-    $reponse->assertExactJson([
+    $response->assertStatus(400);
+    $response->assertExactJson([
         'message' => 'Custom validation failure.',
     ]);
 });

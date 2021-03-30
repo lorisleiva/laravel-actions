@@ -40,23 +40,23 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide valid data.
-    $reponse = $this->postJson('/controller/1', [
+    $response = $this->postJson('/controller/1', [
         'right' => 2,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk();
-    $reponse->assertExactJson([3]);
+    $response->assertOk();
+    $response->assertExactJson([3]);
 });
 
 it('fails validation', function () {
     // When we provide invalid data.
-    $reponse = $this->postJson('/controller/1');
+    $response = $this->postJson('/controller/1');
 
     // Then we receive a validation error.
-    $reponse->assertStatus(422);
-    $reponse->assertJsonMissingValidationErrors('left');
-    $reponse->assertJsonValidationErrors([
+    $response->assertStatus(422);
+    $response->assertJsonMissingValidationErrors('left');
+    $response->assertJsonValidationErrors([
         'right' => 'The right field is required.',
     ]);
 });

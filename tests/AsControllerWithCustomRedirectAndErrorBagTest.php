@@ -44,14 +44,14 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide valid data.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'left' => 1,
         'right' => 2,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk();
-    $reponse->assertExactJson([3]);
+    $response->assertOk();
+    $response->assertExactJson([3]);
 });
 
 it('throws a validation exception with the custom redirect url and error bag', function () {

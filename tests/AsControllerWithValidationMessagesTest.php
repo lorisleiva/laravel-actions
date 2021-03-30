@@ -45,24 +45,24 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide valid data.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'left' => 1,
         'right' => 2,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk();
-    $reponse->assertExactJson([3]);
+    $response->assertOk();
+    $response->assertExactJson([3]);
 });
 
 
 it('fails validation with custom messages and attributes', function () {
     // When we provide invalid data.
-    $reponse = $this->postJson('/controller');
+    $response = $this->postJson('/controller');
 
     // Then we receive a validation error with these custom messages.
-    $reponse->assertStatus(422);
-    $reponse->assertJsonValidationErrors([
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors([
         'left' => 'You forgot the left operand',
         'right' => 'The right operand field is required.',
     ]);

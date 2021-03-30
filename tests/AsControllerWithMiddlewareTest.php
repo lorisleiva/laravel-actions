@@ -35,10 +35,10 @@ it('can register controller middleware', function () {
     Route::post('/calculator', AsControllerWithMiddlewareTest::class);
 
     // When we call that route.
-    $reponse = $this->postJson('/calculator', [
+    $response = $this->postJson('/calculator', [
         'operation' => 'middleware',
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk()->assertExactJson(['caught by middleware']);
+    $response->assertOk()->assertExactJson(['caught by middleware']);
 });

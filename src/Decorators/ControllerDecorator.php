@@ -8,6 +8,7 @@ use Illuminate\Routing\RouteDependencyResolverTrait;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\DecorateActions;
+use Lorisleiva\Actions\Concerns\WithAttributes;
 
 class ControllerDecorator
 {
@@ -60,8 +61,8 @@ class ControllerDecorator
         $this->refreshAction();
         $request = $this->refreshRequest();
 
-        if ($this->shouldValidate()) {
-            $request->resolve();
+        if ($this->shouldValidateRequest()) {
+            $request->validate();
         }
 
         $response = $this->run();
@@ -134,7 +135,13 @@ class ControllerDecorator
         }
     }
 
-    protected function shouldValidate()
+    protected function shouldValidateRequest(): bool
+    {
+        return $this->hasAnyValidationMethod()
+            && ! $this->hasTrait(WithAttributes::class);
+    }
+
+    protected function hasAnyValidationMethod(): bool
     {
         return $this->hasMethod('authorize')
             || $this->hasMethod('rules')

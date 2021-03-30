@@ -40,25 +40,25 @@ beforeEach(function () {
 
 it('passes validation', function () {
     // When we provide valid data.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'left' => 30,
         'right' => 63,
     ]);
 
     // Then we receive a successful response.
-    $reponse->assertOk()->assertExactJson([93]);
+    $response->assertOk()->assertExactJson([93]);
 });
 
 it('fails validation', function () {
     // When we provide invalid data.
-    $reponse = $this->postJson('/controller', [
+    $response = $this->postJson('/controller', [
         'left' => 63,
         'right' => 30,
     ]);
 
     // Then we receive a validation error.
-    $reponse->assertStatus(422);
-    $reponse->assertJsonValidationErrors([
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors([
         'left' => 'Left must be smaller than 42.',
         'right' => 'Right must be odd.',
     ]);
