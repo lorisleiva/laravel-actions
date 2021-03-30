@@ -117,24 +117,12 @@ class ActionManager
 
     public function registerRoutes($paths = 'app/Actions'): void
     {
-        $paths = Collection::wrap($paths)
-            ->map(function (string $path) {
-                return Str::startsWith($path, DIRECTORY_SEPARATOR) ? $path : base_path($path);
-            })
-            ->unique()
-            ->filter(function (string $path) {
-                return is_dir($path);
-            })
-            ->values();
-
-        if ($paths->isEmpty()) {
+        if (empty($paths = Util::getAbsoluteDirectories($paths))) {
             return;
         }
 
-        foreach ((new Finder)->in($paths->toArray())->files() as $file) {
-            $this->registerRoutesForAction(
-                $this->getClassnameFromPathname($file->getPathname())
-            );
+        foreach ((new Finder)->in($paths)->files() as $file) {
+            $this->registerRoutesForAction(Util::getClassnameFromFile($file));
         }
     }
 
@@ -153,14 +141,5 @@ class ActionManager
         }
 
         $className::routes($this->app->make(Router::class));
-    }
-
-    protected function getClassnameFromPathname(string $pathname): string
-    {
-        return $this->app->getNamespace() . str_replace(
-            ['/', '.php'],
-            ['\\', ''],
-            Str::after($pathname, realpath(app_path()).DIRECTORY_SEPARATOR)
-        );
     }
 }
