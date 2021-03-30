@@ -2,9 +2,12 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
@@ -108,6 +111,26 @@ it('runs as an object', function () {
     expect(AsActionWithValidatedAttributesTest::$latestResult)->toBe(42);
 });
 
+it('fails authorization as an object', function () {
+    // Given we pass an unauthorized operation.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'unauthorized',
+    ]);
+
+    // Then we expect an authorizaion exception.
+})->expectException(AuthorizationException::class);
+
+it('fails validation as an object', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
+
 it('runs as a controller', function () {
     // Given we have a route registered for that action.
     Route::post('compute/{operation}', AsActionWithValidatedAttributesTest::class);
@@ -124,6 +147,31 @@ it('runs as a controller', function () {
     expect(AsActionWithValidatedAttributesTest::$latestResult)->toBe(42);
 });
 
+it('fails authorization as a controller', function () {
+    // Given we have a route registered for that action.
+    Route::post('compute/{operation}', AsActionWithValidatedAttributesTest::class);
+
+    // When we run that endpoint with an unauthorized operation.
+    $response = $this->postJson('compute/unauthorized');
+
+    // Then we expect a forbidden response.
+    $response->assertForbidden();
+    $response->assertExactJson([
+        'message' => 'This action is unauthorized.',
+    ]);
+});
+
+it('fails validation as a controller', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
+
 it('runs as a job', function () {
     // When we dispatch the action as a job.
     AsActionWithValidatedAttributesTest::dispatch(6, 'multiplication', 7);
@@ -131,6 +179,26 @@ it('runs as a job', function () {
     // Then we get the expected result.
     expect(AsActionWithValidatedAttributesTest::$latestResult)->toBe(42);
 });
+
+it('fails authorization as a job', function () {
+    // Given we pass an unauthorized operation.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'unauthorized',
+    ]);
+
+    // Then we expect an authorizaion exception.
+})->expectException(AuthorizationException::class);
+
+it('fails validation as a job', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
 
 it('runs as a listener', function () {
     // Given we are listening for the OperationRequestedEvent.
@@ -143,6 +211,26 @@ it('runs as a listener', function () {
     expect($results[0])->toBe(42);
     expect(AsActionWithValidatedAttributesTest::$latestResult)->toBe(42);
 });
+
+it('fails authorization as a listener', function () {
+    // Given we pass an unauthorized operation.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'unauthorized',
+    ]);
+
+    // Then we expect an authorizaion exception.
+})->expectException(AuthorizationException::class);
+
+it('fails validation as a listener', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
 
 it('runs as a command', function () {
     // Given we registered the action as a command.
@@ -158,6 +246,26 @@ it('runs as a command', function () {
     $command->run();
     expect(AsActionWithValidatedAttributesTest::$latestResult)->toBe(42);
 });
+
+it('fails authorization as a command', function () {
+    // Given we pass an unauthorized operation.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'unauthorized',
+    ]);
+
+    // Then we expect an authorizaion exception.
+})->expectException(AuthorizationException::class);
+
+it('fails validation as a command', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
 
 it('runs as a mock', function () {
     // Given the following attributes.
@@ -178,3 +286,23 @@ it('runs as a mock', function () {
     // Then we get the expected result.
     expect($result)->toBe(42);
 });
+
+it('fails authorization as a mock', function () {
+    // Given we pass an unauthorized operation.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'unauthorized',
+    ]);
+
+    // Then we expect an authorizaion exception.
+})->expectException(AuthorizationException::class);
+
+it('fails validation as a mock', function () {
+    // Given we pass invalid data.
+    AsActionWithValidatedAttributesTest::run([
+        'operation' => 'invalid_operation',
+        'left' => 'one',
+        'right' => 'two',
+    ]);
+
+    // Then we expect a validation exception.
+})->expectException(ValidationException::class);
