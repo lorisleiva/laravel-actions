@@ -36,6 +36,7 @@ it('can access the JobDecorator instance from the asJob method', function () {
 
     // Then it received the JobDecorator as its first argument.
     $job = AsJobWithJobDecoratorTest::$latestJobDecorator;
+    expect($job)->toBeInstanceOf(JobDecorator::class);
     expect($job->getParameters())->toBe([1, 2]);
     expect(get_class($job->getAction()))->toBe(AsJobWithJobDecoratorTest::class);
 
