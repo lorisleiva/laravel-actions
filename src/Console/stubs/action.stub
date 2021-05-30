@@ -1,10 +1,10 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class DummyClass
+class {{ class }}
 {
     use AsAction;
 
