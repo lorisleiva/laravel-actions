@@ -53,10 +53,10 @@ class ControllerDecorator
 
     public function callAction($method, $parameters)
     {
-        return $this->__invoke();
+        return $this->__invoke($method);
     }
 
-    public function __invoke()
+    public function __invoke(string $method)
     {
         $this->refreshAction();
         $request = $this->refreshRequest();
@@ -65,7 +65,7 @@ class ControllerDecorator
             $request->validate();
         }
 
-        $response = $this->run();
+        $response = $this->run($method);
 
         if ($this->hasMethod('jsonResponse') && $request->expectsJson()) {
             $response = $this->callMethod('jsonResponse', [$response, $request]);
@@ -104,7 +104,7 @@ class ControllerDecorator
         }
 
         $currentMethod = Str::afterLast($this->route->action['uses'], '@');
-        $newMethod = $this->getRouteMethod();
+        $newMethod = $this->getDefaultRouteMethod();
 
         if ($currentMethod !== '__invoke' || $currentMethod === $newMethod) {
             return;
@@ -115,7 +115,7 @@ class ControllerDecorator
             ->append('@' . $newMethod);
     }
 
-    protected function getRouteMethod(): string
+    protected function getDefaultRouteMethod(): string
     {
         if ($this->hasMethod('asController')) {
             return 'asController';
@@ -124,14 +124,10 @@ class ControllerDecorator
         return $this->hasMethod('handle') ? 'handle' : '__invoke';
     }
 
-    protected function run()
+    protected function run(string $method)
     {
-        if ($this->hasMethod('asController')) {
-            return $this->resolveFromRouteAndCall('asController');
-        }
-
-        if ($this->hasMethod('handle')) {
-            return $this->resolveFromRouteAndCall('handle');
+        if ($this->hasMethod($method)) {
+            return $this->resolveFromRouteAndCall($method);
         }
     }
 
