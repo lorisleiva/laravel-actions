@@ -2,11 +2,14 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Console\Application as Artisan;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
+use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
+use ReflectionClass;
 use ReflectionMethod;
 use Symfony\Component\Finder\Finder;
 
@@ -115,33 +118,42 @@ class ActionManager
 
     public function registerRoutes($paths = 'app/Actions'): void
     {
-        if (empty($paths = Util::getAbsoluteDirectories($paths))) {
-            return;
-        }
+        Util::loadClasses($paths, fn (string $className) => $this->registerRoutesForAction($className));
+    }
 
-        foreach ((new Finder)->in($paths)->files() as $file) {
-            $this->registerRoutesForAction(Util::getClassnameFromFile($file));
-        }
+    public function registerCommands($paths = 'app/Actions'): void
+    {
+        Util::loadClasses($paths, fn (string $className) => $this->registerCommandsForAction($className));
     }
 
     public function registerRoutesForAction(string $className): void
     {
-        if (! class_exists($className)) {
-            return;
-        }
+        $isValidAction = ! Util::isAbstract($className)
+            && Util::hasTrait(AsController::class, $className)
+            && Util::hasStaticMethod($className, 'routes');
 
-        if (! in_array(AsController::class, class_uses_recursive($className))) {
-            return;
-        }
-
-        if (! method_exists($className, 'routes')) {
-            return;
-        }
-
-        if (! (new ReflectionMethod($className, 'routes'))->isStatic()) {
+        if (! $isValidAction) {
             return;
         }
 
         $className::routes($this->app->make(Router::class));
+    }
+
+    public function registerCommandsForAction(string $className): void
+    {
+        $hasSignature = property_exists($className, 'commandSignature')
+            || method_exists($className, 'getCommandSignature');
+
+        $isValidAction = ! Util::isAbstract($className)
+            && Util::hasTrait(AsCommand::class, $className)
+            && $hasSignature;
+
+        if (! $isValidAction) {
+            return;
+        }
+
+        Artisan::starting(function ($artisan) use ($className) {
+            $artisan->resolve($className);
+        });
     }
 }
