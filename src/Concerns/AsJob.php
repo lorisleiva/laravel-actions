@@ -121,7 +121,11 @@ trait AsJob
             $times = null;
         }
 
-        $count = Queue::pushed(JobDecorator::class, function (JobDecorator $job, $queue) use ($callback) {
+        $decoratorClass = static::jobShouldBeUnique()
+            ? UniqueJobDecorator::class
+            : JobDecorator::class;
+
+        $count = Queue::pushed($decoratorClass, function (JobDecorator $job, $queue) use ($callback) {
             if (! $job->decorates(static::class)) {
                 return false;
             }

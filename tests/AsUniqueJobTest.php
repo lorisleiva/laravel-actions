@@ -98,3 +98,11 @@ it('caches job unique ids for the amount of seconds provided in getJobUniqueFor'
     // Then we have dispatched both of these jobs.
     Queue::assertPushed(UniqueJobDecorator::class, 2);
 });
+
+it('can be tested using the assertPushed helper method', function () {
+    // When we dispatch a unique job.
+    AsUniqueJobTest::dispatch(10);
+
+    // Then we can assert it has been pushed using helper methods.
+    AsUniqueJobTest::assertPushed();
+});
