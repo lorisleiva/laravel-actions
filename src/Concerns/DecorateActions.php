@@ -2,22 +2,10 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
-use Illuminate\Contracts\Container\Container;
-
 trait DecorateActions
 {
-    /** @var Container|null */
-    protected $container;
-
     /** @var mixed */
     protected $action;
-
-    public function setContainer($container): self
-    {
-        $this->container = $container;
-
-        return $this;
-    }
 
     public function setAction($action): self
     {
@@ -53,7 +41,7 @@ trait DecorateActions
 
     protected function resolveAndCallMethod(string $method, array $extraArguments = [])
     {
-        return $this->container->call([$this->action, $method], $extraArguments);
+        return app()->call([$this->action, $method], $extraArguments);
     }
 
     protected function fromActionMethod(string $method, array $methodParameters = [], $default = null)

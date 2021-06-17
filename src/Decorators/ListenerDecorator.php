@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\RouteDependencyResolverTrait;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 
@@ -11,10 +10,9 @@ class ListenerDecorator
     use RouteDependencyResolverTrait;
     use DecorateActions;
 
-    public function __construct($action, Container $container)
+    public function __construct($action)
     {
         $this->setAction($action);
-        $this->setContainer($container);
     }
 
     public function handle(...$arguments)

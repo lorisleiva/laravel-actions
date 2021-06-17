@@ -2,7 +2,7 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Illuminate\Contracts\Container\Container;
+use Illuminate\Container\Container;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
 use Illuminate\Support\Str;
@@ -15,6 +15,9 @@ class ControllerDecorator
     use RouteDependencyResolverTrait;
     use DecorateActions;
 
+    /** @var Container */
+    protected Container $container;
+
     /** @var Route */
     protected Route $route;
 
@@ -24,11 +27,11 @@ class ControllerDecorator
     /** @var bool */
     protected bool $executedAtLeastOne = false;
 
-    public function __construct($action, Container $container, Route $route)
+    public function __construct($action, Route $route)
     {
-        $this->setAction($action);
-        $this->setContainer($container);
+        $this->container = Container::getInstance();
         $this->route = $route;
+        $this->setAction($action);
         $this->replaceRouteMethod();
 
         if ($this->hasMethod('getControllerMiddleware')) {
@@ -87,12 +90,12 @@ class ControllerDecorator
 
     protected function refreshRequest(): ActionRequest
     {
-        $this->container->forgetInstance(ActionRequest::class);
+        app()->forgetInstance(ActionRequest::class);
 
         /** @var ActionRequest $request */
         $request = app(ActionRequest::class);
         $request->setAction($this->action);
-        $this->container->instance(ActionRequest::class, $request);
+        app()->instance(ActionRequest::class, $request);
 
         return $request;
     }
@@ -154,6 +157,8 @@ class ControllerDecorator
 
     protected function resolveFromRouteAndCall($method)
     {
+        $this->container = Container::getInstance();
+
         $arguments = $this->resolveClassMethodDependencies(
             $this->route->parametersWithoutNulls(),
             $this->action,

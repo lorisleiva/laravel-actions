@@ -41,7 +41,7 @@ trait ValidateActions
             return $this->validator;
         }
 
-        $factory = $this->container->make(ValidationFactory::class);
+        $factory = app(ValidationFactory::class);
 
         if ($this->hasMethod('getValidator')) {
             $validator = $this->resolveAndCallMethod('getValidator', compact('factory'));
