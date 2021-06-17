@@ -61,7 +61,7 @@ class ControllerDecorator
         $this->refreshAction();
         $request = $this->refreshRequest();
 
-        if ($this->shouldValidateRequest()) {
+        if ($this->shouldValidateRequest($method)) {
             $request->validate();
         }
 
@@ -124,6 +124,11 @@ class ControllerDecorator
         return $this->hasMethod('handle') ? 'handle' : '__invoke';
     }
 
+    protected function isExplicitMethod(string $method): bool
+    {
+        return ! in_array($method, ['asController', 'handle', '__invoke']);
+    }
+
     protected function run(string $method)
     {
         if ($this->hasMethod($method)) {
@@ -131,9 +136,10 @@ class ControllerDecorator
         }
     }
 
-    protected function shouldValidateRequest(): bool
+    protected function shouldValidateRequest(string $method): bool
     {
         return $this->hasAnyValidationMethod()
+            && ! $this->isExplicitMethod($method)
             && ! $this->hasTrait(WithAttributes::class);
     }
 
