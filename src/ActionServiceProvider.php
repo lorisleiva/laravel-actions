@@ -13,7 +13,7 @@ class ActionServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $manager = new ActionManager($this->app, [
+        $manager = new ActionManager([
             new ControllerDesignPattern(),
             new ListenerDesignPattern(),
             new CommandDesignPattern(),

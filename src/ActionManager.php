@@ -12,18 +12,14 @@ use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 
 class ActionManager
 {
-    /** @var Application */
-    protected Application $app;
-
     /** @var DesignPattern[] */
     protected array $designPatterns = [];
 
     /** @var bool[] */
     protected array $extended = [];
 
-    public function __construct(Application $app, array $designPatterns = [])
+    public function __construct(array $designPatterns = [])
     {
-        $this->app = $app;
         $this->setDesignPatterns($designPatterns);
     }
 
@@ -58,7 +54,7 @@ class ActionManager
             return;
         }
 
-        $this->app->extend($abstract, function ($instance) {
+        app()->extend($abstract, function ($instance) {
             return $this->identifyAndDecorate($instance);
         });
 
@@ -133,7 +129,7 @@ class ActionManager
             return;
         }
 
-        $className::routes($this->app->make(Router::class));
+        $className::routes(app(Router::class));
     }
 
     public function registerCommandsForAction(string $className): void
