@@ -5,11 +5,13 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\Concerns\AsController;
+use Lorisleiva\Actions\Concerns\WithAttributes;
 use Lorisleiva\Actions\Tests\Stubs\User;
 
-class AsControllerWithImplicitBindingsTest
+class AsControllerWithImplicitBindingsAndAttributesTest
 {
     use AsController;
+    use WithAttributes;
 
     /**
      * This middleware is included by default in
@@ -28,9 +30,9 @@ class AsControllerWithImplicitBindingsTest
     }
 }
 
-it('supports implicit route model binding', function () {
+it('supports implicit route model binding even with attributes', function () {
     // Given we have a route registering the controller.
-    Route::get('/users/{user}', AsControllerWithImplicitBindingsTest::class);
+    Route::get('/users/{user}', AsControllerWithImplicitBindingsAndAttributesTest::class);
 
     // And an existing user.
     loadMigrations();
@@ -50,9 +52,9 @@ it('supports implicit route model binding', function () {
     ]);
 });
 
-it('supports custom implicit route model binding', function () {
+it('supports custom implicit route model binding even with attributes', function () {
     // Given we have a registered route binding the user using its name.
-    Route::get('/users/{user:name}', AsControllerWithImplicitBindingsTest::class);
+    Route::get('/users/{user:name}', AsControllerWithImplicitBindingsAndAttributesTest::class);
 
     // And an existing user.
     loadMigrations();
