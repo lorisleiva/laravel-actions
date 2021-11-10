@@ -40,8 +40,8 @@ class ActionServiceProvider extends ServiceProvider
 
     protected function extendActions(ActionManager $manager)
     {
-        $this->app->beforeResolving(function ($abstract, $parameters, Application $app) use ($manager) {
-            if (! class_exists($abstract) || $app->resolved($abstract)) {
+        $this->app->beforeResolving(function ($abstract) use ($manager) {
+            if (! class_exists($abstract) || app()->resolved($abstract)) {
                 return;
             }
 
