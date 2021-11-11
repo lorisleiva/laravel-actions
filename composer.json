@@ -23,7 +23,7 @@
     "require": {
         "php": "^8.0",
         "illuminate/contracts": "^8.15",
-        "lorisleiva/lody": "^0.1.0"
+        "lorisleiva/lody": "^0.2.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
