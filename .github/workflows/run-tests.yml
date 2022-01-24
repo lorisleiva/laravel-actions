@@ -9,11 +9,13 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: ["8.0"]
-        laravel: ["^8.15"]
+        php: ["8.0", "8.1"]
+        laravel: ["^8.15", "^9.0"]
         dependency-version: [prefer-lowest, prefer-stable]
         include:
           - laravel: "^8.15"
+            testbench: "^6.5"
+          - laravel: "^9.0"
             testbench: "^6.5"
         exclude:
           - php: "8.0"
