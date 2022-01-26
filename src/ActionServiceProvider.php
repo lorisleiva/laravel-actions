@@ -40,7 +40,15 @@ class ActionServiceProvider extends ServiceProvider
     protected function extendActions(ActionManager $manager)
     {
         $this->app->beforeResolving(function ($abstract) use ($manager) {
-            if (! class_exists($abstract) || app()->resolved($abstract)) {
+            try {
+                // Fix conflict with package: barryvdh/laravel-ide-helper.
+                // @see https://github.com/lorisleiva/laravel-actions/issues/142
+                $classExists = class_exists($abstract);
+            } catch (\ReflectionException $exception) {
+                return;
+            }
+
+            if (! $classExists || app()->resolved($abstract)) {
                 return;
             }
 
