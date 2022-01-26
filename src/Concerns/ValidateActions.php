@@ -155,7 +155,7 @@ trait ValidateActions
         $response->authorize();
     }
 
-    public function validated(): array
+    public function validated($key = null, $default = null): array
     {
         return $this->validator->validated();
     }

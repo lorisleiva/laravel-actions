@@ -23,10 +23,10 @@
     "require": {
         "php": "^8.0",
         "illuminate/contracts": "^8.15|^9.0",
-        "lorisleiva/lody": "^0.2.0"
+        "lorisleiva/lody": "^0.3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.0",
+        "orchestra/testbench": "^7.0",
         "pestphp/pest": "^1.2",
         "phpunit/phpunit": "^9.5"
     },
