@@ -16,7 +16,7 @@ jobs:
           - laravel: "^8.15"
             testbench: "^6.5"
           - laravel: "^9.0"
-            testbench: "^6.5"
+            testbench: "^7.0"
         exclude:
           - php: "8.0"
             dependency-version: prefer-lowest
