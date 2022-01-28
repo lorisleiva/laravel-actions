@@ -13,6 +13,7 @@ use Illuminate\Support\Reflector;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use ReflectionMethod;
 use ReflectionParameter;
+use Throwable;
 
 class JobDecorator implements ShouldQueue
 {
@@ -136,7 +137,21 @@ class JobDecorator implements ShouldQueue
         return $this->fromActionMethod('getJobMiddleware', $this->parameters, []);
     }
 
-    public function displayName(): string
+	/**
+	 * Laravel will call failed() on a job that fails. This function will call
+	 * the function jobFailed(Throwable $e) on the underlying action if Laravel
+	 * calls the failed() function on the job.
+	 *
+	 * @param Throwable $e
+	 * @return void
+	 */
+	public function failed(Throwable $e) {
+		if ($this->hasMethod('jobFailed')) {
+			$this->callMethod('jobFailed', [$e]);
+		}
+	}
+
+	public function displayName(): string
     {
         return $this->fromActionMethod(
             'getJobDisplayName',
