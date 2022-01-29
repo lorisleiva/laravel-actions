@@ -147,9 +147,7 @@ class JobDecorator implements ShouldQueue
      */
     public function failed(Throwable $e)
     {
-        if ($this->hasMethod('jobFailed')) {
-            $this->callMethod('jobFailed', [$e]);
-        }
+        $this->fromActionMethod('jobFailed', [$e, ...$this->parameters], []);
     }
 
     public function displayName(): string

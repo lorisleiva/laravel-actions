@@ -13,7 +13,13 @@ class AsJobWithFailureTest
     /** @var null|int|string */
     public static $latestResult;
 
-    public function handle(bool $throwException)
+    /** @var string|null */
+    public static $latestError;
+
+    /**
+     * @throws Exception
+     */
+    public function handle(bool $throwException, ?string $errorMessage = null)
     {
         static::$latestResult = 'started';
 
@@ -24,25 +30,41 @@ class AsJobWithFailureTest
         static::$latestResult = 'completed';
     }
 
-    public function jobFailed(Throwable $e)
+    public function jobFailed(Throwable $e, bool $throwException, string $errorMessage)
     {
         static::$latestResult = 'exception_thrown';
+        static::$latestError = $errorMessage;
     }
 }
 
-it('asserts a job failure calls the jobFailed() function', function () {
-    $this->expectException(Exception::class);
-
-    // When we dispatch the action.
-    AsJobWithFailureTest::dispatch(true);
-
-    expect(AsJobWithFailureTest::$latestResult)->toBe('exception_thrown');
+beforeEach(function () {
+    // Given we reset the static variables.
+    AsJobWithFailureTest::$latestResult = null;
+    AsJobWithFailureTest::$latestError = null;
 });
 
-it('asserts no job failure does not call the jobFailed() function', function () {
+it('calls the jobFailed function when the job fails', function () {
+    try {
+        // When we dispatch the action whilst telling it to throw an exception.
+        AsJobWithFailureTest::dispatch(true, 'something went wrong');
+    } catch (Throwable $e) {
+        // Then an exception was thrown and the jobFailed method was executed.
+        expect(AsJobWithFailureTest::$latestResult)->toBe('exception_thrown');
+        expect(AsJobWithFailureTest::$latestError)->toBe('something went wrong');
+        return;
+    }
 
-    // When we dispatch the action.
+    // Otherwise, we fail because we did not throw an exception.
+    test()->fail('The job should have failed by throwing an exception.');
+
+});
+
+it('does not call the jobFailed function when the job succeeds', function () {
+
+    // When we dispatch the action whilst telling it to succeed.
     AsJobWithFailureTest::dispatch(false);
 
+    // Then no exception was thrown and the jobFailed method was not executed.
     expect(AsJobWithFailureTest::$latestResult)->toBe('completed');
+    expect(AsJobWithFailureTest::$latestError)->toBeNull();
 });
