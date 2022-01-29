@@ -51,12 +51,12 @@ it('calls the jobFailed function when the job fails', function () {
         // Then an exception was thrown and the jobFailed method was executed.
         expect(AsJobWithFailureTest::$latestResult)->toBe('exception_thrown');
         expect(AsJobWithFailureTest::$latestError)->toBe('something went wrong');
+
         return;
     }
 
     // Otherwise, we fail because we did not throw an exception.
     test()->fail('The job should have failed by throwing an exception.');
-
 });
 
 it('does not call the jobFailed function when the job succeeds', function () {
