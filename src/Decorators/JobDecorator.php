@@ -137,21 +137,22 @@ class JobDecorator implements ShouldQueue
         return $this->fromActionMethod('getJobMiddleware', $this->parameters, []);
     }
 
-	/**
-	 * Laravel will call failed() on a job that fails. This function will call
-	 * the function jobFailed(Throwable $e) on the underlying action if Laravel
-	 * calls the failed() function on the job.
-	 *
-	 * @param Throwable $e
-	 * @return void
-	 */
-	public function failed(Throwable $e) {
-		if ($this->hasMethod('jobFailed')) {
-			$this->callMethod('jobFailed', [$e]);
-		}
-	}
+    /**
+     * Laravel will call failed() on a job that fails. This function will call
+     * the function jobFailed(Throwable $e) on the underlying action if Laravel
+     * calls the failed() function on the job.
+     *
+     * @param Throwable $e
+     * @return void
+     */
+    public function failed(Throwable $e)
+    {
+        if ($this->hasMethod('jobFailed')) {
+            $this->callMethod('jobFailed', [$e]);
+        }
+    }
 
-	public function displayName(): string
+    public function displayName(): string
     {
         return $this->fromActionMethod(
             'getJobDisplayName',
