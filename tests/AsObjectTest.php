@@ -40,16 +40,16 @@ it('provides a static run method', function () {
     expect($result)->toBe(3);
 });
 
-it('can be run conditionally', function() {
-    $result = AsObjectTest::runIf(true, 1,2);
+it('can be run conditionally', function () {
+    $result = AsObjectTest::runIf(true, 1, 2);
     expect($result)->toBe(3);
 
-    $result = AsObjectTest::runIf(false, 1,2);
+    $result = AsObjectTest::runIf(false, 1, 2);
     expect($result)->toBeInstanceOf(Fluent::class);
 
-    $result = AsObjectTest::runUnless(true, 1,2);
+    $result = AsObjectTest::runUnless(true, 1, 2);
     expect($result)->toBeInstanceOf(Fluent::class);
 
-    $result = AsObjectTest::runUnless(false, 1,2);
+    $result = AsObjectTest::runUnless(false, 1, 2);
     expect($result)->toBe(3);
 });
