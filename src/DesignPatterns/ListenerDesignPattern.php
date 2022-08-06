@@ -8,7 +8,7 @@ use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsListener;
 use Lorisleiva\Actions\Decorators\ListenerDecorator;
 
-class ListenerDesignPattern extends DesignPattern
+class ListenerDesignPattern implements DesignPattern
 {
     public function getTrait(): string
     {

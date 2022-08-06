@@ -7,7 +7,7 @@ use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Decorators\ControllerDecorator;
 
-class ControllerDesignPattern extends DesignPattern
+class ControllerDesignPattern implements DesignPattern
 {
     public function getTrait(): string
     {

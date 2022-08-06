@@ -4,11 +4,11 @@ namespace Lorisleiva\Actions\DesignPatterns;
 
 use Lorisleiva\Actions\BacktraceFrame;
 
-abstract class DesignPattern
+interface DesignPattern
 {
-    abstract public function getTrait(): string;
+    public function getTrait(): string;
 
-    abstract public function recognizeFrame(BacktraceFrame $frame): bool;
+    public function recognizeFrame(BacktraceFrame $frame): bool;
 
-    abstract public function decorate($instance, BacktraceFrame $frame);
+    public function decorate($instance, BacktraceFrame $frame);
 }

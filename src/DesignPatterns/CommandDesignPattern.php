@@ -8,7 +8,7 @@ use Lorisleiva\Actions\BacktraceFrame;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Decorators\CommandDecorator;
 
-class CommandDesignPattern extends DesignPattern
+class CommandDesignPattern implements DesignPattern
 {
     public function getTrait(): string
     {
