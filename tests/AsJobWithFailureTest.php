@@ -60,7 +60,6 @@ it('calls the jobFailed function when the job fails', function () {
 });
 
 it('does not call the jobFailed function when the job succeeds', function () {
-
     // When we dispatch the action whilst telling it to succeed.
     AsJobWithFailureTest::dispatch(false);
 
