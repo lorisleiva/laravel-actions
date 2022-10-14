@@ -3,8 +3,10 @@
 namespace Lorisleiva\Actions\Decorators;
 
 use Illuminate\Container\Container;
+use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\DecorateActions;
@@ -63,12 +65,7 @@ class ControllerDecorator
     {
         $this->refreshAction();
         $request = $this->refreshRequest();
-
-        if ($this->shouldValidateRequest($method)) {
-            $request->validate();
-        }
-
-        $response = $this->run($method);
+        $response = $this->run($method, $request);
 
         if ($this->hasMethod('jsonResponse') && $request->expectsJson()) {
             $response = $this->callMethod('jsonResponse', [$response, $request]);
@@ -132,11 +129,44 @@ class ControllerDecorator
         return ! in_array($method, ['asController', 'handle', '__invoke']);
     }
 
-    protected function run(string $method)
+    protected function run(string $method, ActionRequest $request)
     {
-        if ($this->hasMethod($method)) {
-            return $this->resolveFromRouteAndCall($method);
+        return (new Pipeline($this->container))
+            ->send($request)
+            ->through($this->gatherMiddleware($method))
+            ->then(function ($request) use ($method) {
+                if ($this->shouldValidateRequest($method)) {
+                    $request->validate();
+                }
+
+                if ($this->hasMethod($method)) {
+                    return $this->resolveFromRouteAndCall($method);
+                }
+
+                return null;
+            });
+    }
+
+    protected function gatherMiddleware(string $method): array
+    {
+        $shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
+            $this->container->make('middleware.disable') === true;
+
+        if ($shouldSkipMiddleware) {
+            return [];
         }
+
+        /** @var Router $router */
+        $router = $this->container->make(Router::class);
+        $routeMiddleware = $this->route->middleware();
+        $controllerMiddleware = $this->route->controllerDispatcher()->getMiddleware(
+            $this->route->getController(), $method
+        );
+        $middleware = $router->uniqueMiddleware(array_merge(
+            $routeMiddleware, $controllerMiddleware
+        ));
+
+        return $router->resolveMiddleware($middleware, $this->route->excludedMiddleware());
     }
 
     protected function shouldValidateRequest(string $method): bool

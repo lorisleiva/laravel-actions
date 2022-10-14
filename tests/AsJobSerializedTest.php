@@ -62,6 +62,7 @@ it('serialises Eloquent models within the parameters', function () {
         'id' => $model->id,
         'relations' => [],
         'connection' => 'sqlite',
+        'collectionClass' => null,
     ]);
 });
 
@@ -99,6 +100,7 @@ it('serialises Eloquent collections within the parameters', function () {
         'id' => $collection->pluck('id')->toArray(),
         'relations' => [],
         'connection' => 'sqlite',
+        'collectionClass' => null,
     ]);
 });
 
