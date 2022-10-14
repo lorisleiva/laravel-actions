@@ -160,10 +160,12 @@ class ControllerDecorator
         $router = $this->container->make(Router::class);
         $routeMiddleware = $this->route->middleware();
         $controllerMiddleware = $this->route->controllerDispatcher()->getMiddleware(
-            $this->route->getController(), $method
+            $this->route->getController(),
+            $method
         );
         $middleware = $router->uniqueMiddleware(array_merge(
-            $routeMiddleware, $controllerMiddleware
+            $routeMiddleware,
+            $controllerMiddleware
         ));
 
         return $router->resolveMiddleware($middleware, $this->route->excludedMiddleware());
