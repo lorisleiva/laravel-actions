@@ -75,7 +75,8 @@ it('calls route and controller middleware exactly once', function () {
     expect(AsControllerWithMiddlewareTest::$middlewareCounter)->toBe(1);
 });
 
-class RouteMiddleware {
+class RouteMiddleware
+{
     public static int $counter = 0;
 
     public function handle(Request $request, $next)
