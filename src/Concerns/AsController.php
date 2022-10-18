@@ -13,4 +13,14 @@ trait AsController
     {
         return $this->handle(...$arguments);
     }
+
+    /**
+     * This empty method is required to enable controller middleware on the action.
+     * @see https://github.com/lorisleiva/laravel-actions/issues/199
+     * @return void
+     */
+    public function getMiddleware()
+    {
+        // ...
+    }
 }
