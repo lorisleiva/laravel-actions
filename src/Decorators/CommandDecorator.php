@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Decorators;
 
 use Illuminate\Console\Command;
+use \Illuminate\Console\View\Components\Factory;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use Lorisleiva\Actions\Exceptions\MissingCommandSignatureException;
 
@@ -25,6 +26,11 @@ class CommandDecorator extends Command
         }
 
         parent::__construct();
+    }
+
+    public function getCommandComponents():Factory
+    {
+        return $this->components;
     }
 
     public function handle()
