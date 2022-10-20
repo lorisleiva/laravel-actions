@@ -28,11 +28,6 @@ class CommandDecorator extends Command
         parent::__construct();
     }
 
-    public function getCommandComponents():Factory
-    {
-        return $this->components;
-    }
-
     public function handle()
     {
         if ($this->hasMethod('asCommand')) {
@@ -42,5 +37,10 @@ class CommandDecorator extends Command
         if ($this->hasMethod('handle')) {
             return $this->resolveAndCallMethod('handle', ['command' => $this]);
         }
+    }
+
+    public function getComponents():Factory
+    {
+        return $this->components;
     }
 }
