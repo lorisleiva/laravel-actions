@@ -2,8 +2,8 @@
 
 namespace Lorisleiva\Actions\Decorators;
 
-use Illuminate\Console\Command;
 use \Illuminate\Console\View\Components\Factory;
+use Illuminate\Console\Command;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use Lorisleiva\Actions\Exceptions\MissingCommandSignatureException;
 
