@@ -56,13 +56,11 @@ it('serialises Eloquent models within the parameters', function () {
 
     // Then the model parameter has been serialised into a ModelIdentifier.
     $firstParameter = (array) data_get($serializedJob, 'parameters.0');
-    expect($firstParameter)->toBe([
-        '__PHP_Incomplete_Class_Name' => ModelIdentifier::class,
-        'class' => get_class($model),
-        'id' => $model->id,
-        'relations' => [],
-        'connection' => 'sqlite',
-    ]);
+    expect($firstParameter['__PHP_Incomplete_Class_Name'])->toBe(ModelIdentifier::class)
+        ->and($firstParameter['class'])->toBe(get_class($model))
+        ->and($firstParameter['id'])->toBe($model->id)
+        ->and($firstParameter['relations'])->toBe([])
+        ->and($firstParameter['connection'])->toBe("sqlite");
 });
 
 it('unserialises Eloquent models within the parameters', function () {
@@ -93,13 +91,11 @@ it('serialises Eloquent collections within the parameters', function () {
 
     // Then the collection parameter has been serialised into a ModelIdentifier.
     $firstParameter = (array) data_get($serializedJob, 'parameters.0');
-    expect($firstParameter)->toBe([
-        '__PHP_Incomplete_Class_Name' => ModelIdentifier::class,
-        'class' => get_class($modelA),
-        'id' => $collection->pluck('id')->toArray(),
-        'relations' => [],
-        'connection' => 'sqlite',
-    ]);
+    expect($firstParameter['__PHP_Incomplete_Class_Name'])->toBe(ModelIdentifier::class)
+        ->and($firstParameter['class'])->toBe(get_class($modelA))
+        ->and($firstParameter['id'])->toBe($collection->pluck('id')->toArray())
+        ->and($firstParameter['relations'])->toBe([])
+        ->and($firstParameter['connection'])->toBe("sqlite");
 });
 
 it('unserialises Eloquent collections within the parameters', function () {
