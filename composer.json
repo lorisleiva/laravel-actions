@@ -26,7 +26,7 @@
         "lorisleiva/lody": "^0.3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0",
+        "orchestra/testbench": "7.0.0",
         "pestphp/pest": "1.21.3",
         "phpunit/phpunit": "^9.5"
     },
