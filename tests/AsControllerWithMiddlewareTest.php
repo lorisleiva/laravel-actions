@@ -34,6 +34,12 @@ class AsControllerWithMiddlewareTest
     }
 }
 
+beforeEach(function () {
+    // Given we reset the static variables.
+    AsControllerWithMiddlewareTest::$middlewareCounter = 0;
+    RouteMiddleware::$counter = 0;
+});
+
 it('can register controller middleware', function () {
     // Given the action is registered as a controller.
     Route::post('/calculator', AsControllerWithMiddlewareTest::class);
