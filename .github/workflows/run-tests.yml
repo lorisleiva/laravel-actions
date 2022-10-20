@@ -16,7 +16,7 @@ jobs:
           - laravel: "^8.67"
             testbench: "^6.23"
           - laravel: "^9.0"
-            testbench: "^7.0"
+            testbench: "7.0"
         exclude:
           - php: "8.0"
             laravel: "^8.67"
