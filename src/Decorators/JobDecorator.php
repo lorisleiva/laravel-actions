@@ -22,8 +22,6 @@ class JobDecorator implements ShouldQueue
     use Queueable;
     use Batchable;
     use SerializesModels {
-        __sleep as protected sleepFromSerializesModels;
-        __wakeup as protected wakeupFromSerializesModels;
         __serialize as protected serializeFromSerializesModels;
         __unserialize as protected unserializeFromSerializesModels;
     }
@@ -205,19 +203,6 @@ class JobDecorator implements ShouldQueue
         array_walk($this->parameters, function (&$value) {
             $value = $this->getRestoredPropertyValue($value);
         });
-    }
-
-    public function __sleep()
-    {
-        $this->serializeProperties();
-
-        return $this->sleepFromSerializesModels();
-    }
-
-    public function __wakeup()
-    {
-        $this->wakeupFromSerializesModels();
-        $this->unserializeProperties();
     }
 
     public function __serialize()
