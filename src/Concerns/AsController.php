@@ -21,6 +21,6 @@ trait AsController
      */
     public function getMiddleware()
     {
-        // ...
+        return [];
     }
 }
