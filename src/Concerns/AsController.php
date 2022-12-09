@@ -17,10 +17,10 @@ trait AsController
     /**
      * This empty method is required to enable controller middleware on the action.
      * @see https://github.com/lorisleiva/laravel-actions/issues/199
-     * @return void
+     * @return array
      */
     public function getMiddleware()
     {
-        // ...
+        return [];
     }
 }
