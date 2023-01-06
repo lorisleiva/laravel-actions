@@ -24,7 +24,12 @@ class ActionServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/actions.php', 'actions');
+
         if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/actions.php' => config_path('actions.php'),
+            ], 'actions-config');
             // publish Stubs File
             $this->publishes([
                 __DIR__ . '/Console/stubs/action.stub' => base_path('stubs/action.stub'),

@@ -26,8 +26,8 @@
         "lorisleiva/lody": "^0.3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "7.0.0",
-        "orchestra/testbench-core": "7.0.0",
+        "orchestra/testbench": "^7.0.0",
+        "orchestra/testbench-core": "^7.0.0",
         "pestphp/pest": "^1.2",
         "phpunit/phpunit": "^9.5"
     },
@@ -43,7 +43,10 @@
     },
     "scripts": {
         "test": "vendor/bin/pest --colors=always",
-        "test-coverage": "vendor/bin/pest --coverage-html coverage"
+        "test-coverage": "vendor/bin/pest --coverage-html coverage",
+        "post-autoload-dump": [
+            "@php vendor/bin/testbench package:discover --ansi"
+        ]
     },
     "config": {
         "sort-packages": true,
@@ -54,7 +57,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Lorisleiva\\Actions\\ActionServiceProvider"
+                "Lorisleiva\\Actions\\ActionServiceProvider",
+                "Lorisleiva\\Actions\\ActionEventServiceProvider"
             ],
             "aliases": {
                 "Action": "Lorisleiva\\Actions\\Facades\\Actions"

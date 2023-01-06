@@ -3,6 +3,8 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Lorisleiva\Actions\ActionServiceProvider;
+use Lorisleiva\Actions\EventServiceProvider;
+use Lorisleiva\Lody\Lody;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -11,11 +13,7 @@ class TestCase extends Orchestra
     {
         return [
             ActionServiceProvider::class,
+            EventServiceProvider::class
         ];
-    }
-
-    public function getEnvironmentSetUp($app)
-    {
-        //
     }
 }
