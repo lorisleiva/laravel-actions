@@ -58,7 +58,7 @@
         "laravel": {
             "providers": [
                 "Lorisleiva\\Actions\\ActionServiceProvider",
-                "Lorisleiva\\Actions\\ActionEventServiceProvider"
+                "Lorisleiva\\Actions\\EventServiceProvider"
             ],
             "aliases": {
                 "Action": "Lorisleiva\\Actions\\Facades\\Actions"
