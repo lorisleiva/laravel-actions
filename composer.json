@@ -22,12 +22,12 @@
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/contracts": "^8.15 || 9.0 - 9.34 || ^9.36",
+        "illuminate/contracts": "^8.15 || 9.0 - 9.34 || ^9.36|^10.0",
         "lorisleiva/lody": "^0.3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "7.0.0",
-        "orchestra/testbench-core": "7.0.0",
+        "orchestra/testbench": "7.0.0|^8.0",
+        "orchestra/testbench-core": "7.0.0|^7.21",
         "pestphp/pest": "^1.2",
         "phpunit/phpunit": "^9.5"
     },
