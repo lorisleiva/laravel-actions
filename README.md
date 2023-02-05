@@ -1,7 +1,7 @@
 # ⚡️ Laravel Actions
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/lorisleiva/laravel-actions/Tests?label=tests)](https://github.com/lorisleiva/laravel-actions/actions?query=workflow%3ATests+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/lorisleiva/laravel-actions/run-tests.yml?branch=main)](https://github.com/lorisleiva/laravel-actions/actions?query=workflow%3ATests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/lorisleiva/laravel-actions.svg)](https://packagist.org/packages/lorisleiva/laravel-actions)
 
 ![hero](https://user-images.githubusercontent.com/3642397/104024620-4e572400-51bb-11eb-97fc-c2692b16eaa7.png)
