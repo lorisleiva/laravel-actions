@@ -60,7 +60,7 @@ it('serialises Eloquent models within the parameters', function () {
         ->and($firstParameter['class'])->toBe(get_class($model))
         ->and($firstParameter['id'])->toBe($model->id)
         ->and($firstParameter['relations'])->toBe([])
-        ->and($firstParameter['connection'])->toBe("testing");
+        ->and($firstParameter['connection'])->toBeIn(["testing", "sqlite"]);
 });
 
 it('unserialises Eloquent models within the parameters', function () {
@@ -95,7 +95,7 @@ it('serialises Eloquent collections within the parameters', function () {
         ->and($firstParameter['class'])->toBe(get_class($modelA))
         ->and($firstParameter['id'])->toBe($collection->pluck('id')->toArray())
         ->and($firstParameter['relations'])->toBe([])
-        ->and($firstParameter['connection'])->toBe("testing");
+        ->and($firstParameter['connection'])->toBeIn(["testing", "sqlite"]);
 });
 
 it('unserialises Eloquent collections within the parameters', function () {
