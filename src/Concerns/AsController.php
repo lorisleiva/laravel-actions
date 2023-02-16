@@ -2,6 +2,9 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+use Lorisleiva\Actions\Decorators\ControllerDecorator;
+use Illuminate\Support\Facades\Route;
+
 trait AsController
 {
     /**
@@ -11,7 +14,7 @@ trait AsController
      */
     public function __invoke(...$arguments)
     {
-        return $this->handle(...$arguments);
+        return (new ControllerDecorator($this, Route::current()))->execute();
     }
 
     /**

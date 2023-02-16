@@ -54,6 +54,13 @@ class ControllerDecorator
         }, $this->middleware);
     }
 
+    public function execute()
+    {
+        return $this->run(
+            $this->getDefaultRouteMethod()
+        );
+    }
+
     public function callAction($method, $parameters)
     {
         return $this->__invoke($method);
@@ -158,6 +165,10 @@ class ControllerDecorator
     protected function resolveFromRouteAndCall($method)
     {
         $this->container = Container::getInstance();
+
+        $router = app('router');
+        $router->substituteBindings($this->route);
+        $router->substituteImplicitBindings($this->route);
 
         $arguments = $this->resolveClassMethodDependencies(
             $this->route->parametersWithoutNulls(),
