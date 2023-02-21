@@ -43,7 +43,7 @@ it('asserts an action has been pushed - success', function () {
 
     // Then we can assert it has been dispatched.
     AsJobWithAssertionsTest::assertPushed();
-});
+})->with('custom job decorators');
 
 it('asserts an action has been pushed - failure', function () {
     // Given we don't dispatch the action.
@@ -55,7 +55,7 @@ it('asserts an action has been pushed - failure', function () {
 
     // When we assert that it was pushed.
     AsJobWithAssertionsTest::assertPushed();
-});
+})->with('custom job decorators');
 
 it('asserts an action has not been pushed - success', function () {
     // When we don't dispatch the action.
@@ -63,7 +63,7 @@ it('asserts an action has not been pushed - success', function () {
 
     // Then we can assert it has not been dispatched.
     AsJobWithAssertionsTest::assertNotPushed();
-});
+})->with('custom job decorators');
 
 it('asserts an action has not been pushed - failure', function () {
     // Given we dispatched the action.
@@ -75,7 +75,7 @@ it('asserts an action has not been pushed - failure', function () {
 
     // When we assert that it was not pushed.
     AsJobWithAssertionsTest::assertNotPushed();
-});
+})->with('custom job decorators');
 
 it('asserts an action has been pushed a given amount of times - success', function () {
     // When we dispatch the action twice.
@@ -84,7 +84,7 @@ it('asserts an action has been pushed a given amount of times - success', functi
 
     // Then we can assert it has been dispatched.
     AsJobWithAssertionsTest::assertPushed(2);
-});
+})->with('custom job decorators');
 
 it('asserts an action has been pushed a given amount of times - failure', function () {
     // Given we dispatched the action twice.
@@ -97,7 +97,7 @@ it('asserts an action has been pushed a given amount of times - failure', functi
 
     // When we assert that it was pushed 3 times.
     AsJobWithAssertionsTest::assertPushed(3);
-});
+})->with('custom job decorators');
 
 it('asserts an action has been pushed on a given queue - success', function () {
     // When we dispatch the action on "some-queue".
@@ -106,7 +106,7 @@ it('asserts an action has been pushed on a given queue - success', function () {
 
     // Then we can assert it has been dispatched on that queue.
     AsJobWithAssertionsTest::assertPushedOn('some-queue');
-});
+})->with('custom job decorators');
 
 it('asserts an action has been pushed on a given queue - failure', function () {
     // Given we dispatched the action on "some-queue".
@@ -119,4 +119,4 @@ it('asserts an action has been pushed on a given queue - failure', function () {
 
     // When we pushed it on some other queue.
     AsJobWithAssertionsTest::assertPushedOn('some-other-queue');
-});
+})->with('custom job decorators');

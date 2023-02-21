@@ -7,6 +7,7 @@ use Illuminate\Console\Application;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
+use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\User;
 
@@ -46,7 +47,7 @@ function registerCommands(array $commands): void
 
 function assertJobPushed(string $class, ?Closure $callback = null): void
 {
-    Queue::assertPushed(JobDecorator::class, function (JobDecorator $job) use ($class, $callback) {
+    Queue::assertPushed(ActionManager::$jobDecorator, function (JobDecorator $job) use ($class, $callback) {
         if (! $job->decorates($class)) {
             return false;
         }
