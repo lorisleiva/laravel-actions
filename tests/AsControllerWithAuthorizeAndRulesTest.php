@@ -73,7 +73,7 @@ it('fails validation', function () {
     $response->assertStatus(422);
     $response->assertJsonValidationErrors([
         'operation' => 'The selected operation is invalid.',
-        'left' => 'The left must be an integer.',
+        'left' => 'The left field must be an integer.',
         'right' => 'The right field is required.',
     ]);
 });
