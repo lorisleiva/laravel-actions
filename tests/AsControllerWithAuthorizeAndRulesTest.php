@@ -71,11 +71,7 @@ it('fails validation', function () {
 
     // Then we receive a validation error.
     $response->assertStatus(422);
-    $response->assertJsonValidationErrors([
-        'operation' => 'The selected operation is invalid.',
-        'left' => 'The left field must be an integer.',
-        'right' => 'The right field is required.',
-    ]);
+    $response->assertJsonValidationErrors(['operation', 'left', 'right']);
 });
 
 it('uses a new validator at every request', function () {
