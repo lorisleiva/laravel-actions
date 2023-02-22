@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
+use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
@@ -25,7 +26,7 @@ trait AsJob
             return static::makeUniqueJob(...$arguments);
         }
 
-        return new JobDecorator(static::class, ...$arguments);
+        return new ActionManager::$jobDecorator(static::class, ...$arguments);
     }
 
     /**
@@ -34,7 +35,7 @@ trait AsJob
      */
     public static function makeUniqueJob(...$arguments): UniqueJobDecorator
     {
-        return new UniqueJobDecorator(static::class, ...$arguments);
+        return new ActionManager::$uniqueJobDecorator(static::class, ...$arguments);
     }
 
     /**
@@ -122,8 +123,8 @@ trait AsJob
         }
 
         $decoratorClass = static::jobShouldBeUnique()
-            ? UniqueJobDecorator::class
-            : JobDecorator::class;
+            ? ActionManager::$uniqueJobDecorator
+            : ActionManager::$jobDecorator;
 
         $count = Queue::pushed($decoratorClass, function (JobDecorator $job, $queue) use ($callback) {
             if (! $job->decorates(static::class)) {

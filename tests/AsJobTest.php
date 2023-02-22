@@ -6,9 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
+use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\CustomJobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\CustomUniqueJobDecorator;
 
 class AsJobTest
 {
@@ -79,7 +82,7 @@ it('can be dispatched asynchronously with parameters', function () {
     assertJobPushedWith(AsJobTest::class, $parameters);
 });
 
-it('can make a job statically', function () {
+it('can make a job statically', function (string $expectedJobClass) {
     // Given the following job parameters.
     $parameters = [1, 'two', new Filesystem()];
 
@@ -90,7 +93,7 @@ it('can make a job statically', function () {
     dispatch($job);
 
     // Then the created job is a JobDecorator that kept track of the action and its paremeters.
-    expect($job)->toBeInstanceOf(JobDecorator::class);
+    expect($job)->toBeInstanceOf($expectedJobClass);
     expect($job->getAction())->toBeInstanceOf(AsJobTest::class);
     expect($job->getParameters())->toBe($parameters);
 
@@ -99,16 +102,16 @@ it('can make a job statically', function () {
 
     // And the job was dispatched to the queue.
     assertJobPushed(AsJobTest::class);
-});
+})->with('custom job decorators');
 
-it('can make a unique job statically', function () {
+it('can make a unique job statically', function (string $expectedJobClass) {
     // When we make a unique job from the action.
     $job = AsJobTest::makeUniqueJob();
 
     // Then it returns a UniqueJobDecorator.
-    expect($job)->toBeInstanceOf(UniqueJobDecorator::class);
+    expect($job)->toBeInstanceOf($expectedJobClass);
     expect($job)->toBeInstanceOf(ShouldBeUnique::class);
-});
+})->with('custom unique job decorators');
 
 it('can be dispatched with overridden configurations', function () {
     // When we dispatch a job with the following configurations.

@@ -3,15 +3,24 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Decorators\JobDecorator;
+use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 use Lorisleiva\Lody\Lody;
 
 class ActionManager
 {
+    /** @var class-string<JobDecorator> */
+    public static string $jobDecorator = JobDecorator::class;
+
+    /** @var class-string<JobDecorator&ShouldBeUnique> */
+    public static string $uniqueJobDecorator = UniqueJobDecorator::class;
+
     /** @var DesignPattern[] */
     protected array $designPatterns = [];
 
@@ -21,6 +30,22 @@ class ActionManager
     public function __construct(array $designPatterns = [])
     {
         $this->setDesignPatterns($designPatterns);
+    }
+
+    /**
+     * @param class-string<JobDecorator> $jobDecoratorClass
+     */
+    public static function useJobDecorator(string $jobDecoratorClass): void
+    {
+        static::$jobDecorator = $jobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<JobDecorator&ShouldBeUnique> $uniqueJobDecoratorClass
+     */
+    public static function useUniqueJobDecorator(string $uniqueJobDecoratorClass): void
+    {
+        static::$uniqueJobDecorator = $uniqueJobDecoratorClass;
     }
 
     public function setDesignPatterns(array $designPatterns): ActionManager
