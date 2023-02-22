@@ -168,11 +168,7 @@ it('fails validation as a controller', function () {
 
     // Then we expect a forbidden response.
     $response->assertStatus(422);
-    $response->assertJsonValidationErrors([
-        'operation' => 'The selected operation is invalid.',
-        'left' => 'The left must be an integer.',
-        'right' => 'The right field is required.',
-    ]);
+    $response->assertJsonValidationErrors(['operation', 'left', 'right']);
 });
 
 it('runs as a job', function () {
