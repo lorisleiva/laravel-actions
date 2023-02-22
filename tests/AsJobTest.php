@@ -6,12 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
-use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
-use Lorisleiva\Actions\Tests\Stubs\CustomJobDecorator;
-use Lorisleiva\Actions\Tests\Stubs\CustomUniqueJobDecorator;
 
 class AsJobTest
 {

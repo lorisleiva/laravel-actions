@@ -19,6 +19,7 @@ dataset('custom job decorators', [
     'default job decorator class' => [JobDecorator::class],
     'custom job decorator class' => function () {
         ActionManager::useJobDecorator(CustomJobDecorator::class);
+
         return CustomJobDecorator::class;
     },
 ]);
@@ -27,6 +28,7 @@ dataset('custom unique job decorators', [
     'default job decorator class' => [UniqueJobDecorator::class],
     'custom job decorator class' => function () {
         ActionManager::useUniqueJobDecorator(CustomUniqueJobDecorator::class);
+
         return CustomUniqueJobDecorator::class;
     },
 ]);
