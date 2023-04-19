@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
@@ -39,7 +40,7 @@ class ActionServiceProvider extends ServiceProvider
 
     protected function extendActions(ActionManager $manager)
     {
-        $this->app->beforeResolving(function ($abstract) use ($manager) {
+        $this->app->beforeResolving(function ($abstract, $parameters, Application $app) use ($manager) {
             try {
                 // Fix conflict with package: barryvdh/laravel-ide-helper.
                 // @see https://github.com/lorisleiva/laravel-actions/issues/142
@@ -48,11 +49,11 @@ class ActionServiceProvider extends ServiceProvider
                 return;
             }
 
-            if (! $classExists || app()->resolved($abstract)) {
+            if (! $classExists || $app->resolved($abstract)) {
                 return;
             }
 
-            $manager->extend($abstract);
+            $manager->extend($app, $abstract);
         });
     }
 }

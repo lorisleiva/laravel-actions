@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
@@ -69,7 +70,7 @@ class ActionManager
         return array_filter($this->getDesignPatterns(), $filter);
     }
 
-    public function extend(string $abstract): void
+    public function extend(Application $app, string $abstract): void
     {
         if ($this->isExtending($abstract)) {
             return;
@@ -79,7 +80,7 @@ class ActionManager
             return;
         }
 
-        app()->extend($abstract, function ($instance) {
+        $app->extend($abstract, function ($instance) {
             return $this->identifyAndDecorate($instance);
         });
 
