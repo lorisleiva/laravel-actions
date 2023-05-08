@@ -99,7 +99,7 @@ trait AsJob
      */
     public static function dispatchAfterResponse(...$arguments): void
     {
-        app(Dispatcher::class)->dispatchAfterResponse(static::makeJob(...$arguments));
+        static::dispatch(...$arguments)->afterResponse();
     }
 
     /**
