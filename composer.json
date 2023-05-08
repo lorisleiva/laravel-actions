@@ -22,7 +22,7 @@
     ],
     "require": {
         "php": "^8.0|^8.1",
-        "illuminate/contracts": "^8.15 || 9.0 - 9.34 || ^9.36 || ^10.0",
+        "illuminate/contracts": "9.0 - 9.34 || ^9.36 || ^10.0",
         "lorisleiva/lody": "^0.4.0"
     },
     "require-dev": {
