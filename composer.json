@@ -27,7 +27,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
-        "pestphp/pest": "^2.0"
+        "pestphp/pest": "^1.22",
+        "phpunit/phpunit": "^9.6"
     },
     "autoload": {
         "psr-4": {
