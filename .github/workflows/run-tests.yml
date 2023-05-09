@@ -18,6 +18,8 @@ jobs:
           - laravel: "^10.0"
             testbench: "^8.0"
         exclude:
+          - php: "8.2"
+            laravel: "^9.0"
           - php: "8.0"
             laravel: "^10.0"
 
