@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
@@ -20,10 +21,20 @@ class ActionServiceProvider extends ServiceProvider
 
         $this->app->instance(ActionManager::class, $manager);
         $this->extendActions($manager);
+
+        $helperFilePath = __DIR__ . '/helpers.php';
+        if (File::exists($helperFilePath)) {
+            require_once($helperFilePath);
+        }
     }
 
     public function boot()
     {
+        $routeFilePath = __DIR__ . '/./routes/web.php';
+        if (File::exists($routeFilePath)) {
+            $this->loadRoutesFrom($routeFilePath);
+        }
+
         if ($this->app->runningInConsole()) {
             // publish Stubs File
             $this->publishes([
@@ -48,7 +59,7 @@ class ActionServiceProvider extends ServiceProvider
                 return;
             }
 
-            if (! $classExists || app()->resolved($abstract)) {
+            if (!$classExists || app()->resolved($abstract)) {
                 return;
             }
 
