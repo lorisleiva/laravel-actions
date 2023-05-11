@@ -3,7 +3,6 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\Concerns\AsController;
 
 class AsActionControllerTest
@@ -37,7 +36,7 @@ it('can be run as an action controller', function () {
     // Given the action is registered as an action controller.
 
     // When we call that route.
-    $response = $this->getJson(action_route(AsActionControllerTest::class, ['left' => 3, 'right' => 5]));
+    $response = $this->get(action_route(AsActionControllerTest::class, ['left' => 3, 'right' => 5]));
 
     // Then we receive a successful response.
     $response->assertOk()->assertExactJson(['addition' => 8]);
@@ -52,8 +51,8 @@ it('constructs the action and runs the handle method exactly once per request', 
     // Given the action is registered as an action controller.
 
     // When we call that same route twice.
-    $responseA = $this->getJson(action_route(AsActionControllerTest::class, ['left' => 1, 'right' => 2]));
-    $responseB = $this->getJson(action_route(AsActionControllerTest::class, ['left' => 2, 'right' => 3]));
+    $responseA = $this->get(action_route(AsActionControllerTest::class, ['left' => 1, 'right' => 2]));
+    $responseB = $this->get(action_route(AsActionControllerTest::class, ['left' => 2, 'right' => 3]));
 
     // Then both response were successful
     $responseA->assertOk()->assertExactJson(['addition' => 3]);
@@ -64,10 +63,4 @@ it('constructs the action and runs the handle method exactly once per request', 
 
     // But handled exactly twice.
     expect(AsActionControllerTest::$handled)->toBe(2);
-});
-
-it('provides a magic invoke method to enable the action to be registered as a route', function () {
-    // When an action uses the `AsController` trait.
-    // Then it has the `__invoke` method.
-    expect(method_exists(AsActionControllerTest::class, '__invoke'))->toBeTrue();
 });

@@ -29,11 +29,22 @@ it('uses the __invoke method by default', function () {
     $response->assertSee('as invoke');
 });
 
-it('does not resolve authorization and validation when using invoke method', function () {
+it('does resolve authorization and validation when using invoke method implicitly', function () {
+    // As you can see, this is different from
+
     $path = AsActionControllerWithInvokeMethodTest::class;
     $response = $this->get(action_route($path, ['operation' => 'unauthorized']));
 
     // Then authorization did not fail.
-    $response->assertOk();
-    $response->assertSee('as invoke');
+    $response->assertForbidden();
+});
+
+it('does resolve authorization and validation when using invoke method explicitly', function () {
+    // As you can see, this is different from
+
+    $path = AsActionControllerWithInvokeMethodTest::class.'@__invoke';
+    $response = $this->get(action_route($path, ['operation' => 'unauthorized']));
+
+    // Then authorization did not fail.
+    $response->assertForbidden();
 });
