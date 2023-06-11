@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
@@ -12,14 +13,15 @@ class ActionServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $manager = new ActionManager([
-            new ControllerDesignPattern(),
-            new ListenerDesignPattern(),
-            new CommandDesignPattern(),
-        ]);
+        $this->app->scoped(ActionManager::class, function () {
+            return new ActionManager([
+                new ControllerDesignPattern(),
+                new ListenerDesignPattern(),
+                new CommandDesignPattern(),
+            ]);
+        });
 
-        $this->app->instance(ActionManager::class, $manager);
-        $this->extendActions($manager);
+        $this->extendActions();
     }
 
     public function boot()
@@ -37,9 +39,13 @@ class ActionServiceProvider extends ServiceProvider
         }
     }
 
-    protected function extendActions(ActionManager $manager)
+    protected function extendActions()
     {
-        $this->app->beforeResolving(function ($abstract) use ($manager) {
+        $this->app->beforeResolving(function ($abstract, $parameters, Application $app) {
+            if ($abstract === ActionManager::class) {
+                return;
+            }
+
             try {
                 // Fix conflict with package: barryvdh/laravel-ide-helper.
                 // @see https://github.com/lorisleiva/laravel-actions/issues/142
@@ -48,11 +54,11 @@ class ActionServiceProvider extends ServiceProvider
                 return;
             }
 
-            if (! $classExists || app()->resolved($abstract)) {
+            if (! $classExists || $app->resolved($abstract)) {
                 return;
             }
 
-            $manager->extend($abstract);
+            $app->make(ActionManager::class)->extend($app, $abstract);
         });
     }
 }
