@@ -15,6 +15,7 @@ class AsListenerWithShouldQueueTest implements ShouldQueue
 
     public static int $constructed = 0;
     public static int $handled = 0;
+    public static int $shouldQueue = 0;
     public static ?int $latestResult;
 
     public function __construct()
@@ -35,6 +36,13 @@ class AsListenerWithShouldQueueTest implements ShouldQueue
     {
         $this->handle($event->operation, $event->left, $event->right);
     }
+
+    public function shouldQueue(OperationRequestedEvent $event): bool
+    {
+        static::$shouldQueue++;
+
+        return true;
+    }
 }
 
 beforeEach(function () {
@@ -44,6 +52,7 @@ beforeEach(function () {
     // And reset the static properties between each test.
     AsListenerWithShouldQueueTest::$constructed = 0;
     AsListenerWithShouldQueueTest::$handled = 0;
+    AsListenerWithShouldQueueTest::$shouldQueue = 0;
     AsListenerWithShouldQueueTest::$latestResult = null;
 });
 
@@ -69,6 +78,7 @@ it('can run as a queued listener', function () {
     // Then the action was triggered as a queued listener.
     expect(AsListenerWithShouldQueueTest::$latestResult)->toBe(3);
     expect(AsListenerWithShouldQueueTest::$handled)->toBe(1);
+    expect(AsListenerWithShouldQueueTest::$shouldQueue)->toBe(1);
 
     // And was constructed twice. Once before and once during the queued job.
     expect(AsListenerWithShouldQueueTest::$constructed)->toBe(2);
