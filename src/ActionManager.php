@@ -70,6 +70,13 @@ class ActionManager
         return $this->designPatterns;
     }
 
+    public function registerDesignPattern(DesignPattern $designPattern): ActionManager
+    {
+        $this->designPatterns[] = $designPattern;
+        
+        return $this;
+    }
+
     public function getDesignPatternsMatching(array $usedTraits): array
     {
         $filter = function (DesignPattern $designPattern) use ($usedTraits) {
