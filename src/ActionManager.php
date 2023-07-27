@@ -132,7 +132,7 @@ class ActionManager
         
         $ownNumberOfFrames = 2;
         $frames = array_slice(
-            debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit), 
+            debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit),
             $ownNumberOfFrames
         );
         foreach ($frames as $frame) {
