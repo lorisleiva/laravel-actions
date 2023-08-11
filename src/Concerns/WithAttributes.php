@@ -11,6 +11,20 @@ trait WithAttributes
     protected array $attributes = [];
 
     /**
+     * @see static::run()
+     * @param mixed ...$arguments
+     * @return mixed
+     */
+    public static function runWithAttributes(...$arguments)
+    {
+      $action = static::make();
+
+      $action->fill($arguments)->validateAttributes();
+        
+      return $action->handle(...$arguments);
+    }
+    
+    /**
      * @param array $attributes
      * @return static
      */
