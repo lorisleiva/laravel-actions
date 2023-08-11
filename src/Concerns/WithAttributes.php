@@ -5,6 +5,8 @@ namespace Lorisleiva\Actions\Concerns;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Lorisleiva\Actions\AttributeValidator;
+use ReflectionMethod;
+use ReflectionParameter;
 
 trait WithAttributes
 {
@@ -20,6 +22,15 @@ trait WithAttributes
       $action = static::make();
 
       $action->fill($arguments)->validateAttributes();
+
+      $requiredArguments = collect((new ReflectionMethod($action, 'handle'))->getParameters())
+          ->filter(function (ReflectionParameter $parameter) use ($arguments) {
+              return isset($arguments[$parameter->name]);
+          })
+          ->map(function (ReflectionParameter $parameter) use ($arguments) {
+              return $arguments[$parameter->name];
+          })
+          ->toArray();
         
       return $action->handle(...$arguments);
     }
