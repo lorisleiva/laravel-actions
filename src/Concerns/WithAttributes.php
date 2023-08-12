@@ -32,7 +32,7 @@ trait WithAttributes
           })
           ->toArray();
         
-      return $action->handle(...$arguments);
+      return $action->handle(...$requiredArguments);
     }
     
     /**
