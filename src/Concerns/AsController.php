@@ -2,6 +2,13 @@
 
 namespace Lorisleiva\Actions\Concerns;
 
+/**
+ * @method array getControllerMiddleware()
+ * @method \Illuminate\Http\Resources\Json\JsonResource jsonResponse()
+ * @method \Illuminate\Http\Response htmlResponse()
+ * @method void routes(\Illuminate\Routing\Router $router)
+ * @method \Illuminate\Http\Response asController()
+  */
 trait AsController
 {
     /**

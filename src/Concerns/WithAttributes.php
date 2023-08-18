@@ -6,6 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Lorisleiva\Actions\AttributeValidator;
 
+/**
+ * @method void prepareForValidation(\Lorisleiva\Actions\ActionRequest $request)
+ * @method bool|\Illuminate\Auth\Access\Response authorize(\Lorisleiva\Actions\ActionRequest $request)
+ * @method array rules()
+ * @method void withValidator(\Illuminate\Validation\Validator $validator, \Lorisleiva\Actions\ActionRequest $request)
+ * @method void afterValidator(\Illuminate\Validation\Validator $validator, \Lorisleiva\Actions\ActionRequest $request)
+ * @method \Illuminate\Validation\Validator getValidator(\Illuminate\Validation\Factory $factory, \Lorisleiva\Actions\ActionRequest $request)
+ * @method array getValidationData(\Lorisleiva\Actions\ActionRequest $request)
+ * @method array getValidationMessages()
+ * @method array getValidationAttributes()
+ * @method string getValidationRedirect(\Illuminate\Routing\UrlGenerator $url)
+ * @method string getValidationErrorBag()
+ * @method void getValidationFailure()
+ * @method void getAuthorizationFailure()
+ */
 trait WithAttributes
 {
     protected array $attributes = [];
