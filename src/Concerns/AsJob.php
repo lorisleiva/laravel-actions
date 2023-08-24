@@ -13,7 +13,39 @@ use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use PHPUnit\Framework\Assert as PHPUnit;
+use Throwable;
 
+/**
+ * @property-read string $jobConnection
+ * @property-read string $jobQueue
+ * @property-read int $jobTries
+ * @property-read int $jobMaxExceptions
+ * @property-read int $jobTimeout
+ * @method void configureJob(JobDecorator|UniqueJobDecorator $job)
+ *
+ * @property-read int|array $jobBackoff
+ * @method int|array getJobBackoff(...$parameters)
+ *
+ * @property-read \DateTime|int $jobRetryUntil
+ * @method \DateTime|int getJobRetryUntil(...$parameters)
+ *
+ * @method array getJobMiddleware(...$parameters)
+ *
+ * @method void jobFailed(Throwable $e, ...$parameters)
+ *
+ * @method string getJobDisplayName(...$parameters)
+ *
+ * @method array getJobTags(...$parameters)
+ *
+ * @property-read int $jobUniqueFor
+ * @method int getJobUniqueFor(...$parameters)
+ *
+ * @property-read int $jobUniqueId
+ * @method int getJobUniqueId(...$parameters)
+ *
+ * @method int getJobUniqueVia(...$parameters)
+ *
+ */
 trait AsJob
 {
     /**
