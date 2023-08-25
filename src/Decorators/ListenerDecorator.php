@@ -26,6 +26,15 @@ class ListenerDecorator
         }
     }
 
+    public function shouldQueue(...$arguments)
+    {
+        if ($this->hasMethod('shouldQueue')) {
+            return $this->resolveFromArgumentsAndCall('shouldQueue', $arguments);
+        }
+
+        return true;
+    }
+
     protected function resolveFromArgumentsAndCall($method, $arguments)
     {
         $arguments = $this->resolveClassMethodDependencies(
