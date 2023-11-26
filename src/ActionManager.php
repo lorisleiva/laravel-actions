@@ -4,7 +4,7 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
@@ -73,7 +73,7 @@ class ActionManager
     public function registerDesignPattern(DesignPattern $designPattern): ActionManager
     {
         $this->designPatterns[] = $designPattern;
-        
+
         return $this;
     }
 
@@ -136,7 +136,7 @@ class ActionManager
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
         $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
             | DEBUG_BACKTRACE_IGNORE_ARGS;
-        
+
         $ownNumberOfFrames = 2;
         $frames = array_slice(
             debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit),
