@@ -70,9 +70,9 @@ class ControllerDecorator
 
         $response = $this->run($method);
 
-        if ($this->hasMethod('jsonResponse') && $request->expectsJson()) {
+        if ($this->hasMethod('jsonResponse') && ($request->expectsJson() || $request->isJson())) {
             $response = $this->callMethod('jsonResponse', [$response, $request]);
-        } elseif ($this->hasMethod('htmlResponse') && ! $request->expectsJson()) {
+        } elseif ($this->hasMethod('htmlResponse') && ! ($request->expectsJson() || $request->isJson())) {
             $response = $this->callMethod('htmlResponse', [$response, $request]);
         }
 
