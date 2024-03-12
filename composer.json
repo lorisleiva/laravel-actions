@@ -27,8 +27,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.5",
-        "pestphp/pest": "^1.23",
-        "phpunit/phpunit": "^9.6"
+        "pestphp/pest": "^1.23 || ^2.0",
+        "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0"
     },
     "repositories": [
         {
