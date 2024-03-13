@@ -30,12 +30,6 @@
         "pestphp/pest": "^1.23|^2.34",
         "phpunit/phpunit": "^9.6|^10.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel-shift/lody.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Lorisleiva\\Actions\\": "src"
