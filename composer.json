@@ -22,13 +22,13 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/contracts": "^10.0 || ^11.0",
-        "lorisleiva/lody": "dev-l11-compatibility"
+        "illuminate/contracts": "^10.0|^11.0",
+        "lorisleiva/lody": "^0.5"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.5",
-        "pestphp/pest": "^1.23 || ^2.0",
-        "phpunit/phpunit": "^9.6 || ^10.0 || ^11.0"
+        "orchestra/testbench": "^9.0",
+        "pestphp/pest": "^1.23|^2.34",
+        "phpunit/phpunit": "^9.6|^10.0"
     },
     "repositories": [
         {
