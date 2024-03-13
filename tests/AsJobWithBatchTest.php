@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Lorisleiva\Actions\Concerns\AsJob;
 
 class AsJobWithBatchTest
@@ -43,8 +44,12 @@ beforeEach(function () {
 
     // And have a `job_batches` table.
     $this->artisan('migrate')->run();
-    if (! Schema::hasTable('job_batches')) {
-        $this->artisan('queue:batches-table')->run();
+    if (!Schema::hasTable('job_batches')) {
+        if (Str::startsWith($this->app->version(), "11.")) {
+            $this->artisan('make:queue-batches-table')->run();
+        } else {
+            $this->artisan('queue:batches-table')->run();
+        }
         $this->artisan('migrate')->run();
     }
 });
