@@ -44,7 +44,7 @@ beforeEach(function () {
 
     // And have a `job_batches` table.
     $this->artisan('migrate')->run();
-    if (!Schema::hasTable('job_batches')) {
+    if (! Schema::hasTable('job_batches')) {
         if (Str::startsWith($this->app->version(), "11.")) {
             $this->artisan('make:queue-batches-table')->run();
         } else {
