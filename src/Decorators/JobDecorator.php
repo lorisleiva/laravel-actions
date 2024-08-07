@@ -180,11 +180,11 @@ class JobDecorator implements ShouldQueue
 
         if ($firstParameter->allowsNull() && $firstParameterClass === Batch::class) {
             return [$this->batch(), ...$this->parameters];
-        } elseif (is_subclass_of($firstParameterClass, self::class) || $firstParameterClass === self::class) {
-            return [$this, ...$this->parameters];
-        } else {
-            return $this->parameters;
         }
+        if (is_subclass_of($firstParameterClass, self::class) || $firstParameterClass === self::class) {
+            return [$this, ...$this->parameters];
+        }
+        return $this->parameters;
     }
 
     protected function serializeProperties()
