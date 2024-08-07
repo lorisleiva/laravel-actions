@@ -194,6 +194,7 @@ class JobDecorator implements ShouldQueue
         if (is_subclass_of($firstParameterClass, self::class) || $firstParameterClass === self::class) {
             return [$this, ...$this->parameters];
         }
+
         return $this->parameters;
     }
 
