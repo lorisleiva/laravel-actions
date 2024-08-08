@@ -33,6 +33,8 @@ class JobDecorator implements ShouldQueue
     protected string $actionClass;
     protected array $parameters = [];
 
+    public ?bool $deleteWhenMissingModels;
+
     public function __construct(string $action, ...$parameters)
     {
         $this->actionClass = $action;
@@ -48,6 +50,7 @@ class JobDecorator implements ShouldQueue
         $this->setTries($this->fromActionProperty('jobTries'));
         $this->setMaxExceptions($this->fromActionProperty('jobMaxExceptions'));
         $this->setTimeout($this->fromActionProperty('jobTimeout'));
+        $this->setDeleteWhenMissingModels($this->fromActionProperty('jobDeleteWhenMissingModels'));
         $this->fromActionMethod('configureJob', [$this]);
     }
 
@@ -101,6 +104,13 @@ class JobDecorator implements ShouldQueue
     public function setTimeout(?int $timeout)
     {
         $this->timeout = $timeout;
+
+        return $this;
+    }
+
+    public function setDeleteWhenMissingModels(?bool $deleteWhenMissingModels)
+    {
+        $this->deleteWhenMissingModels = $deleteWhenMissingModels;
 
         return $this;
     }
@@ -180,11 +190,12 @@ class JobDecorator implements ShouldQueue
 
         if ($firstParameter->allowsNull() && $firstParameterClass === Batch::class) {
             return [$this->batch(), ...$this->parameters];
-        } elseif (is_subclass_of($firstParameterClass, self::class) || $firstParameterClass === self::class) {
-            return [$this, ...$this->parameters];
-        } else {
-            return $this->parameters;
         }
+        if (is_subclass_of($firstParameterClass, self::class) || $firstParameterClass === self::class) {
+            return [$this, ...$this->parameters];
+        }
+
+        return $this->parameters;
     }
 
     protected function serializeProperties()

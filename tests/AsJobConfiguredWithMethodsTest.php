@@ -18,7 +18,8 @@ class AsJobConfiguredWithMethodsTest
             ->onQueue('my_queue')
             ->through(['my_middleware'])
             ->chain(['my_chain'])
-            ->delay(60);
+            ->delay(60)
+            ->setDeleteWhenMissingModels(true);
     }
 
     public function getJobBackoff(): array
@@ -56,6 +57,7 @@ it('uses the configuration provided in the configureJob and getJobX methods', fu
             && $job->middleware === ['my_middleware']
             && $job->chained === [serialize('my_chain')]
             && $job->delay === 60
+            && $job->deleteWhenMissingModels === true
             && $job->backoff() === [30, 60, 120]
             && $job->retryUntil()->timestamp === now()->addMinutes(30)->timestamp;
     });

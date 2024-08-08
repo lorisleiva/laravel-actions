@@ -17,6 +17,7 @@ class AsJobConfiguredWithPropertiesTest
     public int $jobBackoff = 60 * 5;
     public int $jobTimeout = 60 * 30;
     public int $jobRetryUntil = 3600 * 2;
+    public bool $jobDeleteWhenMissingModels = true;
 
     public function handle()
     {
@@ -41,6 +42,7 @@ it('uses the configuration provided in properties', function () {
             && $job->maxExceptions === 3
             && $job->backoff() === 60 * 5
             && $job->timeout === 60 * 30
+            && $job->deleteWhenMissingModels === true
             && $job->retryUntil() === 3600 * 2;
     });
 });
