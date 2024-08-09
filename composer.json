@@ -8,7 +8,8 @@
         "controller",
         "job",
         "object",
-        "command"
+        "command",
+        "listener"
     ],
     "homepage": "https://github.com/lorisleiva/laravel-actions",
     "license": "MIT",
@@ -26,7 +27,7 @@
         "lorisleiva/lody": "^0.5"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0",
+        "orchestra/testbench": "^8.0|^9.0",
         "pestphp/pest": "^1.23|^2.34",
         "phpunit/phpunit": "^9.6|^10.0"
     },
