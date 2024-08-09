@@ -22,13 +22,13 @@ class AsJobWithBatchTest
         static::$constructed++;
     }
 
-    public function handle(int $left, int $right)
+    public function handle(int $left, int $right): void
     {
         static::$handled++;
         static::$latestResult = $left + $right;
     }
 
-    public function asJob(?Batch $batch, int $left, int $right)
+    public function asJob(?Batch $batch, int $left, int $right): void
     {
         static::$latestBatch = $batch;
         $this->handle($left, $right);
@@ -45,7 +45,7 @@ beforeEach(function () {
     // And have a `job_batches` table.
     $this->artisan('migrate')->run();
     if (! Schema::hasTable('job_batches')) {
-        if (Str::startsWith($this->app->version(), "11.")) {
+        if (Str::startsWith($this->app->version(), '11.')) {
             $this->artisan('make:queue-batches-table')->run();
         } else {
             $this->artisan('queue:batches-table')->run();

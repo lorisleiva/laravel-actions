@@ -7,14 +7,20 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
-    protected function getPackageProviders($app)
+    /**
+     * Get package providers.
+     */
+    protected function getPackageProviders($app): array
     {
         return [
             ActionServiceProvider::class,
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    /**
+     * Define environment setup.
+     */
+    public function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'sqlite');
     }

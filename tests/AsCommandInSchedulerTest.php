@@ -12,7 +12,7 @@ class AsCommandInSchedulerTest
 
     public string $commandSignature = 'my:command';
 
-    public function handle()
+    public function handle(): void
     {
         // ...
     }

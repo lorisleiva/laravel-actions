@@ -58,7 +58,7 @@ function assertJobPushed(string $class, ?Closure $callback = null): void
 
 function assertJobPushedWith(string $class, array $parameters = []): void
 {
-    assertJobPushed($class, function (JobDecorator $job) use ($class, $parameters) {
+    assertJobPushed($class, function (JobDecorator $job) use ($parameters) {
         return $job->getParameters() === $parameters;
     });
 }

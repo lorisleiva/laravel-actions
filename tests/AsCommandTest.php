@@ -11,7 +11,7 @@ class AsCommandTest
 
     public static ?CommandDecorator $decorator;
 
-    public function handle(CommandDecorator $command)
+    public function handle(CommandDecorator $command): void
     {
         static::$decorator = $command;
 

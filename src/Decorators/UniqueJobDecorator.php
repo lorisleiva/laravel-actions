@@ -10,14 +10,14 @@ class UniqueJobDecorator extends JobDecorator implements ShouldBeUnique
 {
     public int $uniqueFor = 0;
 
-    protected function constructed()
+    protected function constructed(): void
     {
         $this->uniqueFor = (int) $this->fromActionWithParameters('getJobUniqueFor', 'jobUniqueFor', 0);
 
         parent::constructed();
     }
 
-    public function uniqueId()
+    public function uniqueId(): string
     {
         $uniqueId = $this->fromActionWithParameters('getJobUniqueId', 'jobUniqueId', '');
         $prefix = '.' . get_class($this->action);

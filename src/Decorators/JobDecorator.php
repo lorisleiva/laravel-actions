@@ -29,11 +29,10 @@ class JobDecorator implements ShouldQueue
     public ?int $tries;
     public ?int $maxExceptions;
     public ?int $timeout;
+    public ?bool $deleteWhenMissingModels;
 
     protected string $actionClass;
     protected array $parameters = [];
-
-    public ?bool $deleteWhenMissingModels;
 
     public function __construct(string $action, ...$parameters)
     {
@@ -43,7 +42,7 @@ class JobDecorator implements ShouldQueue
         $this->constructed();
     }
 
-    protected function constructed()
+    protected function constructed(): void
     {
         $this->onConnection($this->fromActionProperty('jobConnection'));
         $this->onQueue($this->fromActionProperty('jobQueue'));
@@ -75,40 +74,28 @@ class JobDecorator implements ShouldQueue
         return $this->parameters;
     }
 
-    /**
-     * @param int|null $tries
-     * @return $this
-     */
-    public function setTries(?int $tries)
+    public function setTries(?int $tries): self
     {
         $this->tries = $tries;
 
         return $this;
     }
 
-    /**
-     * @param int|null $maxException
-     * @return $this
-     */
-    public function setMaxExceptions(?int $maxException)
+    public function setMaxExceptions(?int $maxException): self
     {
         $this->maxExceptions = $maxException;
 
         return $this;
     }
 
-    /**
-     * @param int|null $timeout
-     * @return $this
-     */
-    public function setTimeout(?int $timeout)
+    public function setTimeout(?int $timeout): self
     {
         $this->timeout = $timeout;
 
         return $this;
     }
 
-    public function setDeleteWhenMissingModels(?bool $deleteWhenMissingModels)
+    public function setDeleteWhenMissingModels(?bool $deleteWhenMissingModels): self
     {
         $this->deleteWhenMissingModels = $deleteWhenMissingModels;
 
@@ -149,11 +136,8 @@ class JobDecorator implements ShouldQueue
      * Laravel will call failed() on a job that fails. This function will call
      * the function jobFailed(Throwable $e) on the underlying action if Laravel
      * calls the failed() function on the job.
-     *
-     * @param Throwable $e
-     * @return void
      */
-    public function failed(Throwable $e)
+    public function failed(Throwable $e): void
     {
         $this->fromActionMethod('jobFailed', [$e, ...$this->parameters], []);
     }
@@ -198,7 +182,7 @@ class JobDecorator implements ShouldQueue
         return $this->parameters;
     }
 
-    protected function serializeProperties()
+    protected function serializeProperties(): void
     {
         $this->action = $this->actionClass;
 
@@ -207,7 +191,7 @@ class JobDecorator implements ShouldQueue
         });
     }
 
-    protected function unserializeProperties()
+    protected function unserializeProperties(): void
     {
         $this->setAction(app($this->actionClass));
 
@@ -216,14 +200,14 @@ class JobDecorator implements ShouldQueue
         });
     }
 
-    public function __serialize()
+    public function __serialize(): array
     {
         $this->serializeProperties();
 
         return $this->serializeFromSerializesModels();
     }
 
-    public function __unserialize(array $values)
+    public function __unserialize(array $values): void
     {
         $this->unserializeFromSerializesModels($values);
         $this->unserializeProperties();

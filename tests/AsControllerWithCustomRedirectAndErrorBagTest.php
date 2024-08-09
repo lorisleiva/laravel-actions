@@ -12,7 +12,7 @@ class AsControllerWithCustomRedirectAndErrorBagTest
 {
     use AsController;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'left' => ['required'],

@@ -19,7 +19,7 @@ class AsControllerWithCustomValidationDataTest
         );
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'left' => ['required'],

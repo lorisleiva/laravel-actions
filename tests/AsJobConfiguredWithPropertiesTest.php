@@ -19,7 +19,7 @@ class AsJobConfiguredWithPropertiesTest
     public int $jobRetryUntil = 3600 * 2;
     public bool $jobDeleteWhenMissingModels = true;
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

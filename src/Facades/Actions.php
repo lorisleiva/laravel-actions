@@ -12,7 +12,10 @@ use Lorisleiva\Actions\ActionManager;
  */
 class Actions extends Facade
 {
-    protected static function getFacadeAccessor()
+    /**
+     * Get the registered name of the component.
+     */
+    protected static function getFacadeAccessor(): string
     {
         return ActionManager::class;
     }

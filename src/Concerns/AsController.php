@@ -13,10 +13,8 @@ trait AsController
 {
     /**
      * @see static::handle()
-     * @param mixed ...$arguments
-     * @return mixed
      */
-    public function __invoke(...$arguments)
+    public function __invoke(mixed ...$arguments): mixed
     {
         return $this->handle(...$arguments);
     }
@@ -24,9 +22,8 @@ trait AsController
     /**
      * This empty method is required to enable controller middleware on the action.
      * @see https://github.com/lorisleiva/laravel-actions/issues/199
-     * @return array
      */
-    public function getMiddleware()
+    public function getMiddleware(): array
     {
         return [];
     }

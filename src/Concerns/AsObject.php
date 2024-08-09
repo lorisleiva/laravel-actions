@@ -6,40 +6,25 @@ use Illuminate\Support\Fluent;
 
 trait AsObject
 {
-    /**
-     * @return static
-     */
-    public static function make()
+    public static function make(): static
     {
         return app(static::class);
     }
 
     /**
      * @see static::handle()
-     * @param mixed ...$arguments
-     * @return mixed
      */
-    public static function run(...$arguments)
+    public static function run(mixed ...$arguments): mixed
     {
         return static::make()->handle(...$arguments);
     }
 
-    /**
-     * @param $boolean
-     * @param ...$arguments
-     * @return mixed|\Illuminate\Support\Fluent
-     */
-    public static function runIf($boolean, ...$arguments)
+    public static function runIf(bool $boolean, mixed ...$arguments): mixed
     {
         return $boolean ? static::run(...$arguments) : new Fluent;
     }
 
-    /**
-     * @param $boolean
-     * @param ...$arguments
-     * @return mixed|\Illuminate\Support\Fluent
-     */
-    public static function runUnless($boolean, ...$arguments)
+    public static function runUnless(bool $boolean, mixed ...$arguments): mixed
     {
         return static::runIf(! $boolean, ...$arguments);
     }

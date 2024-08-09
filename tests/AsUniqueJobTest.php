@@ -18,24 +18,24 @@ class AsUniqueJobTest implements ShouldBeUnique
 
     public static ?Repository $cache;
 
-    public function handle(int $id = 1)
+    public function handle(int $id = 1): void
     {
         //
     }
 
-    public function getJobUniqueId(int $id = 1)
+    public function getJobUniqueId(int $id = 1): int
     {
         return $id;
     }
 
-    public function getJobUniqueVia()
+    public function getJobUniqueVia(): Repository
     {
         return static::$cache = Cache::driver('array');
     }
 
-    public function getJobUniqueFor()
+    public function getJobUniqueFor(): int
     {
-        return 60; // 60 seconds.
+        return 60; // seconds
     }
 }
 

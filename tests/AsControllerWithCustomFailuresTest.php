@@ -10,12 +10,12 @@ class AsControllerWithCustomFailuresTest
 {
     use AsController;
 
-    public function authorize(ActionRequest $request)
+    public function authorize(ActionRequest $request): bool
     {
         return $request->get('operation') !== 'unauthorized';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'left' => ['required'],
@@ -28,12 +28,12 @@ class AsControllerWithCustomFailuresTest
         return $request->left + $request->right;
     }
 
-    public function getAuthorizationFailure()
+    public function getAuthorizationFailure(): void
     {
         abort(400, 'Custom authorization failure.');
     }
 
-    public function getValidationFailure()
+    public function getValidationFailure(): void
     {
         abort(400, 'Custom validation failure.');
     }

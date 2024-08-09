@@ -11,7 +11,10 @@ use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
 
 class ActionServiceProvider extends ServiceProvider
 {
-    public function register()
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
         $this->app->scoped(ActionManager::class, function () {
             return new ActionManager([
@@ -24,10 +27,13 @@ class ActionServiceProvider extends ServiceProvider
         $this->extendActions();
     }
 
-    public function boot()
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
-            // publish Stubs File
+            // Publish Stubs File
             $this->publishes([
                 __DIR__ . '/Console/stubs/action.stub' => base_path('stubs/action.stub'),
             ], 'stubs');
@@ -39,7 +45,7 @@ class ActionServiceProvider extends ServiceProvider
         }
     }
 
-    protected function extendActions()
+    protected function extendActions(): void
     {
         $this->app->beforeResolving(function ($abstract, $parameters, Application $app) {
             if ($abstract === ActionManager::class) {
@@ -50,7 +56,7 @@ class ActionServiceProvider extends ServiceProvider
                 // Fix conflict with package: barryvdh/laravel-ide-helper.
                 // @see https://github.com/lorisleiva/laravel-actions/issues/142
                 $classExists = class_exists($abstract);
-            } catch (\ReflectionException $exception) {
+            } catch (\ReflectionException) {
                 return;
             }
 

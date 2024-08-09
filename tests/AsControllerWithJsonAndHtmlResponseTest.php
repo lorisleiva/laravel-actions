@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\JsonResponse;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsController;
 
@@ -15,7 +16,7 @@ class AsControllerWithJsonAndHtmlResponseTest
         return $request->left + $request->right;
     }
 
-    public function jsonResponse($result, ActionRequest $request)
+    public function jsonResponse($result, ActionRequest $request): JsonResponse
     {
         return response()->json([
             'result' => $result,

@@ -18,12 +18,12 @@ class AsJobWithAssertionsTest
         self::$queue = $queue;
     }
 
-    public function configureJob(JobDecorator $job)
+    public function configureJob(JobDecorator $job): void
     {
         $job->onQueue(static::$queue);
     }
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

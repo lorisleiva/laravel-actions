@@ -25,33 +25,21 @@ trait WithAttributes
 {
     protected array $attributes = [];
 
-    /**
-     * @param array $attributes
-     * @return static
-     */
-    public function setRawAttributes(array $attributes): self
+    public function setRawAttributes(array $attributes): static
     {
         $this->attributes = $attributes;
 
         return $this;
     }
 
-    /**
-     * @param array $attributes
-     * @return static
-     */
-    public function fill(array $attributes): self
+    public function fill(array $attributes): static
     {
         $this->attributes = array_merge($this->attributes, $attributes);
 
         return $this;
     }
 
-    /**
-     * @param Request $request
-     * @return static
-     */
-    public function fillFromRequest(Request $request): self
+    public function fillFromRequest(Request $request): static
     {
         $route = $request->route();
 
@@ -89,12 +77,7 @@ trait WithAttributes
         return Arr::get($this->attributes, $key, $default);
     }
 
-    /**
-     * @param string $key
-     * @param mixed $value
-     * @return static
-     */
-    public function set(string $key, $value): self
+    public function set(string $key, mixed $value): static
     {
         Arr::set($this->attributes, $key, $value);
 

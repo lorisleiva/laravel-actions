@@ -13,7 +13,7 @@ class AsControllerWithMiddlewareTest
 
     public static int $middlewareCounter = 0;
 
-    public function getControllerMiddleware()
+    public function getControllerMiddleware(): array
     {
         return [
             function (Request $request, $next) {
@@ -74,7 +74,7 @@ it('calls route and controller middleware exactly once', function () {
         ->middleware(RouteMiddleware::class);
 
     // When we call that route.
-    $response = $this->postJson('/calculator');
+    $this->postJson('/calculator');
 
     // The we were intercepted by both the route and the controller middleware exactly one.
     expect(RouteMiddleware::$counter)->toBe(1);

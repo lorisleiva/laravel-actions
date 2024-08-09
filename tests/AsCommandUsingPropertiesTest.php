@@ -16,7 +16,7 @@ class AsCommandUsingPropertiesTest
     public string $commandHelp = 'My command help.';
     public bool $commandHidden = true;
 
-    public function handle(CommandDecorator $command)
+    public function handle(CommandDecorator $command): void
     {
         static::$decorator = $command;
 

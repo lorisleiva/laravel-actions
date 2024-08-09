@@ -10,7 +10,7 @@ class AsControllerWithPrepareForValidationTest
 {
     use AsController;
 
-    public function prepareForValidation(ActionRequest $request)
+    public function prepareForValidation(ActionRequest $request): void
     {
         preg_match('/^(\d+)?(.)?(\d+)?$/', $request->route('expression'), $match);
 
@@ -21,7 +21,7 @@ class AsControllerWithPrepareForValidationTest
         ]);
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'left' => ['required'],

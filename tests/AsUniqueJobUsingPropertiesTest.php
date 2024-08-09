@@ -16,7 +16,7 @@ class AsUniqueJobUsingPropertiesTest implements ShouldBeUnique
     public string $jobUniqueId = 'my_job_id';
     public int $jobUniqueFor = 120; // 2 minutes.
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

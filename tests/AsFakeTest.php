@@ -24,15 +24,11 @@ class AsFakeTest
 
     protected function getStrategyFromOperation(string $operation): Closure
     {
-        switch ($operation) {
-            case 'substraction':
-                return fn (int $left, int $right) => $left - $right;
-            case 'multiplication':
-                return fn (int $left, int $right) => $left * $right;
-            case 'addition':
-            default:
-                return fn (int $left, int $right) => $left + $right;
-        }
+        return match ($operation) {
+            'substraction' => fn (int $left, int $right) => $left - $right,
+            'multiplication' => fn (int $left, int $right) => $left * $right,
+            default => fn (int $left, int $right) => $left + $right,
+        };
     }
 }
 
