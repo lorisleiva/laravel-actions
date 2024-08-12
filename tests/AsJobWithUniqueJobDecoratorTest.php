@@ -14,12 +14,12 @@ class AsJobWithUniqueJobDecoratorTest implements ShouldBeUnique
     public static ?int $latestResult;
     public static ?JobDecorator $latestJobDecorator;
 
-    public function handle(int $left, int $right)
+    public function handle(int $left, int $right): void
     {
         static::$latestResult = $left + $right;
     }
 
-    public function asJob(UniqueJobDecorator $job, int $left, int $right)
+    public function asJob(UniqueJobDecorator $job, int $left, int $right): void
     {
         static::$latestJobDecorator = $job;
         $this->handle($left, $right);

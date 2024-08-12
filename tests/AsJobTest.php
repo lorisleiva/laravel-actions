@@ -8,7 +8,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
-use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 
 class AsJobTest
 {
@@ -22,7 +21,7 @@ class AsJobTest
         static::$constructed++;
     }
 
-    public function handle()
+    public function handle(): void
     {
         static::$handled++;
     }

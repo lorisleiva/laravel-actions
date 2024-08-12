@@ -12,7 +12,7 @@ class AsJobConfiguredWithMethodsTest
 {
     use AsJob;
 
-    public function configureJob(JobDecorator $job)
+    public function configureJob(JobDecorator $job): void
     {
         $job->onConnection('my_connection')
             ->onQueue('my_queue')
@@ -32,7 +32,7 @@ class AsJobConfiguredWithMethodsTest
         return now()->addMinutes(30);
     }
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

@@ -14,12 +14,15 @@ trait ValidateActions
     use DecorateActions;
 
     /** @var Validator|null */
-    protected $validator = null;
+    protected $validator;
 
     /** @var Redirector|null */
-    protected $redirector = null;
+    protected $redirector;
 
-    public function validate()
+    /**
+     * @throws ValidationException
+     */
+    public function validate(): void
     {
         $this->prepareForValidation();
         $response = $this->inspectAuthorization();

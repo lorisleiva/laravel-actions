@@ -19,7 +19,7 @@ class AsJobWithFailureTest
     /**
      * @throws Exception
      */
-    public function handle(bool $throwException, ?string $errorMessage = null)
+    public function handle(bool $throwException, ?string $errorMessage = null): void
     {
         static::$latestResult = 'started';
 
@@ -30,7 +30,7 @@ class AsJobWithFailureTest
         static::$latestResult = 'completed';
     }
 
-    public function jobFailed(Throwable $e, bool $throwException, string $errorMessage)
+    public function jobFailed(Throwable $e, bool $throwException, string $errorMessage): void
     {
         static::$latestResult = 'exception_thrown';
         static::$latestError = $errorMessage;
@@ -47,7 +47,7 @@ it('calls the jobFailed function when the job fails', function () {
     try {
         // When we dispatch the action whilst telling it to throw an exception.
         AsJobWithFailureTest::dispatch(true, 'something went wrong');
-    } catch (Throwable $e) {
+    } catch (Throwable) {
         // Then an exception was thrown and the jobFailed method was executed.
         expect(AsJobWithFailureTest::$latestResult)->toBe('exception_thrown');
         expect(AsJobWithFailureTest::$latestError)->toBe('something went wrong');

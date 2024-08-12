@@ -20,7 +20,7 @@ class AsControllerWithPolicyResponsesTest
         return Response::allow();
     }
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

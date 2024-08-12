@@ -9,9 +9,7 @@ class BacktraceFrame
     public ?string $class;
     public ?string $function;
     public bool $isStatic;
-
-    /** @var mixed|null */
-    public $object;
+    public mixed $object;
 
     public function __construct(array $frame)
     {
@@ -36,9 +34,9 @@ class BacktraceFrame
             || is_subclass_of($this->class, $superClass);
     }
 
-    public function matches(string $class, string $method, ?bool $isStatic = null)
+    public function matches(string $class, string $method, ?bool $isStatic = null): bool
     {
-        $matchesStatic = is_null($isStatic) ? true : ($this->isStatic === $isStatic);
+        $matchesStatic = is_null($isStatic) || $this->isStatic === $isStatic;
 
         return $this->instanceOf($class)
             && $this->function === $method

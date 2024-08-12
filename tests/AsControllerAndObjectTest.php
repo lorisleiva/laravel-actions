@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsController;
@@ -17,7 +18,7 @@ class AsControllerAndObjectTest
         return $left + $right;
     }
 
-    public function asController($left, ActionRequest $request)
+    public function asController($left, ActionRequest $request): JsonResponse
     {
         $addition = $this->handle($left, $request->get('right'));
 

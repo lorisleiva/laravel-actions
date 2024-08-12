@@ -24,35 +24,34 @@ use Throwable;
  * @method void configureJob(JobDecorator|UniqueJobDecorator $job)
  *
  * @property-read int|array $jobBackoff
- * @method int|array getJobBackoff(...$parameters)
+ * @method int|array getJobBackoff()
  *
  * @property-read \DateTime|int $jobRetryUntil
- * @method \DateTime|int getJobRetryUntil(...$parameters)
+ * @method \DateTime|int getJobRetryUntil()
  *
- * @method array getJobMiddleware(...$parameters)
+ * @method array getJobMiddleware()
  *
- * @method void jobFailed(Throwable $e, ...$parameters)
+ * @method void jobFailed(Throwable $e)
  *
- * @method string getJobDisplayName(...$parameters)
+ * @method string getJobDisplayName()
  *
- * @method array getJobTags(...$parameters)
+ * @method array getJobTags()
  *
  * @property-read int $jobUniqueFor
- * @method int getJobUniqueFor(...$parameters)
+ * @method int getJobUniqueFor()
  *
  * @property-read int $jobUniqueId
- * @method int getJobUniqueId(...$parameters)
+ * @method int getJobUniqueId()
  *
- * @method int getJobUniqueVia(...$parameters)
+ * @method int getJobUniqueVia()
+ *
+ * @property-read bool $jobDeleteWhenMissingModels
+ * @method bool getJobDeleteWhenMissingModels()
  *
  */
 trait AsJob
 {
-    /**
-     * @param mixed ...$arguments
-     * @return JobDecorator|UniqueJobDecorator
-     */
-    public static function makeJob(...$arguments): JobDecorator
+    public static function makeJob(mixed ...$arguments): JobDecorator
     {
         if (static::jobShouldBeUnique()) {
             return static::makeUniqueJob(...$arguments);
@@ -61,93 +60,52 @@ trait AsJob
         return new ActionManager::$jobDecorator(static::class, ...$arguments);
     }
 
-    /**
-     * @param mixed ...$arguments
-     * @return UniqueJobDecorator
-     */
-    public static function makeUniqueJob(...$arguments): UniqueJobDecorator
+    public static function makeUniqueJob(mixed ...$arguments): UniqueJobDecorator
     {
         return new ActionManager::$uniqueJobDecorator(static::class, ...$arguments);
     }
 
-    /**
-     * @return bool
-     */
     protected static function jobShouldBeUnique(): bool
     {
         return is_subclass_of(static::class, ShouldBeUnique::class);
     }
 
-    /**
-     * @param mixed ...$arguments
-     * @return PendingDispatch
-     */
-    public static function dispatch(...$arguments): PendingDispatch
+    public static function dispatch(mixed ...$arguments): PendingDispatch
     {
         return new PendingDispatch(static::makeJob(...$arguments));
     }
 
-    /**
-     * @param $boolean
-     * @param mixed ...$arguments
-     * @return PendingDispatch|Fluent
-     */
-    public static function dispatchIf($boolean, ...$arguments)
+    public static function dispatchIf(bool $boolean, mixed ...$arguments): PendingDispatch|Fluent
     {
         return $boolean ? static::dispatch(...$arguments) : new Fluent;
     }
 
-    /**
-     * @param $boolean
-     * @param mixed ...$arguments
-     * @return PendingDispatch|Fluent
-     */
-    public static function dispatchUnless($boolean, ...$arguments)
+    public static function dispatchUnless(bool $boolean, mixed ...$arguments): PendingDispatch|Fluent
     {
         return static::dispatchIf(! $boolean, ...$arguments);
     }
 
-    /**
-     * @param mixed ...$arguments
-     * @return mixed
-     */
-    public static function dispatchSync(...$arguments)
+    public static function dispatchSync(mixed ...$arguments): mixed
     {
         return app(Dispatcher::class)->dispatchSync(static::makeJob(...$arguments));
     }
 
-    /**
-     * @param mixed ...$arguments
-     * @return mixed
-     */
-    public static function dispatchNow(...$arguments)
+    public static function dispatchNow(mixed ...$arguments): mixed
     {
         return static::dispatchSync(...$arguments);
     }
 
-    /**
-     * @param mixed ...$arguments
-     * @return void
-     */
-    public static function dispatchAfterResponse(...$arguments): void
+    public static function dispatchAfterResponse(mixed ...$arguments): void
     {
         static::dispatch(...$arguments)->afterResponse();
     }
 
-    /**
-     * @param $chain
-     * @return ActionPendingChain
-     */
-    public static function withChain($chain): ActionPendingChain
+    public static function withChain(array $chain): ActionPendingChain
     {
         return new ActionPendingChain(static::class, $chain);
     }
 
-    /**
-     * @param Closure|int|null $times
-     * @param Closure|null $callback
-     */
-    public static function assertPushed($times = null, Closure $callback = null): void
+    public static function assertPushed(Closure|int|null $times = null, Closure|null $callback = null): void
     {
         if ($times instanceof Closure) {
             $callback = $times;
@@ -191,20 +149,12 @@ trait AsJob
         }
     }
 
-    /**
-     * @param Closure|null $callback
-     */
-    public static function assertNotPushed(Closure $callback = null): void
+    public static function assertNotPushed(Closure|null $callback = null): void
     {
         static::assertPushed(0, $callback);
     }
 
-    /**
-     * @param string $queue
-     * @param Closure|int|null $times
-     * @param Closure|null $callback
-     */
-    public static function assertPushedOn(string $queue, $times = null, Closure $callback = null): void
+    public static function assertPushedOn(string $queue, Closure|int|null $times = null, Closure|null $callback = null): void
     {
         if ($times instanceof Closure) {
             $callback = $times;

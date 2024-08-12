@@ -15,16 +15,12 @@ class ControllerDecorator
     use RouteDependencyResolverTrait;
     use DecorateActions;
 
-    /** @var Container */
     protected Container $container;
 
-    /** @var Route */
     protected Route $route;
 
-    /** @var array */
-    protected $middleware = [];
+    protected array $middleware = [];
 
-    /** @var bool */
     protected bool $executedAtLeastOne = false;
 
     public function __construct($action, Route $route)

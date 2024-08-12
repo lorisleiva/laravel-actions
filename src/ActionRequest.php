@@ -9,7 +9,7 @@ class ActionRequest extends FormRequest
 {
     use ValidateActions;
 
-    public function validateResolved()
+    public function validateResolved(): void
     {
         // Cancel the auto-resolution trait.
     }

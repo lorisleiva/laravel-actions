@@ -9,7 +9,7 @@ class AsCommandWithoutSignatureTest
 {
     use AsCommand;
 
-    public function handle()
+    public function handle(): void
     {
         //
     }

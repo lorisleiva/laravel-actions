@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\Concerns\AsController;
 
@@ -18,7 +19,7 @@ class AsControllerTest
         static::$constructed++;
     }
 
-    public function handle($left, $right, Filesystem $filesystem)
+    public function handle($left, $right, Filesystem $filesystem): JsonResponse
     {
         static::$handled++;
 

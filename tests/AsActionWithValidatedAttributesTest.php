@@ -44,15 +44,11 @@ class AsActionWithValidatedAttributesTest
 
     protected function applyStrategyFromOperation(): int
     {
-        switch ($this->operation) {
-            case 'substraction':
-                return $this->left - $this->right;
-            case 'multiplication':
-                return $this->left * $this->right;
-            case 'addition':
-            default:
-                return $this->left + $this->right;
-        }
+        return match ($this->operation) {
+            'substraction' => $this->left - $this->right,
+            'multiplication' => $this->left * $this->right,
+            default => $this->left + $this->right,
+        };
     }
 
     public function asController(ActionRequest $request): array

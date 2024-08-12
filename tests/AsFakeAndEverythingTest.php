@@ -27,7 +27,7 @@ class AsFakeAndEverythingTest
         return $left + $right;
     }
 
-    public function asCommand(Command $command)
+    public function asCommand(Command $command): void
     {
         $result = $this->handle(
             $command->argument('left'),

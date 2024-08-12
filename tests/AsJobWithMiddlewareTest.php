@@ -27,7 +27,7 @@ class AsJobWithMiddlewareTest
         ];
     }
 
-    public function handle(string $operation, $left, $right)
+    public function handle(string $operation, $left, $right): void
     {
         static::$latestResult = $operation === 'addition'
             ? $left + $right

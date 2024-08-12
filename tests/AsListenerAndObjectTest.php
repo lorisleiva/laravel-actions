@@ -19,7 +19,7 @@ class AsListenerAndObjectTest
         return $addition ? $left + $right : $left - $right;
     }
 
-    public function asListener(OperationRequestedEvent $event)
+    public function asListener(OperationRequestedEvent $event): void
     {
         static::$latestResult = $this->handle(
             $event->left,

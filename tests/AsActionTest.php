@@ -27,18 +27,14 @@ class AsActionTest
 
     protected function getStrategyFromOperation(string $operation): Closure
     {
-        switch ($operation) {
-            case 'substraction':
-                return fn (int $left, int $right) => $left - $right;
-            case 'multiplication':
-                return fn (int $left, int $right) => $left * $right;
-            case 'addition':
-            default:
-                return fn (int $left, int $right) => $left + $right;
-        }
+        return match ($operation) {
+            'substraction' => fn (int $left, int $right) => $left - $right,
+            'multiplication' => fn (int $left, int $right) => $left * $right,
+            default => fn (int $left, int $right) => $left + $right,
+        };
     }
 
-    public function asController(ActionRequest $request)
+    public function asController(ActionRequest $request): array
     {
         $result = $this->handle(
             $request->route('operation'),
@@ -54,7 +50,7 @@ class AsActionTest
         return $this->handle($operation, $left, $right);
     }
 
-    public function asListener(OperationRequestedEvent $event)
+    public function asListener(OperationRequestedEvent $event): int
     {
         return $this->handle(
             $event->operation,
@@ -63,7 +59,7 @@ class AsActionTest
         );
     }
 
-    public function asCommand(Command $command)
+    public function asCommand(Command $command): void
     {
         $result = $this->handle(
             $command->argument('operation'),

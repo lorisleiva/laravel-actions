@@ -4,8 +4,7 @@ namespace Lorisleiva\Actions\Concerns;
 
 trait DecorateActions
 {
-    /** @var mixed */
-    protected $action;
+    protected mixed $action;
 
     public function setAction($action): self
     {

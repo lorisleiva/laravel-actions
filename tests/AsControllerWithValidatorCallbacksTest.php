@@ -11,7 +11,7 @@ class AsControllerWithValidatorCallbacksTest
 {
     use AsController;
 
-    public function withValidator(Validator $validator, ActionRequest $request)
+    public function withValidator(Validator $validator, ActionRequest $request): void
     {
         $validator->after(function (Validator $validator) use ($request) {
             if ($request->left >= 42) {
@@ -20,7 +20,7 @@ class AsControllerWithValidatorCallbacksTest
         });
     }
 
-    public function afterValidator(ActionRequest $request, $validator)
+    public function afterValidator(ActionRequest $request, $validator): void
     {
         if ($request->right % 2 === 0) {
             $validator->errors()->add('right', 'Right must be odd.');

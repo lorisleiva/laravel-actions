@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Facades\Actions;
@@ -10,12 +11,12 @@ class AsControllerWithRoutesTest
 {
     use AsController;
 
-    public static function routes(Router $router)
+    public static function routes(Router $router): void
     {
         $router->get('/controller/with/routes', static::class);
     }
 
-    public function handle()
+    public function handle(): JsonResponse
     {
         return response()->json(['Ok'], 200);
     }

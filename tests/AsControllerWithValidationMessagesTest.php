@@ -10,7 +10,7 @@ class AsControllerWithValidationMessagesTest
 {
     use AsController;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             'left' => ['required'],
@@ -18,14 +18,14 @@ class AsControllerWithValidationMessagesTest
         ];
     }
 
-    public function getValidationMessages()
+    public function getValidationMessages(): array
     {
         return [
             'left.required' => 'You forgot the left operand.',
         ];
     }
 
-    public function getValidationAttributes()
+    public function getValidationAttributes(): array
     {
         return [
             'right' => 'right operand',
