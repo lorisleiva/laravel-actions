@@ -2,8 +2,8 @@
 
 namespace Lorisleiva\Actions\Tests;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Route;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsController;
 
