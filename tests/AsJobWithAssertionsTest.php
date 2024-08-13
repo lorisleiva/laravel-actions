@@ -134,7 +134,7 @@ it('asserts an action has been pushed with params - success', function () {
     AsJobWithAssertionsTest::assertPushedWithParams([$user]);
 })->with('custom job decorators');
 
-it('asserts an action has been pushed with params - failure', function () {
+it('asserts an action has been pushed with params - failure (using closure)', function () {
     loadMigrations();
     $userA = createUser();
     $userB = createUser();
@@ -147,6 +147,21 @@ it('asserts an action has been pushed with params - failure', function () {
 
     // Then we can expect a failure when asserting it has been dispatched with other parameters.
     AsJobWithAssertionsTest::assertPushedWithParams(fn (User $u) => $userB->is($u));
+})->with('custom job decorators');
+
+it('asserts an action has been pushed with params - failure (using array)', function () {
+    loadMigrations();
+    $userA = createUser();
+    $userB = createUser();
+
+    // When we dispatch the action with some parameters.
+    AsJobWithAssertionsTest::dispatch($userA);
+
+    $this->expectException(ExpectationFailedException::class);
+    $this->expectExceptionMessage('The expected ['.AsJobWithAssertionsTest::class.'] job was not pushed');
+
+    // Then we can expect a failure when asserting it has been dispatched with other parameters.
+    AsJobWithAssertionsTest::assertPushedWithParams([$userB]);
 })->with('custom job decorators');
 
 it('asserts an action has been pushed with params on a given queue - success', function () {
