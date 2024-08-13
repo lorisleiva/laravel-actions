@@ -169,4 +169,29 @@ trait AsJob
             return $callback ? $callback(...func_get_args()) : true;
         });
     }
+
+    public static function assertPushedWithParams(Closure|array $callback, ?string $queue = null): void
+    {
+        if (is_array($callback)) {
+            $callback = fn (...$params) => $params === $callback;
+        }
+
+        static::assertPushed(
+            fn ($action, $params, JobDecorator $job, $q) => $callback(...$params) && (is_null($queue) || $q === $queue)
+        );
+    }
+
+    public static function assertPushedWithParamsOn(string $queue, Closure|array $callback): void
+    {
+        static::assertPushedWithParams($callback, $queue);
+    }
+
+    public static function assertNotPushedWithParams(Closure|array $callback): void
+    {
+        if (is_array($callback)) {
+            $callback = fn (...$params) => $params === $callback;
+        }
+
+        static::assertNotPushed(fn ($action, $params, JobDecorator $job) => $callback(...$job->getParameters()));
+    }
 }
