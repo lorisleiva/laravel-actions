@@ -54,7 +54,7 @@ it('can be dispatched synchronously with parameters', function () {
     AsJobTest::dispatchNow(...$parameters);
 
     // Then it was pushed to the queue with these parameters.
-    assertJobPushedWith(AsJobTest::class, $parameters);
+    AsJobTest::assertPushedWithParams($parameters);
 });
 
 it('can be dispatched asynchronously', function () {
@@ -75,7 +75,7 @@ it('can be dispatched asynchronously with parameters', function () {
     AsJobTest::dispatch(...$parameters);
 
     // Then it was pushed to the queue with these parameters.
-    assertJobPushedWith(AsJobTest::class, $parameters);
+    AsJobTest::assertPushedWithParams($parameters);
 });
 
 it('can make a job statically', function (string $expectedJobClass) {
