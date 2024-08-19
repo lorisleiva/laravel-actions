@@ -88,6 +88,7 @@ it('runs as an object', function () {
 it('returns void when calling make()', function () {
     // Make sure that the static function ::make() returns not a type.
     $result = (new \ReflectionMethod(AsActionTest::class, 'make'))->getReturnType();
+
     expect($result)->toBeEmpty();
 });
 
