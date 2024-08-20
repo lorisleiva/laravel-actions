@@ -130,8 +130,8 @@ it('asserts an action has been pushed with params - success', function () {
     AsJobWithAssertionsTest::dispatch($user);
 
     // Then we can assert it has been dispatched with these parameters.
-    AsJobWithAssertionsTest::assertPushedWithParams(fn (User $u) => $user->is($u));
-    AsJobWithAssertionsTest::assertPushedWithParams([$user]);
+    AsJobWithAssertionsTest::assertPushedWith(fn (User $u) => $user->is($u));
+    AsJobWithAssertionsTest::assertPushedWith([$user]);
 })->with('custom job decorators');
 
 it('asserts an action has been pushed with params - failure (using closure)', function () {
@@ -146,7 +146,7 @@ it('asserts an action has been pushed with params - failure (using closure)', fu
     $this->expectExceptionMessage('The expected ['.AsJobWithAssertionsTest::class.'] job was not pushed');
 
     // Then we can expect a failure when asserting it has been dispatched with other parameters.
-    AsJobWithAssertionsTest::assertPushedWithParams(fn (User $u) => $userB->is($u));
+    AsJobWithAssertionsTest::assertPushedWith(fn (User $u) => $userB->is($u));
 })->with('custom job decorators');
 
 it('asserts an action has been pushed with params - failure (using array)', function () {
@@ -161,7 +161,7 @@ it('asserts an action has been pushed with params - failure (using array)', func
     $this->expectExceptionMessage('The expected ['.AsJobWithAssertionsTest::class.'] job was not pushed');
 
     // Then we can expect a failure when asserting it has been dispatched with other parameters.
-    AsJobWithAssertionsTest::assertPushedWithParams([$userB]);
+    AsJobWithAssertionsTest::assertPushedWith([$userB]);
 })->with('custom job decorators');
 
 it('asserts an action has been pushed with params on a given queue - success', function () {
@@ -217,6 +217,6 @@ it('asserts an action has not been pushed with params - success', function () {
     AsJobWithAssertionsTest::dispatch($userA);
 
     // Then we can assert it has not been dispatched with these parameters.
-    AsJobWithAssertionsTest::assertNotPushedWithParams(fn (User $u) => $userB->is($u));
-    AsJobWithAssertionsTest::assertNotPushedWithParams([$userB]);
+    AsJobWithAssertionsTest::assertNotPushedWith(fn (User $u) => $userB->is($u));
+    AsJobWithAssertionsTest::assertNotPushedWith([$userB]);
 })->with('custom job decorators');

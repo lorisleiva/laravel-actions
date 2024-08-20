@@ -170,7 +170,7 @@ trait AsJob
         });
     }
 
-    public static function assertPushedWithParams(Closure|array $callback, ?string $queue = null): void
+    public static function assertPushedWith(Closure|array $callback, ?string $queue = null): void
     {
         if (is_array($callback)) {
             $callback = fn (...$params) => $params === $callback;
@@ -183,10 +183,10 @@ trait AsJob
 
     public static function assertPushedWithParamsOn(string $queue, Closure|array $callback): void
     {
-        static::assertPushedWithParams($callback, $queue);
+        static::assertPushedWith($callback, $queue);
     }
 
-    public static function assertNotPushedWithParams(Closure|array $callback): void
+    public static function assertNotPushedWith(Closure|array $callback): void
     {
         if (is_array($callback)) {
             $callback = fn (...$params) => $params === $callback;
