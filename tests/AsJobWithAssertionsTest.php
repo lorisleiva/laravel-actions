@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\User;
 use PHPUnit\Framework\ExpectationFailedException;
 
 class AsJobWithAssertionsTest
@@ -23,7 +24,7 @@ class AsJobWithAssertionsTest
         $job->onQueue(static::$queue);
     }
 
-    public function handle(): void
+    public function handle(User $user): void
     {
         //
     }
@@ -119,4 +120,59 @@ it('asserts an action has been pushed on a given queue - failure', function () {
 
     // When we pushed it on some other queue.
     AsJobWithAssertionsTest::assertPushedOn('some-other-queue');
+})->with('custom job decorators');
+
+it('asserts an action has been pushed with params - success', function () {
+    loadMigrations();
+    $user = createUser();
+
+    // When we dispatch the action with some parameters.
+    AsJobWithAssertionsTest::dispatch($user);
+
+    // Then we can assert it has been dispatched with these parameters.
+    AsJobWithAssertionsTest::assertPushedWith(fn (User $u) => $user->is($u));
+    AsJobWithAssertionsTest::assertPushedWith([$user]);
+})->with('custom job decorators');
+
+it('asserts an action has been pushed with params - failure (using closure)', function () {
+    loadMigrations();
+    $userA = createUser();
+    $userB = createUser();
+
+    // When we dispatch the action with some parameters.
+    AsJobWithAssertionsTest::dispatch($userA);
+
+    $this->expectException(ExpectationFailedException::class);
+    $this->expectExceptionMessage('The expected ['.AsJobWithAssertionsTest::class.'] job was not pushed');
+
+    // Then we can expect a failure when asserting it has been dispatched with other parameters.
+    AsJobWithAssertionsTest::assertPushedWith(fn (User $u) => $userB->is($u));
+})->with('custom job decorators');
+
+it('asserts an action has been pushed with params - failure (using array)', function () {
+    loadMigrations();
+    $userA = createUser();
+    $userB = createUser();
+
+    // When we dispatch the action with some parameters.
+    AsJobWithAssertionsTest::dispatch($userA);
+
+    $this->expectException(ExpectationFailedException::class);
+    $this->expectExceptionMessage('The expected ['.AsJobWithAssertionsTest::class.'] job was not pushed');
+
+    // Then we can expect a failure when asserting it has been dispatched with other parameters.
+    AsJobWithAssertionsTest::assertPushedWith([$userB]);
+})->with('custom job decorators');
+
+it('asserts an action has not been pushed with params - success', function () {
+    loadMigrations();
+    $userA = createUser();
+    $userB = createUser();
+
+    // When we dispatch the action with some parameters.
+    AsJobWithAssertionsTest::dispatch($userA);
+
+    // Then we can assert it has not been dispatched with these parameters.
+    AsJobWithAssertionsTest::assertNotPushedWith(fn (User $u) => $userB->is($u));
+    AsJobWithAssertionsTest::assertNotPushedWith([$userB]);
 })->with('custom job decorators');
