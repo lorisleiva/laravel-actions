@@ -181,11 +181,6 @@ trait AsJob
         );
     }
 
-    public static function assertPushedWithParamsOn(string $queue, Closure|array $callback): void
-    {
-        static::assertPushedWith($callback, $queue);
-    }
-
     public static function assertNotPushedWith(Closure|array $callback): void
     {
         if (is_array($callback)) {
