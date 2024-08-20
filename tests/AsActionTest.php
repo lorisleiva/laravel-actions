@@ -85,6 +85,13 @@ it('runs as an object', function () {
     expect(AsActionTest::$latestResult)->toBe(42);
 });
 
+it('returns void when calling make()', function () {
+    // Make sure that the static function ::make() returns not a type.
+    $result = (new \ReflectionMethod(AsActionTest::class, 'make'))->getReturnType();
+
+    expect($result)->toBeEmpty();
+});
+
 it('runs as a controller', function () {
     // Given we have a route registered for that action.
     Route::post('compute/{operation}', AsActionTest::class);

@@ -6,7 +6,7 @@ use Illuminate\Support\Fluent;
 
 trait AsObject
 {
-    public static function make(): static
+    public static function make()
     {
         return app(static::class);
     }
