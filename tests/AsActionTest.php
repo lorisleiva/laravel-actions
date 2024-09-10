@@ -85,11 +85,15 @@ it('runs as an object', function () {
     expect(AsActionTest::$latestResult)->toBe(42);
 });
 
-it('returns void when calling make()', function () {
-    // Make sure that the static function ::make() returns not a type.
-    $result = (new \ReflectionMethod(AsActionTest::class, 'make'))->getReturnType();
+it('uses a comment instead of a return type on make()', function () {
+    // Make sure that the static function ::make() does not have a return type.
+    $reflectionMethod = new \ReflectionMethod(AsActionTest::class, 'make');
 
-    expect($result)->toBeEmpty();
+    $returnType = $reflectionMethod->getReturnType();
+    $docComment = $reflectionMethod->getDocComment();
+
+    expect($returnType)->toBeEmpty();
+    expect($docComment)->toContain('@return static');
 });
 
 it('runs as a controller', function () {
