@@ -21,7 +21,7 @@ class ActionResourceRegistrar extends ResourceRegistrar
             'edit' => 'ShowEdit'.ucfirst($actionName),
             'store' => 'Create'.ucfirst($actionName),
             'update' => 'Update'.ucfirst($actionName),
-            'destroy' => 'Destroy'.ucfirst($actionName),
+            'destroy' => 'Delete'.ucfirst($actionName),
         };
 
         // Replaces the Controller@action string with the ActionClass string
