@@ -16,10 +16,10 @@ class ActionResourceRegistrar extends ResourceRegistrar
 
         $actionClass = match ($method) {
             'index' => 'Get'.ucfirst($resource),
-            'create' => 'Create'.ucfirst($actionName),
+            'create' => 'ShowCreate'.ucfirst($actionName),
             'show' => 'Show'.ucfirst($actionName),
-            'edit' => 'Edit'.ucfirst($actionName),
-            'store' => 'Store'.ucfirst($actionName),
+            'edit' => 'ShowEdit'.ucfirst($actionName),
+            'store' => 'Create'.ucfirst($actionName),
             'update' => 'Update'.ucfirst($actionName),
             'destroy' => 'Destroy'.ucfirst($actionName),
         };
