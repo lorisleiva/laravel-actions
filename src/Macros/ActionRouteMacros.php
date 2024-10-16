@@ -10,7 +10,7 @@ class ActionRouteMacros
 {
     public function actions(): callable
     {
-        return function (string $name, string $namespace, array $options = []): PendingResourceRegistration {
+        return function (string $name, string $namespace = 'App\Actions', array $options = []): PendingResourceRegistration {
             /** @var Router $router */
             $router = $this;
             $registrar = new ActionResourceRegistrar($router);
