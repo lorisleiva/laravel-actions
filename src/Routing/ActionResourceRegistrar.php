@@ -14,8 +14,7 @@ class ActionResourceRegistrar extends ResourceRegistrar
     {
         $action = parent::getResourceAction($resource, $controller, $method, $options);
 
-        $resource = str_replace('.', '_', $resource);
-        $resource = Str::camel($resource);
+        $resource = Str::camel(str_replace('.', '_', $resource));
         $actionName = Str::singular($resource);
 
         if (static::$actionResolver) {
