@@ -330,51 +330,55 @@ it('allows you to customise the name of each action class, but falls back to the
 
 namespace App\Actions;
 
-class GetAddresses { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowCreateAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
-class CreateAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
-class UpdateAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
-class DeleteAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditAddress { use \Lorisleiva\Actions\Concerns\AsAction; }
+use Lorisleiva\Actions\Concerns\AsAction;
 
-class GetPhotosComments { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowCreatePhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class CreatePhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class UpdatePhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class DeletePhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowPhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditPhotosComment { use \Lorisleiva\Actions\Concerns\AsAction; }
+class GetAddresses { use AsAction; }
+class ShowCreateAddress { use AsAction; }
+class CreateAddress { use AsAction; }
+class UpdateAddress { use AsAction; }
+class DeleteAddress { use AsAction; }
+class ShowAddress { use AsAction; }
+class ShowEditAddress { use AsAction; }
 
-class ShowIndexPage { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowCreatePage { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowPage { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditPage { use \Lorisleiva\Actions\Concerns\AsAction; }
-class Store { use \Lorisleiva\Actions\Concerns\AsAction; }
-class Update { use \Lorisleiva\Actions\Concerns\AsAction; }
+class GetPhotosComments { use AsAction; }
+class ShowCreatePhotosComment { use AsAction; }
+class CreatePhotosComment { use AsAction; }
+class UpdatePhotosComment { use AsAction; }
+class DeletePhotosComment { use AsAction; }
+class ShowPhotosComment { use AsAction; }
+class ShowEditPhotosComment { use AsAction; }
 
-class GetOrderItems { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowCreateOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
-class CreateOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
-class UpdateOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
-class DeleteOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditOrderItem { use \Lorisleiva\Actions\Concerns\AsAction; }
+class ShowIndexPage { use AsAction; }
+class ShowCreatePage { use AsAction; }
+class ShowPage { use AsAction; }
+class ShowEditPage { use AsAction; }
+class Store { use AsAction; }
+class Update { use AsAction; }
 
-class GetProducts { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowProduct { use \Lorisleiva\Actions\Concerns\AsAction; }
+class GetOrderItems { use AsAction; }
+class ShowCreateOrderItem { use AsAction; }
+class CreateOrderItem { use AsAction; }
+class UpdateOrderItem { use AsAction; }
+class DeleteOrderItem { use AsAction; }
+class ShowOrderItem { use AsAction; }
+class ShowEditOrderItem { use AsAction; }
+
+class GetProducts { use AsAction; }
+class ShowProduct { use AsAction; }
 
 namespace Custom\Namespace;
 
-class ShowComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class UpdateComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class DeleteComment { use \Lorisleiva\Actions\Concerns\AsAction; }
+use Lorisleiva\Actions\Concerns\AsAction;
 
-class GetUsersComments { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowCreateUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class CreateUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class UpdateUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class DeleteUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
-class ShowEditUsersComment { use \Lorisleiva\Actions\Concerns\AsAction; }
+class ShowComment { use AsAction; }
+class ShowEditComment { use AsAction; }
+class UpdateComment { use AsAction; }
+class DeleteComment { use AsAction; }
+
+class GetUsersComments { use AsAction; }
+class ShowCreateUsersComment { use AsAction; }
+class CreateUsersComment { use AsAction; }
+class UpdateUsersComment { use AsAction; }
+class DeleteUsersComment { use AsAction; }
+class ShowUsersComment { use AsAction; }
+class ShowEditUsersComment { use AsAction; }
