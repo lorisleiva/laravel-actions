@@ -291,7 +291,7 @@ it('applies middleware to a route', function () {
 });
 
 it('allows you to customise the name of each action class, but falls back to the default behaviour if unresolved', function () {
-    ActionResourceRegistrar::resolveResourcefulActionsUsing(function (string $resource, string $method) {
+    ActionResourceRegistrar::resolveActionClassNameUsing(function (string $resource, string $method) {
         return match ($method) {
             'index' => 'ShowIndexPage',
             'create' => 'ShowCreatePage',

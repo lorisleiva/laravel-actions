@@ -45,7 +45,7 @@ class ActionResourceRegistrar extends ResourceRegistrar
      *
      * @example
      *
-     * ActionResourceRegistrar::resolveResourcefulActionsUsing(
+     * ActionResourceRegistrar::resolveActionClassNameUsing(
      *     function ($resource, $method): ?string {
      *         return ucfirst($method)
      *             .ucfirst(Str::camel(str_replace('.', '-', $resource)))
@@ -56,7 +56,7 @@ class ActionResourceRegistrar extends ResourceRegistrar
      * @param Closure $resolver
      * @return void
      */
-    public static function resolveResourcefulActionsUsing(Closure $resolver): void
+    public static function resolveActionClassNameUsing(Closure $resolver): void
     {
         static::$actionResolver = $resolver;
     }
