@@ -131,7 +131,7 @@ class ActionManager
         return $designPattern->decorate($instance, $frame);
     }
 
-    public function identifyFromBacktrace($usedTraits, BacktraceFrame &$frame = null): ?DesignPattern
+    public function identifyFromBacktrace($usedTraits, ?BacktraceFrame &$frame = null): ?DesignPattern
     {
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
         $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
