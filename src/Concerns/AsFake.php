@@ -41,6 +41,11 @@ trait AsFake
         return static::mock()->shouldReceive('handle');
     }
 
+    public static function shouldExpect(): Expectation|ExpectationInterface|HigherOrderMessage
+    {
+        return static::mock()->expects('handle');
+    }
+
     public static function shouldNotRun(): Expectation|ExpectationInterface|HigherOrderMessage
     {
         return static::mock()->shouldNotReceive('handle');
