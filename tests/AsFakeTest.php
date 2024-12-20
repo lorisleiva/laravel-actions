@@ -74,6 +74,19 @@ it('can mock an action expecting for it to run', function () {
     expect($result)->toBe(3);
 });
 
+it('can mock an action expecting for it to run only once', function () {
+    // Given we mock the action with the
+    // expection it should run only once.
+    AsFakeTest::shouldExpect();
+
+    // When we run the action more than once.
+    AsFakeTest::run('addition', 1, 2);
+    AsFakeTest::run('addition', 1, 2);
+
+    // Then we expect a mocking exception.
+    Mockery::close();
+})->throws(InvalidCountException::class);
+
 it('can mock an action expecting for it not to run', function () {
     // Given we mock the action with the
     // expectation that it should not run.
