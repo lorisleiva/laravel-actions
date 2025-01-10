@@ -31,12 +31,6 @@ trait AsPipeline
         $passable = array_shift($arguments);
         $closure = array_pop($arguments);
 
-        $returned = $this->handle($passable);
-
-        if (! is_null($returned)) {
-            return $closure($returned);
-        }
-
-        return $closure($passable);
+        return $closure($this->handle($passable) ?? $passable);
     }
 }
