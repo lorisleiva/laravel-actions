@@ -30,9 +30,5 @@ class PipelineDecorator
         if ($this->hasMethod('asPipeline')) {
             return $this->resolveAndCallMethod('asPipeline', $arguments);
         }
-
-        if ($this->hasMethod('handle')) {
-            return $this->resolveFromArgumentsAndCall('handle', $arguments);
-        }
     }
 }
