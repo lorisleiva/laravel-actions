@@ -17,8 +17,22 @@ class PipelineDecorator
 
     public function __invoke(mixed ...$arguments): mixed
     {
+        return $this->handleFromAnyMethod(...$arguments);
+    }
+
+    public function handle(mixed ...$arguments): mixed
+    {
+        return $this->handleFromAnyMethod(...$arguments);
+    }
+
+    protected function handleFromAnyMethod(mixed ...$arguments): mixed
+    {
         if ($this->hasMethod('asPipeline')) {
             return $this->resolveAndCallMethod('asPipeline', $arguments);
+        }
+
+        if ($this->hasMethod('handle')) {
+            return $this->resolveFromArgumentsAndCall('handle', $arguments);
         }
     }
 }
