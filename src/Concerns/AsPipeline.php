@@ -35,8 +35,8 @@ trait AsPipeline
 
         if (! is_null($returned)) {
             return $closure($returned);
-        } else {
-            return $closure($passable);
         }
+
+        return $closure($passable);
     }
 }
