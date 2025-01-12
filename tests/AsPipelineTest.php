@@ -154,7 +154,7 @@ it('can run as a pipe in a pipeline, without an explicit asPipeline method', fun
     expect($passable->count)->toBe(4);
 });
 
-it('it can run as a noop/passthrough pipe in a pipeline, without a handle or asPipeline method', function () {
+it('can run as a noop/passthrough pipe in a pipeline, without a handle or asPipeline method', function () {
     $anonymous = getAnonymous();
     $passable = Pipeline::send(getPassable())
         ->through([
@@ -169,7 +169,7 @@ it('it can run as a noop/passthrough pipe in a pipeline, without a handle or asP
     expect($passable->count)->toBe(2);
 });
 
-it('it can run with an arbitrary via method configured on Pipeline', function () {
+it('can run with an arbitrary via method configured on Pipeline', function () {
     $anonymous = getAnonymous();
     $passable = Pipeline::send(getPassable())
         ->via('foobar')
