@@ -15,9 +15,9 @@ class AsPipelinePassable
         //
     }
 
-    public function increment(int $multiplier = 1)
+    public function increment()
     {
-        $this->count = $this->count + (1 * $multiplier);
+        $this->count++;
     }
 }
 
@@ -61,10 +61,10 @@ class AsPipelineMultipleParamTest
 
     public function handle(AsPipelinePassable $passable): void
     {
-        $passable->increment($multiplier);
+        $passable->increment();
     }
 
-    public function asPipeline(AsPipelinePassable $passable, int $multiplier): AsPipelinePassable
+    public function asPipeline(AsPipelinePassable $passable, int $foo): AsPipelinePassable
     {
         $this->handle($passable);
 
@@ -86,9 +86,9 @@ class AsPipelineMultipleParamHandleOnlyTest
 {
     use AsAction;
 
-    public function handle(AsPipelinePassable $passable, int $multiplier): void
+    public function handle(AsPipelinePassable $passable, int $foo): void
     {
-        $passable->increment($multiplier);
+        $passable->increment();
     }
 }
 
@@ -195,9 +195,6 @@ it('cannot run as a pipe in a pipeline, with an explicit asPipeline method expec
             $anonymous,
         ])
         ->thenReturn();
-
-    expect(is_object($passable))->toBe(true);
-    expect($passable->count)->toBe(10);
 })->throws(ArgumentCountError::class, 'Too few arguments to function Lorisleiva\Actions\Tests\AsPipelineMultipleParamTest::asPipeline(), 1 passed and exactly 2 expected');
 
 it('cannot run as a pipe in a pipeline, without an explicit asPipeline method and multiple non-optional handle params', function () {
@@ -210,7 +207,4 @@ it('cannot run as a pipe in a pipeline, without an explicit asPipeline method an
             $anonymous,
         ])
         ->thenReturn();
-
-    expect(is_object($passable))->toBe(true);
-    expect($passable->count)->toBe(10);
 })->throws(ArgumentCountError::class, 'Too few arguments to function Lorisleiva\Actions\Tests\AsPipelineMultipleParamHandleOnlyTest::handle(), 1 passed and exactly 2 expected');
