@@ -8,7 +8,7 @@ use Lorisleiva\Actions\Routing\ActionResourceRegistrar;
 
 class ActionRouteMacros
 {
-    public function actions(): callable
+    public function resourceActions(): callable
     {
         return function (string $name, string $namespace = 'App\Actions', array $options = []): PendingResourceRegistration {
             /** @var Router $router */

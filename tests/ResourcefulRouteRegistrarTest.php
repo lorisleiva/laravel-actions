@@ -7,19 +7,19 @@ use Lorisleiva\Actions\Routing\ActionResourceRegistrar;
 
 beforeEach(function () {
     // Allows us to test routes with a single word
-    Route::actions('addresses')->middleware('auth');
+    Route::resourceActions('addresses')->middleware('auth');
 
     // Allows us to test routes with kebab-case words
-    Route::actions('order-items');
+    Route::resourceActions('order-items');
 
     // Allows us to test routes where we specify the actions
-    Route::actions('products')->only('index', 'show');
+    Route::resourceActions('products')->only('index', 'show');
 
     // Allows us to test nesting
-    Route::actions('photos.comments');
+    Route::resourceActions('photos.comments');
 
     // Allows us to test shallow nesting, with a custom namespace
-    Route::actions('users.comments', 'Custom\Namespace')->shallow();
+    Route::resourceActions('users.comments', 'Custom\Namespace')->shallow();
 });
 
 it('registers index route for addresses', function () {
@@ -303,7 +303,7 @@ it('allows you to customise the name of each action class, but falls back to the
         };
     });
 
-    Route::actions('addresses');
+    Route::resourceActions('addresses');
 
     $route = Route::getRoutes()->getByName('addresses.index');
     expect($route->getAction()['uses'])->toEqual('App\Actions\ShowIndexPage@__invoke');

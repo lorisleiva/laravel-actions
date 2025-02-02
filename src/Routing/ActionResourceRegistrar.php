@@ -18,11 +18,11 @@ class ActionResourceRegistrar extends ResourceRegistrar
         $actionName = Str::singular($resource);
 
         if (static::$actionResolver) {
-            $actionClass = call_user_func(static::$actionResolver, $resource, $method);
+            $controllerMethod = call_user_func(static::$actionResolver, $resource, $method);
         }
 
-        if (empty($actionClass)) {
-            $actionClass = match ($method) {
+        if (empty($controllerMethod)) {
+            $controllerMethod = match ($method) {
                 'index' => 'Get'.ucfirst($resource),
                 'create' => 'ShowCreate'.ucfirst($actionName),
                 'show' => 'Show'.ucfirst($actionName),
@@ -34,7 +34,7 @@ class ActionResourceRegistrar extends ResourceRegistrar
         }
 
         // Replaces the Controller@action string with the ActionClass string
-        $action['uses'] = str_replace('\\\\', '\\', "{$controller}\\{$actionClass}");
+        $action['uses'] = str_replace('\\\\', '\\', "{$controller}\\{$controllerMethod}");
 
         return $action;
     }
