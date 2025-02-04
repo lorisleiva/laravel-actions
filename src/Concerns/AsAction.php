@@ -10,4 +10,5 @@ trait AsAction
     use AsJob;
     use AsCommand;
     use AsFake;
+    use AsPipeline;
 }
