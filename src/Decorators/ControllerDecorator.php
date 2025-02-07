@@ -3,12 +3,14 @@
 namespace Lorisleiva\Actions\Decorators;
 
 use Illuminate\Container\Container;
+use Illuminate\Foundation\Routing\PrecognitionControllerDispatcher;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use Lorisleiva\Actions\Concerns\WithAttributes;
+use Lorisleiva\Actions\Routing\PrecognitionActionControllerDispatcher;
 
 class ControllerDecorator
 {
@@ -33,6 +35,7 @@ class ControllerDecorator
         if ($this->hasMethod('getControllerMiddleware')) {
             $this->middleware = $this->resolveAndCallMethod('getControllerMiddleware');
         }
+        app()->bind(PrecognitionControllerDispatcher::class, PrecognitionActionControllerDispatcher::class);
         app()->extend(ActionRequest::class, fn(ActionRequest $request) => $request->setAction($action));
     }
 
