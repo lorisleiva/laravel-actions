@@ -33,6 +33,7 @@ class ControllerDecorator
         if ($this->hasMethod('getControllerMiddleware')) {
             $this->middleware = $this->resolveAndCallMethod('getControllerMiddleware');
         }
+        app()->extend(ActionRequest::class, fn(ActionRequest $request) => $request->setAction($action));
     }
 
     public function getRoute(): Route
