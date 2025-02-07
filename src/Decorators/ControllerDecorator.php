@@ -59,7 +59,7 @@ class ControllerDecorator
     public function __invoke(string $method)
     {
         $this->refreshAction();
-        $request = $this->refreshRequest();
+        $request = app(ActionRequest::class);
 
         if ($this->shouldValidateRequest($method)) {
             $request->validate();
@@ -83,18 +83,6 @@ class ControllerDecorator
         }
 
         $this->executedAtLeastOne = true;
-    }
-
-    protected function refreshRequest(): ActionRequest
-    {
-        app()->forgetInstance(ActionRequest::class);
-
-        /** @var ActionRequest $request */
-        $request = app(ActionRequest::class);
-        $request->setAction($this->action);
-        app()->instance(ActionRequest::class, $request);
-
-        return $request;
     }
 
     protected function replaceRouteMethod(): void
