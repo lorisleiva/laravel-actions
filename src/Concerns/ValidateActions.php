@@ -133,8 +133,12 @@ trait ValidateActions
     protected function inspectAuthorization(): Response
     {
         try {
+            $routeParameters = method_exists($this, 'route') ? $this->route()->parameters() : null;
+
             $response = $this->hasMethod('authorize')
-                ? $this->resolveAndCallMethod('authorize')
+                ? ($routeParameters
+                    ? $this->resolveAndCallMethod('authorize', $routeParameters)
+                    : $this->resolveAndCallMethod('authorize'))
                 : true;
         } catch (AuthorizationException $e) {
             return $e->toResponse();

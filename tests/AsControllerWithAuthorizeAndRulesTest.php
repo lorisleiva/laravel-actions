@@ -32,9 +32,25 @@ class AsControllerWithAuthorizeAndRulesTest
     }
 }
 
+class AsControllerWithAuthorizeBindingsTest
+{
+    use AsController;
+
+    public function authorize(string $someRouteParameter): bool
+    {
+        return $someRouteParameter !== 'unauthorized';
+    }
+
+    public function handle(ActionRequest $request, string $someRouteParameter)
+    {
+        return [$someRouteParameter];
+    }
+}
+
 beforeEach(function () {
     // Given the action is registered as a controller.
     Route::post('/calculator', AsControllerWithAuthorizeAndRulesTest::class);
+    Route::get('/authorize-bindings/{someRouteParameter}', AsControllerWithAuthorizeBindingsTest::class);
 });
 
 it('passes authorization and validation', function () {
@@ -85,4 +101,9 @@ it('uses a new validator at every request', function () {
 
     $this->post('/calculator', ['operation' => 'invalid'])
         ->assertSessionHasErrors(['operation', 'right', 'left']);
+});
+
+it('resolves route parameters as authorization arguments', function () {
+    $this->get('/authorize-bindings/authorized')->assertOk()->assertExactJson(['authorized']);
+    $this->get('/authorize-bindings/unauthorized')->assertForbidden();
 });
