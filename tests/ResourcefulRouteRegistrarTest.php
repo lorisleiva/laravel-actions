@@ -3,6 +3,7 @@
 namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Lorisleiva\Actions\Routing\ActionResourceRegistrar;
 
 beforeEach(function () {
@@ -290,42 +291,58 @@ it('applies middleware to a route', function () {
     expect($route->gatherMiddleware())->toContain('auth');
 });
 
-it('allows you to customise the name of each action class, but falls back to the default behaviour if unresolved', function () {
-    ActionResourceRegistrar::resolveActionClassNameUsing(function (string $resource, string $method) {
-        return match ($method) {
-            'index' => 'ShowIndexPage',
-            'create' => 'ShowCreatePage',
-            'show' => 'ShowPage',
-            'edit' => 'ShowEditPage',
-            'store' => 'Store',
-            'update' => 'Update',
-            default => null,
-        };
+it('allows you to override the default action naming conventions', function () {
+    ActionResourceRegistrar::resolveResourceAction('index', function (string $resource) {
+        return 'GetAll'.ucfirst($resource);
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('create', function (string $resource) {
+        return 'Create'.Str::singular(ucfirst($resource));
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('show', function (string $resource) {
+        return 'Get'.Str::singular(ucfirst($resource));
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('edit', function (string $resource) {
+        return 'Edit'.Str::singular(ucfirst($resource));
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('store', function (string $resource) {
+        return 'Store'.Str::singular(ucfirst($resource));
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('update', function (string $resource) {
+        return 'Patch'.Str::singular(ucfirst($resource));
+    });
+
+    ActionResourceRegistrar::resolveResourceAction('destroy', function (string $resource) {
+        return 'Destroy'.Str::singular(ucfirst($resource));
     });
 
     Route::resourceActions('addresses');
 
     $route = Route::getRoutes()->getByName('addresses.index');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\ShowIndexPage@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\GetAllAddresses@__invoke');
 
     $route = Route::getRoutes()->getByName('addresses.create');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\ShowCreatePage@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\CreateAddress@__invoke');
 
     $route = Route::getRoutes()->getByName('addresses.show');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\ShowPage@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\GetAddress@__invoke');
 
     $route = Route::getRoutes()->getByName('addresses.edit');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\ShowEditPage@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\EditAddress@__invoke');
 
     $route = Route::getRoutes()->getByName('addresses.store');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\Store@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\StoreAddress@__invoke');
 
     $route = Route::getRoutes()->getByName('addresses.update');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\Update@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\PatchAddress@__invoke');
 
     // This one uses the default definition because it was never overridden
     $route = Route::getRoutes()->getByName('addresses.destroy');
-    expect($route->getAction()['uses'])->toEqual('App\Actions\DeleteAddress@__invoke');
+    expect($route->getAction()['uses'])->toEqual('App\Actions\DestroyAddress@__invoke');
 });
 
 namespace App\Actions;
@@ -348,12 +365,12 @@ class DeletePhotosComment { use AsAction; }
 class ShowPhotosComment { use AsAction; }
 class ShowEditPhotosComment { use AsAction; }
 
-class ShowIndexPage { use AsAction; }
-class ShowCreatePage { use AsAction; }
-class ShowPage { use AsAction; }
-class ShowEditPage { use AsAction; }
-class Store { use AsAction; }
-class Update { use AsAction; }
+class GetAllAddresses { use AsAction; }
+class StoreAddress { use AsAction; }
+class GetAddress { use AsAction; }
+class EditAddress { use AsAction; }
+class PatchAddress { use AsAction; }
+class DestroyAddress { use AsAction; }
 
 class GetOrderItems { use AsAction; }
 class ShowCreateOrderItem { use AsAction; }

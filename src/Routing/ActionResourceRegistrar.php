@@ -8,7 +8,10 @@ use Illuminate\Support\Str;
 
 class ActionResourceRegistrar extends ResourceRegistrar
 {
-    private static ?Closure $actionResolver = null;
+    /**
+     * @var array<string, Closure>
+     */
+    private static array $actionResolver = [];
 
     protected function getResourceAction($resource, $controller, $method, $options): array
     {
@@ -17,8 +20,8 @@ class ActionResourceRegistrar extends ResourceRegistrar
         $resource = Str::camel(str_replace('.', '_', $resource));
         $actionName = Str::singular($resource);
 
-        if (static::$actionResolver) {
-            $actionClass = call_user_func(static::$actionResolver, $resource, $method);
+        if (! empty(static::$actionResolver[$method])) {
+            $actionClass = call_user_func(static::$actionResolver[$method], $resource);
         }
 
         if (empty($actionClass)) {
@@ -44,19 +47,16 @@ class ActionResourceRegistrar extends ResourceRegistrar
      *
      * @example
      *
-     * ActionResourceRegistrar::resolveActionClassNameUsing(
-     *     function ($resource, $method): ?string {
-     *         return ucfirst($method)
-     *             .ucfirst(Str::camel(str_replace('.', '-', $resource)))
-     *             .'Action';
-     *     }
-     * );
+     * ActionResourceRegistrar::resolveResourceAction('index', function (string $resource) {
+     *     return 'GetAll'.ucfirst($resource); // e.g. GetAllUsers
+     * });
      *
+     * @param string $method
      * @param Closure $resolver
      * @return void
      */
-    public static function resolveActionClassNameUsing(Closure $resolver): void
+    public static function resolveResourceAction(string $method, Closure $resolver): void
     {
-        static::$actionResolver = $resolver;
+        static::$actionResolver[$method] = $resolver;
     }
 }
