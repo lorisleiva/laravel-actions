@@ -3,11 +3,13 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
+use Lorisleiva\Actions\Macros\ActionRouteMacros;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -43,6 +45,8 @@ class ActionServiceProvider extends ServiceProvider
                 MakeActionCommand::class,
             ]);
         }
+
+        Route::mixin(new ActionRouteMacros);
     }
 
     protected function extendActions(): void
