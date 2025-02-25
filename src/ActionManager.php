@@ -73,7 +73,7 @@ class ActionManager
     public function registerDesignPattern(DesignPattern $designPattern): ActionManager
     {
         $this->designPatterns[] = $designPattern;
-
+        
         return $this;
     }
 
@@ -136,7 +136,7 @@ class ActionManager
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
         $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
             | DEBUG_BACKTRACE_IGNORE_ARGS;
-
+        
         $ownNumberOfFrames = 2;
         $frames = array_slice(
             debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit),
