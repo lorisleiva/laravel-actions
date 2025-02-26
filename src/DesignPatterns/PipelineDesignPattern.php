@@ -17,7 +17,8 @@ class PipelineDesignPattern extends DesignPattern
 
     public function recognizeFrame(BacktraceFrame $frame): bool
     {
-        return $frame->matches(Pipeline::class, 'Illuminate\Pipeline\{closure}');
+        return $frame->matches(Pipeline::class, 'Illuminate\Pipeline\{closure}')
+            || $frame->matches(Pipeline::class, '{closure:{closure:Illuminate\Pipeline\Pipeline::carry():184}:185}');
     }
 
     public function decorate($instance, BacktraceFrame $frame)

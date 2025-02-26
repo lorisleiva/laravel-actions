@@ -1,11 +1,11 @@
 <?php
 
-namespace Lorisleiva\Actions\Tests;
+namespace Lorisleiva\Actions\Tests\Stubs;
 
 /**
  * Test fixture used in all of the AsPipeline{*} tests.
  */
-class AsPipelinePassable
+class PipelinePassable
 {
     public function __construct(public int $count = 0)
     {

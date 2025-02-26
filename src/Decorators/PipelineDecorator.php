@@ -22,6 +22,6 @@ class PipelineDecorator
 
         $method = $this->hasMethod('asPipeline') ? 'asPipeline' : 'handle';
 
-        return $closure($this->callMethod($method, [$passable]) ?? $passable);
+        return $closure($this->callMethod($method, [$passable]) ?? $passable) ?? $passable;
     }
 }
