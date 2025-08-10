@@ -4,12 +4,20 @@ use Lorisleiva\Actions\ActionRequest;
 
 beforeEach(function () {
     $this->request = new class extends ActionRequest {
-        public function authorize(): bool { return true; }
-        public function rules(): array   { return []; }
-        public function handle()          { /* no-op */ }
+        public function authorize(): bool
+        {
+            return true;
+        }
+        public function rules(): array
+        {
+            return [];
+        }
+        public function handle()
+        { /* no-op */
+        }
     };
 
-    $method            = new \ReflectionMethod($this->request, 'hasMethod');
+    $method = new \ReflectionMethod($this->request, 'hasMethod');
     $method->setAccessible(true);
     $this->hasMethod = $method;
 });
