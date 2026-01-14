@@ -25,7 +25,12 @@ trait AsObject
     public static function run(mixed ...$arguments): mixed
     {
         $instance = static::make();
-        $arguments = static::resolveModelBindings($instance, 'handle', $arguments);
+        
+        if (static::shouldResolveModelBindings()) {
+            $arguments = static::resolveModelBindings($instance, 'handle', $arguments);
+        } else {
+            $arguments = static::convertToNamedParameters($instance, 'handle', $arguments);
+        }
 
         return app()->call([$instance, 'handle'], $arguments);
     }
@@ -38,6 +43,37 @@ trait AsObject
     public static function runUnless(bool $boolean, mixed ...$arguments): mixed
     {
         return static::runIf(! $boolean, ...$arguments);
+    }
+
+    /**
+     * Override to enable automatic model resolution from scalar values.
+     * 
+     * @return bool
+     */
+    protected static function shouldResolveModelBindings(): bool
+    {
+        return false;
+    }
+
+    protected static function convertToNamedParameters(object $instance, string $method, array $arguments): array
+    {
+        if (! method_exists($instance, $method)) {
+            return $arguments;
+        }
+
+        $reflection = new ReflectionMethod($instance, $method);
+        $parameters = $reflection->getParameters();
+        $resolved = [];
+
+        foreach ($parameters as $index => $parameter) {
+            if (! array_key_exists($index, $arguments)) {
+                continue;
+            }
+
+            $resolved[$parameter->getName()] = $arguments[$index];
+        }
+
+        return $resolved;
     }
 
     protected static function resolveModelBindings(object $instance, string $method, array $arguments): array

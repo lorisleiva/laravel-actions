@@ -9,6 +9,11 @@ class AsObjectWithModelBindingOptionalParamTest
 {
     use AsObject;
 
+    protected static function shouldResolveModelBindings(): bool
+    {
+        return true;
+    }
+
     public function handle(User $user, string $status = 'active'): array
     {
         return [

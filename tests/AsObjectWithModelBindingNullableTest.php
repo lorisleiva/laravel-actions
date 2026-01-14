@@ -9,6 +9,11 @@ class AsObjectWithModelBindingNullableTest
 {
     use AsObject;
 
+    protected static function shouldResolveModelBindings(): bool
+    {
+        return true;
+    }
+
     public function handle(?User $user): ?User
     {
         return $user;
