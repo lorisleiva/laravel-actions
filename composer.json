@@ -23,13 +23,13 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/contracts": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
         "lorisleiva/lody": "^0.6"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^2.34|^3.0",
-        "phpunit/phpunit": "^10.5|^11.5"
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^2.34|^3.0|^4.4",
+        "phpunit/phpunit": "^10.5|^11.5|^12.5.12"
     },
     "autoload": {
         "psr-4": {
