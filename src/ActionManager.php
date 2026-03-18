@@ -12,7 +12,8 @@ use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
-use Lorisleiva\Lody\Lody;
+use ReflectionClass;
+use Symfony\Component\Finder\Finder;
 
 class ActionManager
 {
@@ -156,25 +157,95 @@ class ActionManager
         return null;
     }
 
-    public function registerRoutes(array | string $paths = 'app/Actions'): void
+    public function registerRoutes(array|string $paths = 'app/Actions'): void
     {
-        Lody::classes($paths)
-            ->isNotAbstract()
-            ->hasTrait(AsController::class)
-            ->hasStaticMethod('routes')
+        $this->discoverClasses($paths)
+            ->filter(fn (string $class) => ! (new ReflectionClass($class))->isAbstract())
+            ->filter(fn (string $class) => in_array(AsController::class, class_uses_recursive($class)))
+            ->filter(fn (string $class) => method_exists($class, 'routes'))
             ->each(fn (string $classname) => $this->registerRoutesForAction($classname));
     }
 
-    public function registerCommands(array | string $paths = 'app/Actions'): void
+    public function registerCommands(array|string $paths = 'app/Actions'): void
     {
-        Lody::classes($paths)
-            ->isNotAbstract()
-            ->hasTrait(AsCommand::class)
-            ->filter(function (string $classname): bool {
-                return property_exists($classname, 'commandSignature')
-                    || method_exists($classname, 'getCommandSignature');
-            })
+        $this->discoverClasses($paths)
+            ->filter(fn (string $class) => ! (new ReflectionClass($class))->isAbstract())
+            ->filter(fn (string $class) => in_array(AsCommand::class, class_uses_recursive($class)))
+            ->filter(fn (string $class) => property_exists($class, 'commandSignature') || method_exists($class, 'getCommandSignature'))
             ->each(fn (string $classname) => $this->registerCommandsForAction($classname));
+    }
+
+    /**
+     * Discover class names from the given paths.
+     *
+     * @param  array|string  $paths
+     * @return \Illuminate\Support\Collection<int, class-string>
+     */
+    private function discoverClasses(array|string $paths): \Illuminate\Support\Collection
+    {
+        $paths = array_map(
+            fn (string $path) => is_dir($path) ? $path : base_path($path),
+            (array) $paths
+        );
+
+        $paths = array_filter($paths, 'is_dir');
+
+        if (empty($paths)) {
+            return collect();
+        }
+
+        $files = Finder::create()->files()->name('*.php')->in($paths)->sortByName();
+
+        return collect($files)
+            ->map(fn (\SplFileInfo $file) => $this->classFromFile($file))
+            ->filter(fn (?string $class) => $class !== null && class_exists($class))
+            ->values();
+    }
+
+    /**
+     * Extract the FQCN from a PHP file using token parsing.
+     */
+    private function classFromFile(\SplFileInfo $file): ?string
+    {
+        $contents = file_get_contents($file->getRealPath());
+        $namespace = null;
+        $class = null;
+
+        $tokens = token_get_all($contents);
+        foreach ($tokens as $i => $token) {
+            if (! is_array($token)) {
+                continue;
+            }
+            if ($token[0] === T_NAMESPACE) {
+                $namespace = '';
+                for ($j = $i + 1; isset($tokens[$j]); $j++) {
+                    if (is_array($tokens[$j]) && in_array($tokens[$j][0], [T_NAME_QUALIFIED, T_STRING])) {
+                        $namespace .= $tokens[$j][1];
+                    } elseif ($tokens[$j] === ';' || $tokens[$j] === '{') {
+                        break;
+                    }
+                }
+            }
+            if ($token[0] === T_CLASS) {
+                // Skip anonymous classes
+                if (isset($tokens[$i - 1]) && is_array($tokens[$i - 1]) && $tokens[$i - 1][0] === T_NEW) {
+                    continue;
+                }
+                for ($j = $i + 1; isset($tokens[$j]); $j++) {
+                    if (is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
+                        $class = $tokens[$j][1];
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        if ($class === null) {
+            return null;
+        }
+
+        return $namespace ? $namespace . '\\' . $class : $class;
     }
 
     public function registerRoutesForAction(string $className): void

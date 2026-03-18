@@ -10,21 +10,24 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: ["8.2", "8.3", "8.4"]
-        laravel: ["^10.0", "^11.0", "^12.0"]
+        laravel: ["^11.0", "^12.0", "^13.0"]
         dependency-version: [prefer-lowest, prefer-stable]
         include:
-          - laravel: "^10.0"
-            testbench: "^8.0"
           - laravel: "^11.0"
             testbench: "^9.0"
           - laravel: "^12.0"
             testbench: "^10.0"
+          - laravel: "^13.0"
+            testbench: "^11.0"
+        exclude:
+          - php: "8.2"
+            laravel: "^13.0"
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
