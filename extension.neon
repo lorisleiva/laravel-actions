@@ -1,0 +1,18 @@
+services:
+    -
+        class: Lorisleiva\Actions\PHPStan\ActionHelper
+
+    -
+        class: Lorisleiva\Actions\PHPStan\RunReturnTypeExtension
+        tags:
+            - phpstan.broker.expressionTypeResolverExtension
+
+    -
+        class: Lorisleiva\Actions\PHPStan\RunThrowTypeExtension
+        tags:
+            - phpstan.dynamicStaticMethodThrowTypeExtension
+
+    -
+        class: Lorisleiva\Actions\PHPStan\RunParameterValidationRule
+        tags:
+            - phpstan.rules.rule

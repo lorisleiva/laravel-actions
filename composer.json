@@ -29,6 +29,7 @@
     "require-dev": {
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "pestphp/pest": "^3.0|^4.0",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5|^12.0"
     },
     "autoload": {
@@ -39,7 +40,10 @@
     "autoload-dev": {
         "psr-4": {
             "Lorisleiva\\Actions\\Tests\\": "tests"
-        }
+        },
+        "classmap": [
+            "tests/PHPStan/Fixtures"
+        ]
     },
     "scripts": {
         "test": "vendor/bin/pest --colors=always",
@@ -59,6 +63,11 @@
             "aliases": {
                 "Action": "Lorisleiva\\Actions\\Facades\\Actions"
             }
+        },
+        "phpstan": {
+            "includes": [
+                "extension.neon"
+            ]
         }
     },
     "minimum-stability": "dev",

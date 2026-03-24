@@ -1,0 +1,10 @@
+includes:
+    - ../../extension.neon
+
+parameters:
+    exceptions:
+        implicitThrows: false
+        check:
+            missingCheckedExceptionInThrows: true
+        checkedExceptionClasses:
+            - RuntimeException
