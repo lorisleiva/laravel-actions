@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lorisleiva\Actions\Tests\PHPStan\Fixtures;
 
 use Lorisleiva\Actions\Concerns\AsAction;
-use Lorisleiva\Actions\Concerns\AsObject;
 
 class AddAction
 {
@@ -68,3 +67,25 @@ OptionalAction::run('not-int');
 // No handle method
 NoHandleAction::run();
 NoHandleAction::runIf(true);
+
+// --- Named arguments ---
+
+class NamedArgAction
+{
+    use AsAction;
+
+    public function handle(int $a, string $b = 'default', float $c = 0.0): string
+    {
+        return "$a $b $c";
+    }
+}
+
+// Valid named argument calls — no errors
+NamedArgAction::run(1, c: 3.14);
+NamedArgAction::run(a: 1, c: 3.14);
+NamedArgAction::run(a: 1, b: 'hello', c: 3.14);
+NamedArgAction::runIf(true, 1, c: 3.14);
+
+// Wrong type via named argument — should error
+NamedArgAction::run(1, c: 'not-float');
+NamedArgAction::run(a: 'not-int');

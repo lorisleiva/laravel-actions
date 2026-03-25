@@ -31,43 +31,52 @@ final class RunParameterValidationRuleTest extends RuleTestCase
         $this->analyse([__DIR__ . '/Fixtures/run-parameter-validation.php'], [
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 0 given.",
-                55,
+                54,
             ],
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 1 given.",
-                56,
+                55,
             ],
             [
                 "{$ns}\AddAction::runIf() expects exactly 3 arguments, 1 given.",
-                57,
+                56,
             ],
             [
                 "{$ns}\AddAction::runUnless() expects exactly 3 arguments, 2 given.",
-                58,
+                57,
             ],
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 3 given.",
-                61,
+                60,
             ],
             [
                 "Parameter #1 \$a of {$ns}\AddAction::run() expects int, string given.",
-                64,
+                63,
             ],
             [
                 "Parameter #2 \$b of {$ns}\AddAction::run() expects int, string given.",
-                65,
+                64,
             ],
             [
                 "Parameter #1 \$a of {$ns}\OptionalAction::run() expects int, string given.",
-                66,
+                65,
             ],
             [
                 "Call to {$ns}\NoHandleAction::run() but class has no handle() method.",
-                69,
+                68,
             ],
             [
                 "Call to {$ns}\NoHandleAction::runIf() but class has no handle() method.",
-                70,
+                69,
+            ],
+            // Named argument type errors
+            [
+                "Parameter #3 \$c of {$ns}\NamedArgAction::run() expects float, string given.",
+                90,
+            ],
+            [
+                "Parameter #1 \$a of {$ns}\NamedArgAction::run() expects int, string given.",
+                91,
             ],
         ]);
     }

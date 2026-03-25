@@ -17,7 +17,8 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
 {
     public function __construct(
         private ActionHelper $helper,
-    ) {}
+    ) {
+    }
 
     public function getType(Expr $expr, Scope $scope): ?Type
     {

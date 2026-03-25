@@ -21,7 +21,8 @@ final class RunParameterValidationRule implements Rule
     public function __construct(
         private ActionHelper $helper,
         private RuleLevelHelper $ruleLevelHelper,
-    ) {}
+    ) {
+    }
 
     public function getNodeType(): string
     {
@@ -120,7 +121,22 @@ final class RunParameterValidationRule implements Rule
         }
 
         foreach ($args as $i => $arg) {
-            $param = $parameters[$i] ?? ($isVariadic ? $parameters[count($parameters) - 1] : null);
+            if ($arg->name !== null) {
+                $paramName = $arg->name->toString();
+                $param = null;
+                $paramIndex = null;
+                foreach ($parameters as $j => $p) {
+                    if ($p->getName() === $paramName) {
+                        $param = $p;
+                        $paramIndex = $j;
+
+                        break;
+                    }
+                }
+            } else {
+                $param = $parameters[$i] ?? ($isVariadic ? $parameters[count($parameters) - 1] : null);
+                $paramIndex = $i;
+            }
 
             if ($param === null) {
                 continue;
@@ -132,9 +148,11 @@ final class RunParameterValidationRule implements Rule
             $accepts = $this->ruleLevelHelper->accepts($paramType, $argType, $scope->isDeclareStrictTypes());
 
             if (! $accepts->result) {
+                $reportedIndex = $isConditional ? ($paramIndex ?? $i) + 2 : ($paramIndex ?? $i) + 1;
+
                 $errors[] = RuleErrorBuilder::message(sprintf(
                     'Parameter #%d $%s of %s::%s() expects %s, %s given.',
-                    $isConditional ? $i + 2 : $i + 1,
+                    $reportedIndex,
                     $param->getName(),
                     $classReflection->getDisplayName(),
                     $methodName,

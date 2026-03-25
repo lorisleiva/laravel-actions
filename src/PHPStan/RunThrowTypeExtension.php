@@ -14,7 +14,8 @@ final class RunThrowTypeExtension implements DynamicStaticMethodThrowTypeExtensi
 {
     public function __construct(
         private ActionHelper $helper,
-    ) {}
+    ) {
+    }
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {

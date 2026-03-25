@@ -24,7 +24,9 @@ class VoidAction
 {
     use AsAction;
 
-    public function handle(string $name): void {}
+    public function handle(string $name): void
+    {
+    }
 }
 
 class NullableAction
