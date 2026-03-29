@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Lorisleiva\Actions\Console\IdeHelperCommand;
 use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
@@ -41,6 +42,7 @@ class ActionServiceProvider extends ServiceProvider
             // Register the make:action generator command.
             $this->commands([
                 MakeActionCommand::class,
+                IdeHelperCommand::class,
             ]);
         }
     }
