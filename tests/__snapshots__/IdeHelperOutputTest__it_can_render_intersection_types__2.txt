@@ -1,0 +1,36 @@
+<?php
+
+namespace Lorisleiva\Actions\Tests\IdeHelper\stubs\IntersectionTypes;
+
+/**
+ * @method static ?\stdClass run(\stdClass&\PhpParser\Node\Expr\Array_ $permissionable)
+ */
+class IntersectionAction
+{
+}
+namespace Lorisleiva\Actions\Concerns;
+
+/**
+ * @method void asController()
+ */
+trait AsController
+{
+}
+/**
+ * @method void asListener()
+ */
+trait AsListener
+{
+}
+/**
+ * @method void asJob()
+ */
+trait AsJob
+{
+}
+/**
+ * @method void asCommand(\Illuminate\Console\Command $command)
+ */
+trait AsCommand
+{
+}

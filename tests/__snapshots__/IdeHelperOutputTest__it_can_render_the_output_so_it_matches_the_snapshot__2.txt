@@ -1,0 +1,168 @@
+<?php
+
+namespace Lorisleiva\Actions\Tests\IdeHelper\stubs;
+
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(string $string, float|int $number)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, string $string, float|int $number)
+ * @method static dispatchSync(string $string, float|int $number)
+ * @method static dispatchNow(string $string, float|int $number)
+ * @method static dispatchAfterResponse(string $string, float|int $number)
+ * @method static int|string run(string $string, float|int $number)
+ */
+class UnionTypeAction
+{
+}
+/**
+ */
+class EmptyAction
+{
+}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob()
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob()
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch()
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean)
+ * @method static dispatchSync()
+ * @method static dispatchNow()
+ * @method static dispatchAfterResponse()
+ * @method static mixed run()
+ */
+class VoidActionWithNoReturnType
+{
+}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(mixed ...$someArguments)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(mixed ...$someArguments)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(mixed ...$someArguments)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, mixed ...$someArguments)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, mixed ...$someArguments)
+ * @method static dispatchSync(mixed ...$someArguments)
+ * @method static dispatchNow(mixed ...$someArguments)
+ * @method static dispatchAfterResponse(mixed ...$someArguments)
+ * @method static mixed run(mixed ...$someArguments)
+ */
+class TestAction
+{
+}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(string $s, bool $var = false)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(string $s, bool $var = false)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(string $s, bool $var = false)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, string $s, bool $var = false)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, string $s, bool $var = false)
+ * @method static dispatchSync(string $s, bool $var = false)
+ * @method static dispatchNow(string $s, bool $var = false)
+ * @method static dispatchAfterResponse(string $s, bool $var = false)
+ * @method static int run(string $s, bool $var = false)
+ */
+class DefaultParameterValuesAction
+{
+}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(int $i)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, int $i)
+ * @method static dispatchSync(int $i)
+ * @method static dispatchNow(int $i)
+ * @method static dispatchAfterResponse(int $i)
+ * @method static void run(int $i)
+ */
+class VoidAction
+{
+}
+/**
+ * @method static string run()
+ */
+class BaseAction
+{
+}
+/**
+ */
+class NewAction
+{
+}
+namespace Lorisleiva\Actions\Tests\IdeHelper\stubs\Object;
+
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(string $string, float|int $number)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, string $string, float|int $number)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, string $string, float|int $number)
+ * @method static dispatchSync(string $string, float|int $number)
+ * @method static dispatchNow(string $string, float|int $number)
+ * @method static dispatchAfterResponse(string $string, float|int $number)
+ * @method static int|string run(string $string, float|int $number)
+ */
+class ObjectAction
+{
+}
+namespace Lorisleiva\Actions\Tests\IdeHelper\stubs\Jobs;
+
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(int $i)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, int $i)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, int $i)
+ * @method static dispatchSync(int $i)
+ * @method static dispatchNow(int $i)
+ * @method static dispatchAfterResponse(int $i)
+ */
+class WithDecoratorAction
+{
+}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob()
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob()
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch()
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean)
+ * @method static dispatchSync()
+ * @method static dispatchNow()
+ * @method static dispatchAfterResponse()
+ */
+class WithoutDecoratorAction
+{
+}
+namespace Lorisleiva\Actions\Tests\IdeHelper\stubs\IntersectionTypes;
+
+/**
+ * @method static ?\stdClass run(\stdClass&\PhpParser\Node\Expr\Array_ $permissionable)
+ */
+class IntersectionAction
+{
+}
+namespace Lorisleiva\Actions\Concerns;
+
+/**
+ * @method void asController()
+ */
+trait AsController
+{
+}
+/**
+ * @method void asListener()
+ */
+trait AsListener
+{
+}
+/**
+ * @method void asJob()
+ */
+trait AsJob
+{
+}
+/**
+ * @method void asCommand(\Illuminate\Console\Command $command)
+ */
+trait AsCommand
+{
+}
