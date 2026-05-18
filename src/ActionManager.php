@@ -158,23 +158,39 @@ class ActionManager
 
     public function registerRoutes(array | string $paths = 'app/Actions'): void
     {
-        Lody::classes($paths)
-            ->isNotAbstract()
-            ->hasTrait(AsController::class)
-            ->hasStaticMethod('routes')
-            ->each(fn (string $classname) => $this->registerRoutesForAction($classname));
+        $paths = is_array($paths) ? $paths : [$paths];
+
+        foreach ($paths as $path) {
+            if (! is_dir(base_path($path))) {
+                continue;
+            }
+
+            Lody::classes($path)
+                ->isNotAbstract()
+                ->hasTrait(AsController::class)
+                ->hasStaticMethod('routes')
+                ->each(fn (string $classname) => $this->registerRoutesForAction($classname));
+        }
     }
 
     public function registerCommands(array | string $paths = 'app/Actions'): void
     {
-        Lody::classes($paths)
-            ->isNotAbstract()
-            ->hasTrait(AsCommand::class)
-            ->filter(function (string $classname): bool {
-                return property_exists($classname, 'commandSignature')
-                    || method_exists($classname, 'getCommandSignature');
-            })
-            ->each(fn (string $classname) => $this->registerCommandsForAction($classname));
+        $paths = is_array($paths) ? $paths : [$paths];
+
+        foreach ($paths as $path) {
+            if (! is_dir(base_path($path))) {
+                continue;
+            }
+
+            Lody::classes($path)
+                ->isNotAbstract()
+                ->hasTrait(AsCommand::class)
+                ->filter(function (string $classname): bool {
+                    return property_exists($classname, 'commandSignature')
+                        || method_exists($classname, 'getCommandSignature');
+                })
+                ->each(fn (string $classname) => $this->registerCommandsForAction($classname));
+        }
     }
 
     public function registerRoutesForAction(string $className): void
