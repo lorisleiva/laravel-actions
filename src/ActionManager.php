@@ -9,6 +9,7 @@ use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
@@ -21,6 +22,9 @@ class ActionManager
 
     /** @var class-string<JobDecorator&ShouldBeUnique> */
     public static string $uniqueJobDecorator = UniqueJobDecorator::class;
+
+    /** @var class-string<DebounceJobDecorator> */
+    public static string $debounceJobDecorator = DebounceJobDecorator::class;
 
     /** @var DesignPattern[] */
     protected array $designPatterns = [];
@@ -49,6 +53,14 @@ class ActionManager
     public static function useUniqueJobDecorator(string $uniqueJobDecoratorClass): void
     {
         static::$uniqueJobDecorator = $uniqueJobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<DebounceJobDecorator> $debounceJobDecoratorClass
+     */
+    public static function useDebounceJobDecorator(string $debounceJobDecoratorClass): void
+    {
+        static::$debounceJobDecorator = $debounceJobDecoratorClass;
     }
 
     public function setBacktraceLimit(int $backtraceLimit): ActionManager
