@@ -18,6 +18,7 @@ class ListenerDesignPattern extends DesignPattern
     public function recognizeFrame(BacktraceFrame $frame): bool
     {
         return $frame->matches(Dispatcher::class, 'dispatch')
+            || $frame->matches(Dispatcher::class, 'invokeListeners')
             || $frame->matches(Dispatcher::class, 'handlerWantsToBeQueued')
             || $frame->matches(CallQueuedListener::class, 'handle')
             || $frame->matches(CallQueuedListener::class, 'failed');
