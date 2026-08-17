@@ -82,6 +82,18 @@ final class RunParameterValidationRuleTest extends RuleTestCase
                 "Parameter #2 \$a of {$ns}\AddAction::runIf() expects int, string given.",
                 95,
             ],
+            [
+                "{$ns}\AddAction::runIf() expects exactly 3 arguments, 0 given.",
+                98,
+            ],
+            [
+                "{$ns}\AddAction::runUnless() expects exactly 3 arguments, 0 given.",
+                99,
+            ],
+            [
+                "{$ns}\NoParamsAction::runIf() expects exactly 1 argument, 2 given.",
+                122,
+            ],
         ]);
     }
 }

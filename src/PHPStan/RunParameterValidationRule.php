@@ -56,6 +56,9 @@ final class RunParameterValidationRule implements Rule
             ];
         }
 
+        $callArgCount = count($node->getArgs());
+        $isConditional = $methodName === 'runIf' || $methodName === 'runUnless';
+
         $args = $this->helper->stripConditionArg($node->getArgs(), $methodName);
 
         $variant = ParametersAcceptorSelector::selectFromArgs(
@@ -76,12 +79,10 @@ final class RunParameterValidationRule implements Rule
             }
         }
 
-        $isConditional = $methodName === 'runIf' || $methodName === 'runUnless';
         $maxParams = $isVariadic ? null : count($parameters);
         $argCount = count($args);
 
         // Report counts relative to the actual call (including the condition argument for runIf/runUnless).
-        $reportedArgCount = $isConditional ? $argCount + 1 : $argCount;
         $reportedMin = $isConditional ? $minParams + 1 : $minParams;
         $reportedMax = $maxParams !== null ? ($isConditional ? $maxParams + 1 : $maxParams) : null;
 
@@ -94,7 +95,7 @@ final class RunParameterValidationRule implements Rule
                     $reportedMin === $reportedMax ? 'exactly' : 'at least',
                     $reportedMin,
                     $reportedMin === 1 ? 'argument' : 'arguments',
-                    $reportedArgCount,
+                    $callArgCount,
                 ))
                     ->identifier('laravelActions.tooFewArguments')
                     ->build(),
@@ -110,7 +111,7 @@ final class RunParameterValidationRule implements Rule
                     $reportedMin === $reportedMax ? 'exactly' : 'at most',
                     $reportedMax,
                     $reportedMax === 1 ? 'argument' : 'arguments',
-                    $reportedArgCount,
+                    $callArgCount,
                 ))
                     ->identifier('laravelActions.tooManyArguments')
                     ->build(),

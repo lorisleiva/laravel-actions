@@ -93,3 +93,34 @@ NamedArgAction::run(a: 'not-int');
 // Named condition argument
 AddAction::runIf(a: 1, b: 2, boolean: true);
 AddAction::runIf(a: 'not-int', b: 2, boolean: true);
+
+// Zero-arg conditional call — always fatal at runtime, reported with the full arity
+AddAction::runIf();
+AddAction::runUnless();
+
+// --- Conditional calls on a handle() with no parameters ---
+
+class NoParamsAction
+{
+    use AsAction;
+
+    public function handle(): string
+    {
+        return 'ran';
+    }
+}
+
+// Valid — the condition is the only argument
+NoParamsAction::runIf(true);
+NoParamsAction::runUnless(false);
+
+// Zero-arg — this rule stays silent, PHPStan's native check reports the missing $boolean
+NoParamsAction::runIf();
+NoParamsAction::runUnless();
+
+// Too many arguments
+NoParamsAction::runIf(true, 'extra');
+
+// Variadic handle() called conditionally — any number of arguments is valid
+VariadicAction::runIf(true);
+VariadicAction::runIf(true, 'a', 'b');
