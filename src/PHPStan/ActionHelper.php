@@ -66,6 +66,11 @@ final class ActionHelper
         return $classReflection->getNativeMethod('handle');
     }
 
+    public function resolveProxyMethodName(StaticCall $call): ?string
+    {
+        return $call->name instanceof Identifier ? $call->name->toString() : null;
+    }
+
     public function isActionProxyMethod(MethodReflection $methodReflection): bool
     {
         return in_array($methodReflection->getName(), self::PROXY_METHODS, true)

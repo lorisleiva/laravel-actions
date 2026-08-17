@@ -39,7 +39,11 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
             return null;
         }
 
-        $methodName = $expr->name->toString();
+        $methodName = $this->helper->resolveProxyMethodName($expr);
+
+        if ($methodName === null) {
+            return null;
+        }
 
         $conditionArg = $this->helper->getConditionArg($expr->getArgs(), $methodName);
         $args = $this->helper->stripConditionArg($expr->getArgs(), $methodName);

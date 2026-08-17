@@ -32,15 +32,17 @@ final class RunParameterValidationRule implements Rule
     /** @return list<\PHPStan\Rules\IdentifierRuleError> */
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof StaticCall);
-
         $classReflection = $this->helper->resolveActionClass($node, $scope);
 
         if ($classReflection === null) {
             return [];
         }
 
-        $methodName = $node->name->toString();
+        $methodName = $this->helper->resolveProxyMethodName($node);
+
+        if ($methodName === null) {
+            return [];
+        }
 
         $handleMethod = $this->helper->getHandleMethod($classReflection);
 
