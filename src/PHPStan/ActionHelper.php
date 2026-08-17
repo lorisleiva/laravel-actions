@@ -11,6 +11,7 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Reflection\MethodReflection;
 
 final class ActionHelper
 {
@@ -63,6 +64,12 @@ final class ActionHelper
         }
 
         return $classReflection->getNativeMethod('handle');
+    }
+
+    public function isActionProxyMethod(MethodReflection $methodReflection): bool
+    {
+        return in_array($methodReflection->getName(), self::PROXY_METHODS, true)
+            && $methodReflection->getDeclaringClass()->hasTraitUse(self::AS_OBJECT_TRAIT);
     }
 
     /**

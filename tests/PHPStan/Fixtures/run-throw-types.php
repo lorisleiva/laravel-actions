@@ -62,3 +62,19 @@ function callThrowingRunUnless(): void
 {
     ThrowingAction::runUnless(false, 'test');
 }
+
+/** A static run() on a class that is not an action keeps its own throw type. */
+class NotAnAction
+{
+    /** @throws RuntimeException */
+    public static function run(): int
+    {
+        throw new RuntimeException('Not an action');
+    }
+}
+
+// Should error: the extension leaves non-actions alone
+function callNonAction(): int
+{
+    return NotAnAction::run();
+}

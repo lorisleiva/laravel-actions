@@ -9,6 +9,8 @@ services:
 
     -
         class: Lorisleiva\Actions\PHPStan\RunThrowTypeExtension
+        arguments:
+            implicitThrows: %exceptions.implicitThrows%
         tags:
             - phpstan.dynamicStaticMethodThrowTypeExtension
 

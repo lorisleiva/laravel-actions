@@ -41,6 +41,10 @@ final class RunThrowTypeExtensionTest extends RuleTestCase
                 "Function {$ns}\callThrowingRunUnless() throws checked exception RuntimeException but it's missing from the PHPDoc @throws tag.",
                 63,
             ],
+            [
+                "Function {$ns}\callNonAction() throws checked exception RuntimeException but it's missing from the PHPDoc @throws tag.",
+                79,
+            ],
         ]);
     }
 }
