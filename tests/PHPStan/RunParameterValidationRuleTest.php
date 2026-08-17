@@ -79,24 +79,32 @@ final class RunParameterValidationRuleTest extends RuleTestCase
                 124,
             ],
             [
-                "Parameter #2 \$a of {$ns}\AddAction::runIf() expects int, string given.",
+                "Unknown parameter \$typo in call to {$ns}\NamedArgAction::run().",
+                129,
+            ],
+            [
+                "Unknown parameter \$typo in call to {$ns}\NamedArgAction::runIf().",
                 130,
             ],
             [
-                "{$ns}\AddAction::runIf() expects exactly 3 arguments, 0 given.",
+                "Parameter #2 \$a of {$ns}\AddAction::runIf() expects int, string given.",
                 139,
             ],
             [
+                "{$ns}\AddAction::runIf() expects exactly 3 arguments, 0 given.",
+                148,
+            ],
+            [
                 "{$ns}\AddAction::runUnless() expects exactly 3 arguments, 0 given.",
-                140,
+                149,
             ],
             [
                 "{$ns}\NoParamsAction::runIf() expects exactly 1 argument, 2 given.",
-                152,
+                161,
             ],
             [
                 "Call to {$ns}\NoHandleAction::run() but class has no handle() method.",
-                189,
+                198,
             ],
         ]);
     }

@@ -124,6 +124,15 @@ function wrongNamedArgumentTypes(): void
     NamedArgAction::run(a: 'not-int');
 }
 
+function unknownNamedArguments(): void
+{
+    NamedArgAction::run(a: 1, typo: 2);
+    NamedArgAction::runIf(true, a: 1, typo: 2);
+
+    // A variadic handle() accepts any name.
+    VariadicAction::run(anything: 'a');
+}
+
 function namedConditionArgument(): void
 {
     AddAction::runIf(a: 1, b: 2, boolean: true);

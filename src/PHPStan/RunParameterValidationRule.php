@@ -153,6 +153,18 @@ final class RunParameterValidationRule implements Rule
             }
 
             if ($param === null) {
+                // A variadic handle() collects unmatched named arguments by key.
+                if ($arg->name !== null && ! $isVariadic) {
+                    $errors[] = RuleErrorBuilder::message(sprintf(
+                        'Unknown parameter $%s in call to %s::%s().',
+                        $arg->name->toString(),
+                        $classReflection->getDisplayName(),
+                        $methodName,
+                    ))
+                        ->identifier('laravelActions.unknownNamedArgument')
+                        ->build();
+                }
+
                 continue;
             }
 
