@@ -79,7 +79,7 @@ function runReturnTypes(): void
     assertType('int', OptionalParamsAction::run(1, 2, false));
 }
 
-/** runIf() is narrowed when the condition is a literal true/false. */
+/** runIf() narrows to handle()'s return type when the condition is a literal true/false. */
 function runIfReturnTypes(): void
 {
     assertType('int', IntAction::runIf(true, 1, 2));
@@ -89,7 +89,6 @@ function runIfReturnTypes(): void
     assertType('Illuminate\Support\Fluent', IntAction::runIf(false, 1, 2));
 }
 
-/** runUnless() behaves the same as runIf(), inverted. */
 function runUnlessReturnTypes(): void
 {
     assertType('int', IntAction::runUnless(false, 1, 2));

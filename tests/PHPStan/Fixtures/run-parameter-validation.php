@@ -61,6 +61,18 @@ class NoParamsAction
     }
 }
 
+/** @method string handle(string $input) */
+class AnnotatedHandleAction
+{
+    use AsAction;
+
+    /** @param array<mixed> $arguments */
+    public function __call(string $name, array $arguments): string
+    {
+        return 'ran';
+    }
+}
+
 function validCalls(): void
 {
     AddAction::run(1, 2);
@@ -130,15 +142,13 @@ function zeroArgumentConditional(): void
 
 function conditionalWithoutParameters(): void
 {
-    // Valid, the condition is the only argument.
     NoParamsAction::runIf(true);
     NoParamsAction::runUnless(false);
 
-    // Zero-arg. This rule stays silent, PHPStan's native check reports the missing $boolean.
+    // This rule stays silent on zero-arg calls, PHPStan's native check reports the missing $boolean.
     NoParamsAction::runIf();
     NoParamsAction::runUnless();
 
-    // Too many arguments.
     NoParamsAction::runIf(true, 'extra');
 }
 
@@ -147,4 +157,21 @@ function variadicConditional(): void
 {
     VariadicAction::runIf(true);
     VariadicAction::runIf(true, 'a', 'b');
+}
+
+function firstClassCallables(): void
+{
+    $run = AddAction::run(...);
+    $runIf = AddAction::runIf(...);
+    $runUnless = AddAction::runUnless(...);
+    $run(1, 2);
+    $runIf(true, 1, 2);
+    $runUnless(false, 1, 2);
+}
+
+function annotatedHandle(): void
+{
+    AnnotatedHandleAction::run('hello');
+    AnnotatedHandleAction::run();
+    AnnotatedHandleAction::runIf(true, 'hello');
 }

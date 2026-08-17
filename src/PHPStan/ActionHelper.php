@@ -28,6 +28,11 @@ final class ActionHelper
             return null;
         }
 
+        // StaticCall::getArgs() asserts against being called on a first-class callable.
+        if ($call->isFirstClassCallable()) {
+            return null;
+        }
+
         if ($call->class instanceof Name) {
             $callerType = $scope->resolveTypeByName($call->class);
         } else {
@@ -51,7 +56,9 @@ final class ActionHelper
 
     public function getHandleMethod(ClassReflection $classReflection): ?ExtendedMethodReflection
     {
-        if (! $classReflection->hasMethod('handle')) {
+        // hasMethod() also reports @method, __call and @mixin methods, which
+        // getNativeMethod() then throws on.
+        if (! $classReflection->hasNativeMethod('handle')) {
             return null;
         }
 

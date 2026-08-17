@@ -45,6 +45,11 @@ final class RunParameterValidationRule implements Rule
         $handleMethod = $this->helper->getHandleMethod($classReflection);
 
         if ($handleMethod === null) {
+            // A virtual handle() has an unknown signature rather than a missing one.
+            if ($classReflection->hasMethod('handle')) {
+                return [];
+            }
+
             return [
                 RuleErrorBuilder::message(sprintf(
                     'Call to %s::%s() but class has no handle() method.',
