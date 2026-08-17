@@ -1,0 +1,6 @@
+includes:
+    - ../../extension.neon
+
+parameters:
+    exceptions:
+        implicitThrows: true

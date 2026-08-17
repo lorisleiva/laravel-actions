@@ -1,0 +1,197 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Lorisleiva\Actions\PHPStan;
+
+use PhpParser\Node;
+use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Rules\RuleLevelHelper;
+use PHPStan\Type\VerbosityLevel;
+
+/**
+ * @implements Rule<StaticCall>
+ */
+final class RunParameterValidationRule implements Rule
+{
+    public function __construct(
+        private ActionHelper $helper,
+        private RuleLevelHelper $ruleLevelHelper,
+    ) {
+    }
+
+    public function getNodeType(): string
+    {
+        return StaticCall::class;
+    }
+
+    /** @return list<\PHPStan\Rules\IdentifierRuleError> */
+    public function processNode(Node $node, Scope $scope): array
+    {
+        $classReflection = $this->helper->resolveActionClass($node, $scope);
+
+        if ($classReflection === null) {
+            return [];
+        }
+
+        $methodName = $this->helper->resolveProxyMethodName($node);
+
+        if ($methodName === null) {
+            return [];
+        }
+
+        $handleMethod = $this->helper->getHandleMethod($classReflection);
+
+        if ($handleMethod === null) {
+            // A virtual handle() has an unknown signature rather than a missing one.
+            if ($classReflection->hasMethod('handle')) {
+                return [];
+            }
+
+            // A subclass receiving the call may declare handle() itself.
+            if ($this->helper->isLateStaticBinding($node)) {
+                return [];
+            }
+
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    'Call to %s::%s() but class has no handle() method.',
+                    $classReflection->getDisplayName(),
+                    $methodName,
+                ))
+                    ->identifier('laravelActions.missingHandle')
+                    ->build(),
+            ];
+        }
+
+        // Unpacking hides both the argument count and the positions the remaining
+        // arguments land on, so neither check can be made.
+        if ($this->helper->hasUnpackedArg($node->getArgs())) {
+            return [];
+        }
+
+        $callArgCount = count($node->getArgs());
+        $isConditional = $methodName === 'runIf' || $methodName === 'runUnless';
+
+        $args = $this->helper->stripConditionArg($node->getArgs(), $methodName);
+
+        $variant = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $args,
+            $handleMethod->getVariants(),
+            $handleMethod->getNamedArgumentsVariants(),
+        );
+
+        $parameters = $variant->getParameters();
+        $isVariadic = $variant->isVariadic();
+        $errors = [];
+
+        $minParams = 0;
+        foreach ($parameters as $param) {
+            if (! $param->isOptional()) {
+                $minParams++;
+            }
+        }
+
+        $maxParams = $isVariadic ? null : count($parameters);
+        $argCount = count($args);
+
+        // Report counts relative to the actual call (including the condition argument for runIf/runUnless).
+        $reportedMin = $isConditional ? $minParams + 1 : $minParams;
+        $reportedMax = $maxParams !== null ? ($isConditional ? $maxParams + 1 : $maxParams) : null;
+
+        if ($argCount < $minParams) {
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    '%s::%s() expects %s %d %s, %d given.',
+                    $classReflection->getDisplayName(),
+                    $methodName,
+                    $reportedMin === $reportedMax ? 'exactly' : 'at least',
+                    $reportedMin,
+                    $reportedMin === 1 ? 'argument' : 'arguments',
+                    $callArgCount,
+                ))
+                    ->identifier('laravelActions.tooFewArguments')
+                    ->build(),
+            ];
+        }
+
+        if ($maxParams !== null && $argCount > $maxParams) {
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    '%s::%s() expects %s %d %s, %d given.',
+                    $classReflection->getDisplayName(),
+                    $methodName,
+                    $reportedMin === $reportedMax ? 'exactly' : 'at most',
+                    $reportedMax,
+                    $reportedMax === 1 ? 'argument' : 'arguments',
+                    $callArgCount,
+                ))
+                    ->identifier('laravelActions.tooManyArguments')
+                    ->build(),
+            ];
+        }
+
+        foreach ($args as $i => $arg) {
+            if ($arg->name !== null) {
+                $paramName = $arg->name->toString();
+                $param = null;
+                $paramIndex = null;
+                foreach ($parameters as $j => $p) {
+                    if ($p->getName() === $paramName) {
+                        $param = $p;
+                        $paramIndex = $j;
+
+                        break;
+                    }
+                }
+            } else {
+                $param = $parameters[$i] ?? ($isVariadic ? $parameters[count($parameters) - 1] : null);
+                $paramIndex = $i;
+            }
+
+            if ($param === null) {
+                // A variadic handle() collects unmatched named arguments by key.
+                if ($arg->name !== null && ! $isVariadic) {
+                    $errors[] = RuleErrorBuilder::message(sprintf(
+                        'Unknown parameter $%s in call to %s::%s().',
+                        $arg->name->toString(),
+                        $classReflection->getDisplayName(),
+                        $methodName,
+                    ))
+                        ->identifier('laravelActions.unknownNamedArgument')
+                        ->build();
+                }
+
+                continue;
+            }
+
+            $argType = $scope->getType($arg->value);
+            $paramType = $param->getType();
+
+            $accepts = $this->ruleLevelHelper->accepts($paramType, $argType, $scope->isDeclareStrictTypes());
+
+            if (! $accepts->result) {
+                $reportedIndex = $isConditional ? ($paramIndex ?? $i) + 2 : ($paramIndex ?? $i) + 1;
+
+                $errors[] = RuleErrorBuilder::message(sprintf(
+                    'Parameter #%d $%s of %s::%s() expects %s, %s given.',
+                    $reportedIndex,
+                    $param->getName(),
+                    $classReflection->getDisplayName(),
+                    $methodName,
+                    $paramType->describe(VerbosityLevel::typeOnly()),
+                    $argType->describe(VerbosityLevel::typeOnly()),
+                ))
+                    ->identifier('laravelActions.argumentType')
+                    ->build();
+            }
+        }
+
+        return $errors;
+    }
+}
