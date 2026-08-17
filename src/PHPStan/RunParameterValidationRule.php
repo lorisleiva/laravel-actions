@@ -50,6 +50,11 @@ final class RunParameterValidationRule implements Rule
                 return [];
             }
 
+            // A subclass receiving the call may declare handle() itself.
+            if ($this->helper->isLateStaticBinding($node)) {
+                return [];
+            }
+
             return [
                 RuleErrorBuilder::message(sprintf(
                     'Call to %s::%s() but class has no handle() method.',

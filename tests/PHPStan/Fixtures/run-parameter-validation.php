@@ -188,3 +188,22 @@ function unpackedArguments(array $pair, array $all): void
     AddAction::runIf(...$all);
     NoHandleAction::run(...$pair);
 }
+
+abstract class BaseAction
+{
+    use AsAction;
+
+    public static function twice(): void
+    {
+        static::run();
+        static::run();
+    }
+}
+
+final class ConcreteAction extends BaseAction
+{
+    public function handle(): int
+    {
+        return 1;
+    }
+}

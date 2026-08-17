@@ -65,6 +65,15 @@ final class ActionHelper
         return $classReflection->getNativeMethod('handle');
     }
 
+    /**
+     * static:: resolves to the declaring class, losing the subclass that will
+     * actually receive the call.
+     */
+    public function isLateStaticBinding(StaticCall $call): bool
+    {
+        return $call->class instanceof Name && $call->class->toLowerString() === 'static';
+    }
+
     /** @param array<Arg> $args */
     public function hasUnpackedArg(array $args): bool
     {
