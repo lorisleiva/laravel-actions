@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lorisleiva\Actions\PHPStan;
 
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -55,5 +56,37 @@ final class ActionHelper
         }
 
         return $classReflection->getNativeMethod('handle');
+    }
+
+    /**
+     * Removes the leading $boolean condition argument from a runIf()/runUnless() call,
+     * so the remaining args line up with handle()'s parameters.
+     *
+     * @param array<Arg> $args
+     * @return array<Arg>
+     */
+    public function stripConditionArg(array $args, string $methodName): array
+    {
+        if (! ($methodName === 'runIf' || $methodName === 'runUnless')) {
+            return $args;
+        }
+
+        if (count($args) === 0) {
+            return $args;
+        }
+
+        if ($args[0]->name === null) {
+            return array_slice($args, 1);
+        }
+
+        foreach ($args as $i => $arg) {
+            if ($arg->name !== null && $arg->name->toString() === 'boolean') {
+                unset($args[$i]);
+
+                return array_values($args);
+            }
+        }
+
+        return $args;
     }
 }

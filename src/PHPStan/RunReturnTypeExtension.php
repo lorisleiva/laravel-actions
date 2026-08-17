@@ -40,10 +40,7 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
 
         $methodName = $expr->name->toString();
 
-        $args = $expr->getArgs();
-        if ($methodName === 'runIf' || $methodName === 'runUnless') {
-            $args = array_slice($args, 1);
-        }
+        $args = $this->helper->stripConditionArg($expr->getArgs(), $methodName);
 
         $variant = ParametersAcceptorSelector::selectFromArgs(
             $scope,

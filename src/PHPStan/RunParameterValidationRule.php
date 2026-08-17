@@ -56,10 +56,7 @@ final class RunParameterValidationRule implements Rule
             ];
         }
 
-        $args = $node->getArgs();
-        if ($methodName === 'runIf' || $methodName === 'runUnless') {
-            $args = array_slice($args, 1);
-        }
+        $args = $this->helper->stripConditionArg($node->getArgs(), $methodName);
 
         $variant = ParametersAcceptorSelector::selectFromArgs(
             $scope,

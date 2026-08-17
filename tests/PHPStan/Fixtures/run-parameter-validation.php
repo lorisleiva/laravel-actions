@@ -89,3 +89,7 @@ NamedArgAction::runIf(true, 1, c: 3.14);
 // Wrong type via named argument — should error
 NamedArgAction::run(1, c: 'not-float');
 NamedArgAction::run(a: 'not-int');
+
+// Named condition argument
+AddAction::runIf(a: 1, b: 2, boolean: true);
+AddAction::runIf(a: 'not-int', b: 2, boolean: true);

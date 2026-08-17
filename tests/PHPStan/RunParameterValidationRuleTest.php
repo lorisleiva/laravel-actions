@@ -78,6 +78,10 @@ final class RunParameterValidationRuleTest extends RuleTestCase
                 "Parameter #1 \$a of {$ns}\NamedArgAction::run() expects int, string given.",
                 91,
             ],
+            [
+                "Parameter #2 \$a of {$ns}\AddAction::runIf() expects int, string given.",
+                95,
+            ],
         ]);
     }
 }
