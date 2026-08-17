@@ -87,3 +87,8 @@ assertType('Illuminate\Support\Fluent|int|string', UnionReturnAction::runIf(true
 // runUnless() return types — same as runIf
 assertType('Illuminate\Support\Fluent|int', IntAction::runUnless(false, 1, 2));
 assertType('bool|Illuminate\Support\Fluent', AsObjectOnlyAction::runUnless(false, 'test'));
+
+// run() via a class-string variable
+/** @var class-string<IntAction> $actionClass */
+$actionClass = IntAction::class;
+assertType('int', $actionClass::run(1, 2));

@@ -30,7 +30,7 @@ final class ActionHelper
         if ($call->class instanceof Name) {
             $callerType = $scope->resolveTypeByName($call->class);
         } else {
-            $callerType = $scope->getType($call->class);
+            $callerType = $scope->getType($call->class)->getObjectTypeOrClassStringObjectType();
         }
 
         $classReflections = $callerType->getObjectClassReflections();
