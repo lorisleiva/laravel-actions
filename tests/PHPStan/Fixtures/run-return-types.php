@@ -101,6 +101,8 @@ function withVariableCondition(bool $flag): void
 {
     assertType('Illuminate\Support\Fluent|int', IntAction::runIf($flag, 1, 2));
     assertType('Illuminate\Support\Fluent|int', IntAction::runUnless($flag, 1, 2));
+    assertType('Illuminate\Support\Fluent|null', VoidAction::runIf($flag, 'hello'));
+    assertType('Illuminate\Support\Fluent|null', VoidAction::runUnless($flag, 'hello'));
 }
 
 function viaClassStringVariable(): void

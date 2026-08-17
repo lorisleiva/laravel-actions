@@ -9,6 +9,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\ExpressionTypeResolverExtension;
+use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -72,6 +73,12 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
             }
         }
 
-        return TypeCombinator::union($handleReturnType, $fluentType);
+        // void cannot take part in a union, and a void handle() leaves the call
+        // evaluating to null.
+        $valueType = $handleReturnType->isVoid()->yes()
+            ? new NullType()
+            : $handleReturnType;
+
+        return TypeCombinator::union($valueType, $fluentType);
     }
 }
