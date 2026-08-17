@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions;
 use Illuminate\Routing\Redirector;
 use Lorisleiva\Actions\Concerns\ValidateActions;
 
+/** @phpstan-consistent-constructor */
 class AttributeValidator
 {
     use ValidateActions;

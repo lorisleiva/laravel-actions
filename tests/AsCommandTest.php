@@ -15,9 +15,12 @@ class AsCommandTest
     {
         static::$decorator = $command;
 
+        $left = (int) $command->argument('left');
+        $right = (int) $command->argument('right');
+
         $result = ($command->hasOption('sub') && $command->option('sub'))
-            ? $command->argument('left') - $command->argument('right')
-            : $command->argument('left') + $command->argument('right');
+            ? $left - $right
+            : $left + $right;
 
         $command->line("Result: {$result}");
     }

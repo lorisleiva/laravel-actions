@@ -141,8 +141,8 @@ class ActionManager
             debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit),
             $ownNumberOfFrames
         );
-        foreach ($frames as $frame) {
-            $frame = new BacktraceFrame($frame);
+        foreach ($frames as $rawFrame) {
+            $frame = new BacktraceFrame($rawFrame);
 
             /** @var DesignPattern $designPattern */
             foreach ($designPatterns as $designPattern) {

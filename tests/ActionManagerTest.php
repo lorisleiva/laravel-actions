@@ -10,13 +10,13 @@ use Lorisleiva\Actions\Tests\Stubs\CustomUniqueJobDecorator;
 it('resolves from the container', function () {
     $manager = app(ActionManager::class);
 
-    expect($manager instanceof ActionManager)->toBeTrue();
+    expect($manager)->toBeInstanceOf(ActionManager::class);
 });
 
 it('resolves as a Facade', function () {
     $manager = Actions::getFacadeRoot();
 
-    expect($manager instanceof ActionManager)->toBeTrue();
+    expect($manager)->toBeInstanceOf(ActionManager::class);
 });
 
 it('resolves as a singleton', function () {
