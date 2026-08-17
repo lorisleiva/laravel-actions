@@ -175,3 +175,16 @@ function annotatedHandle(): void
     AnnotatedHandleAction::run();
     AnnotatedHandleAction::runIf(true, 'hello');
 }
+
+/**
+ * @param array{int, int} $pair
+ * @param array{bool, int, int} $all
+ */
+function unpackedArguments(array $pair, array $all): void
+{
+    AddAction::run(...$pair);
+    AddAction::runIf(true, ...$pair);
+    AddAction::runUnless(false, ...$pair);
+    AddAction::runIf(...$all);
+    NoHandleAction::run(...$pair);
+}

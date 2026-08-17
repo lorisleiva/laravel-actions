@@ -61,6 +61,12 @@ final class RunParameterValidationRule implements Rule
             ];
         }
 
+        // Unpacking hides both the argument count and the positions the remaining
+        // arguments land on, so neither check can be made.
+        if ($this->helper->hasUnpackedArg($node->getArgs())) {
+            return [];
+        }
+
         $callArgCount = count($node->getArgs());
         $isConditional = $methodName === 'runIf' || $methodName === 'runUnless';
 

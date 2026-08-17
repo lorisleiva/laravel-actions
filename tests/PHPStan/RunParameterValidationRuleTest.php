@@ -94,6 +94,10 @@ final class RunParameterValidationRuleTest extends RuleTestCase
                 "{$ns}\NoParamsAction::runIf() expects exactly 1 argument, 2 given.",
                 152,
             ],
+            [
+                "Call to {$ns}\NoHandleAction::run() but class has no handle() method.",
+                189,
+            ],
         ]);
     }
 }

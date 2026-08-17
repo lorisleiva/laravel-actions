@@ -65,6 +65,18 @@ final class ActionHelper
         return $classReflection->getNativeMethod('handle');
     }
 
+    /** @param array<Arg> $args */
+    public function hasUnpackedArg(array $args): bool
+    {
+        foreach ($args as $arg) {
+            if ($arg->unpack) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Removes the $boolean condition argument from a runIf()/runUnless() call,
      * so the remaining args line up with handle()'s parameters.
@@ -105,6 +117,12 @@ final class ActionHelper
         }
 
         if (count($args) === 0) {
+            return null;
+        }
+
+        // An unpacked first argument may supply the condition and any number of
+        // handle() arguments, so none of them can be told apart.
+        if ($args[0]->unpack) {
             return null;
         }
 
