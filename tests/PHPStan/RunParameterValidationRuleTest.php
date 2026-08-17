@@ -31,68 +31,68 @@ final class RunParameterValidationRuleTest extends RuleTestCase
         $this->analyse([__DIR__ . '/Fixtures/run-parameter-validation.php'], [
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 0 given.",
-                54,
+                77,
             ],
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 1 given.",
-                55,
+                78,
             ],
             [
                 "{$ns}\AddAction::runIf() expects exactly 3 arguments, 1 given.",
-                56,
+                79,
             ],
             [
                 "{$ns}\AddAction::runUnless() expects exactly 3 arguments, 2 given.",
-                57,
+                80,
             ],
             [
                 "{$ns}\AddAction::run() expects exactly 2 arguments, 3 given.",
-                60,
+                85,
             ],
             [
                 "Parameter #1 \$a of {$ns}\AddAction::run() expects int, string given.",
-                63,
+                90,
             ],
             [
                 "Parameter #2 \$b of {$ns}\AddAction::run() expects int, string given.",
-                64,
+                91,
             ],
             [
                 "Parameter #1 \$a of {$ns}\OptionalAction::run() expects int, string given.",
-                65,
+                92,
             ],
             [
                 "Call to {$ns}\NoHandleAction::run() but class has no handle() method.",
-                68,
+                97,
             ],
             [
                 "Call to {$ns}\NoHandleAction::runIf() but class has no handle() method.",
-                69,
+                98,
             ],
             // Named argument type errors
             [
                 "Parameter #3 \$c of {$ns}\NamedArgAction::run() expects float, string given.",
-                90,
+                111,
             ],
             [
                 "Parameter #1 \$a of {$ns}\NamedArgAction::run() expects int, string given.",
-                91,
+                112,
             ],
             [
                 "Parameter #2 \$a of {$ns}\AddAction::runIf() expects int, string given.",
-                95,
+                118,
             ],
             [
                 "{$ns}\AddAction::runIf() expects exactly 3 arguments, 0 given.",
-                98,
+                127,
             ],
             [
                 "{$ns}\AddAction::runUnless() expects exactly 3 arguments, 0 given.",
-                99,
+                128,
             ],
             [
                 "{$ns}\NoParamsAction::runIf() expects exactly 1 argument, 2 given.",
-                122,
+                142,
             ],
         ]);
     }

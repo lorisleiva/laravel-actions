@@ -41,35 +41,6 @@ class OptionalAction
     }
 }
 
-// Valid calls — no errors expected
-AddAction::run(1, 2);
-AddAction::runIf(true, 1, 2);
-AddAction::runUnless(false, 1, 2);
-VariadicAction::run('a', 'b', 'c');
-VariadicAction::run();
-OptionalAction::run(1);
-OptionalAction::run(1, 2);
-
-// Too few arguments
-AddAction::run();
-AddAction::run(1);
-AddAction::runIf(true);
-AddAction::runUnless(false, 1);
-
-// Too many arguments
-AddAction::run(1, 2, 3);
-
-// Wrong argument types
-AddAction::run('not-int', 2);
-AddAction::run(1, 'not-int');
-OptionalAction::run('not-int');
-
-// No handle method
-NoHandleAction::run();
-NoHandleAction::runIf(true);
-
-// --- Named arguments ---
-
 class NamedArgAction
 {
     use AsAction;
@@ -79,26 +50,6 @@ class NamedArgAction
         return "$a $b $c";
     }
 }
-
-// Valid named argument calls — no errors
-NamedArgAction::run(1, c: 3.14);
-NamedArgAction::run(a: 1, c: 3.14);
-NamedArgAction::run(a: 1, b: 'hello', c: 3.14);
-NamedArgAction::runIf(true, 1, c: 3.14);
-
-// Wrong type via named argument — should error
-NamedArgAction::run(1, c: 'not-float');
-NamedArgAction::run(a: 'not-int');
-
-// Named condition argument
-AddAction::runIf(a: 1, b: 2, boolean: true);
-AddAction::runIf(a: 'not-int', b: 2, boolean: true);
-
-// Zero-arg conditional call — always fatal at runtime, reported with the full arity
-AddAction::runIf();
-AddAction::runUnless();
-
-// --- Conditional calls on a handle() with no parameters ---
 
 class NoParamsAction
 {
@@ -110,17 +61,90 @@ class NoParamsAction
     }
 }
 
-// Valid — the condition is the only argument
-NoParamsAction::runIf(true);
-NoParamsAction::runUnless(false);
+function validCalls(): void
+{
+    AddAction::run(1, 2);
+    AddAction::runIf(true, 1, 2);
+    AddAction::runUnless(false, 1, 2);
+    VariadicAction::run('a', 'b', 'c');
+    VariadicAction::run();
+    OptionalAction::run(1);
+    OptionalAction::run(1, 2);
+}
 
-// Zero-arg — this rule stays silent, PHPStan's native check reports the missing $boolean
-NoParamsAction::runIf();
-NoParamsAction::runUnless();
+function tooFewArguments(): void
+{
+    AddAction::run();
+    AddAction::run(1);
+    AddAction::runIf(true);
+    AddAction::runUnless(false, 1);
+}
 
-// Too many arguments
-NoParamsAction::runIf(true, 'extra');
+function tooManyArguments(): void
+{
+    AddAction::run(1, 2, 3);
+}
 
-// Variadic handle() called conditionally — any number of arguments is valid
-VariadicAction::runIf(true);
-VariadicAction::runIf(true, 'a', 'b');
+function wrongArgumentTypes(): void
+{
+    AddAction::run('not-int', 2);
+    AddAction::run(1, 'not-int');
+    OptionalAction::run('not-int');
+}
+
+function noHandleMethod(): void
+{
+    NoHandleAction::run();
+    NoHandleAction::runIf(true);
+}
+
+function validNamedArguments(): void
+{
+    NamedArgAction::run(1, c: 3.14);
+    NamedArgAction::run(a: 1, c: 3.14);
+    NamedArgAction::run(a: 1, b: 'hello', c: 3.14);
+    NamedArgAction::runIf(true, 1, c: 3.14);
+}
+
+function wrongNamedArgumentTypes(): void
+{
+    NamedArgAction::run(1, c: 'not-float');
+    NamedArgAction::run(a: 'not-int');
+}
+
+function namedConditionArgument(): void
+{
+    AddAction::runIf(a: 1, b: 2, boolean: true);
+    AddAction::runIf(a: 'not-int', b: 2, boolean: true);
+}
+
+/**
+ * Zero-arg conditional calls are always fatal at runtime, so they are reported
+ * with the full arity of the call, including the condition argument.
+ */
+function zeroArgumentConditional(): void
+{
+    AddAction::runIf();
+    AddAction::runUnless();
+}
+
+function conditionalWithoutParameters(): void
+{
+    // Valid, the condition is the only argument.
+    NoParamsAction::runIf(true);
+    NoParamsAction::runUnless(false);
+
+    // Zero-arg. This rule stays silent, PHPStan's native check reports the missing $boolean.
+    NoParamsAction::runIf();
+    NoParamsAction::runUnless();
+
+    // Too many arguments.
+    NoParamsAction::runIf(true, 'extra');
+}
+
+/** A variadic handle() called conditionally accepts any number of arguments. */
+function variadicConditional(): void
+{
+    VariadicAction::runIf(true);
+    VariadicAction::runIf(true, 'a', 'b');
+}
