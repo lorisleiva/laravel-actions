@@ -40,6 +40,7 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
 
         $methodName = $expr->name->toString();
 
+        $conditionArg = $this->helper->getConditionArg($expr->getArgs(), $methodName);
         $args = $this->helper->stripConditionArg($expr->getArgs(), $methodName);
 
         $variant = ParametersAcceptorSelector::selectFromArgs(
@@ -55,9 +56,22 @@ final class RunReturnTypeExtension implements ExpressionTypeResolverExtension
             return $handleReturnType;
         }
 
-        return TypeCombinator::union(
-            $handleReturnType,
-            new ObjectType('Illuminate\Support\Fluent'),
-        );
+        $fluentType = new ObjectType('Illuminate\Support\Fluent');
+
+        if ($conditionArg !== null) {
+            $conditionType = $scope->getType($conditionArg->value);
+            $runsHandle = $methodName === 'runIf' ? $conditionType->isTrue() : $conditionType->isFalse();
+            $skipsHandle = $methodName === 'runIf' ? $conditionType->isFalse() : $conditionType->isTrue();
+
+            if ($runsHandle->yes()) {
+                return $handleReturnType;
+            }
+
+            if ($skipsHandle->yes()) {
+                return $fluentType;
+            }
+        }
+
+        return TypeCombinator::union($handleReturnType, $fluentType);
     }
 }

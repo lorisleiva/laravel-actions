@@ -59,7 +59,7 @@ final class ActionHelper
     }
 
     /**
-     * Removes the leading $boolean condition argument from a runIf()/runUnless() call,
+     * Removes the $boolean condition argument from a runIf()/runUnless() call,
      * so the remaining args line up with handle()'s parameters.
      *
      * @param array<Arg> $args
@@ -67,26 +67,50 @@ final class ActionHelper
      */
     public function stripConditionArg(array $args, string $methodName): array
     {
-        if (! ($methodName === 'runIf' || $methodName === 'runUnless')) {
+        $index = $this->findConditionArgIndex($args, $methodName);
+
+        if ($index === null) {
             return $args;
+        }
+
+        unset($args[$index]);
+
+        return array_values($args);
+    }
+
+    /**
+     * Finds the $boolean condition argument of a runIf()/runUnless() call.
+     *
+     * @param array<Arg> $args
+     */
+    public function getConditionArg(array $args, string $methodName): ?Arg
+    {
+        $index = $this->findConditionArgIndex($args, $methodName);
+
+        return $index === null ? null : $args[$index];
+    }
+
+    /** @param array<Arg> $args */
+    private function findConditionArgIndex(array $args, string $methodName): ?int
+    {
+        if (! ($methodName === 'runIf' || $methodName === 'runUnless')) {
+            return null;
         }
 
         if (count($args) === 0) {
-            return $args;
+            return null;
         }
 
         if ($args[0]->name === null) {
-            return array_slice($args, 1);
+            return 0;
         }
 
         foreach ($args as $i => $arg) {
             if ($arg->name !== null && $arg->name->toString() === 'boolean') {
-                unset($args[$i]);
-
-                return array_values($args);
+                return $i;
             }
         }
 
-        return $args;
+        return null;
     }
 }

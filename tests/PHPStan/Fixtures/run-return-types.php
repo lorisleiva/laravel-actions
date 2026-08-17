@@ -78,15 +78,24 @@ assertType('bool', AsObjectOnlyAction::run('test'));
 assertType('int', OptionalParamsAction::run(1, 2));
 assertType('int', OptionalParamsAction::run(1, 2, false));
 
-// runIf() return types — union with Fluent
-assertType('Illuminate\Support\Fluent|int', IntAction::runIf(true, 1, 2));
-assertType('Illuminate\Support\Fluent|void', VoidAction::runIf(true, 'hello'));
-assertType('Illuminate\Support\Fluent|string|null', NullableAction::runIf(true));
-assertType('Illuminate\Support\Fluent|int|string', UnionReturnAction::runIf(true));
+// runIf() return types — narrowed when the condition is a literal true/false
+assertType('int', IntAction::runIf(true, 1, 2));
+assertType('void', VoidAction::runIf(true, 'hello'));
+assertType('string|null', NullableAction::runIf(true));
+assertType('int|string', UnionReturnAction::runIf(true));
+assertType('Illuminate\Support\Fluent', IntAction::runIf(false, 1, 2));
 
-// runUnless() return types — same as runIf
-assertType('Illuminate\Support\Fluent|int', IntAction::runUnless(false, 1, 2));
-assertType('bool|Illuminate\Support\Fluent', AsObjectOnlyAction::runUnless(false, 'test'));
+// runUnless() return types — same as runIf, inverted
+assertType('int', IntAction::runUnless(false, 1, 2));
+assertType('bool', AsObjectOnlyAction::runUnless(false, 'test'));
+assertType('Illuminate\Support\Fluent', IntAction::runUnless(true, 1, 2));
+
+// runIf()/runUnless() return types — union with Fluent when the condition isn't statically known
+function withVariableCondition(bool $flag): void
+{
+    assertType('Illuminate\Support\Fluent|int', IntAction::runIf($flag, 1, 2));
+    assertType('Illuminate\Support\Fluent|int', IntAction::runUnless($flag, 1, 2));
+}
 
 // run() via a class-string variable
 /** @var class-string<IntAction> $actionClass */
