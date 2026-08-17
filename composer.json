@@ -27,9 +27,13 @@
         "lorisleiva/lody": "^0.7"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "larastan/larastan": "^3.0",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "pestphp/pest": "^3.0|^4.0",
+        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^11.5|^12.0"
     },
     "autoload": {
@@ -46,13 +50,15 @@
         ]
     },
     "scripts": {
+        "phpstan": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest --colors=always",
         "test-coverage": "vendor/bin/pest --coverage-html coverage"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
         }
     },
     "extra": {

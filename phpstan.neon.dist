@@ -1,0 +1,62 @@
+includes:
+    # Larastan, Pest, Carbon and phpstan-phpunit register themselves through
+    # phpstan/extension-installer. The root package's own extension does not.
+    - extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    excludePaths:
+        analyse:
+            # Deliberately invalid calls that the rule's own tests assert against.
+            - tests/PHPStan/Fixtures
+
+    # Pest shares state between hooks and tests by assigning arbitrary
+    # properties onto $this, which it types as a TestCall.
+    universalObjectCratesClasses:
+        - Pest\PendingCalls\TestCall
+
+    ignoreErrors:
+        # Pest's test() returns a TestCall that forwards every unknown method to
+        # the underlying TestCase through __call.
+        -
+            identifier: method.notFound
+            message: '#Call to an undefined method .*Pest\\.*::#'
+            path: tests/*
+
+        # Mockery's fluent expectations are typed as a union that only one half
+        # of implements.
+        -
+            identifier: method.notFound
+            message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::#'
+            path: tests/*
+
+        # The concerns call handle(), which the concrete action supplies. A
+        # @method tag on the trait would resolve this, but it would also make
+        # hasMethod('handle') true everywhere and silence
+        # laravelActions.missingHandle.
+        -
+            identifier: method.notFound
+            message: '#Call to an undefined method .*::handle\(\)#'
+            path: src/Concerns/*
+
+        # An action may declare a void handle(), which __invoke() still returns.
+        # Reported once per such action, so it cannot be baselined.
+        -
+            identifier: method.void
+            path: src/Concerns/AsController.php
+
+        # FormRequest annotates $validator as non-nullable even though it stays
+        # null until getValidatorInstance() populates it, so PHPStan reads the
+        # null check as always true.
+        -
+            identifier: deadCode.unreachable
+            path: src/Concerns/ValidateActions.php
+
+        # Testing a throw type extension means running PHPStan's own rules, which
+        # sit outside its backward compatibility promise.
+        -
+            identifier: phpstanApi.classConstant
+            path: tests/PHPStan/*

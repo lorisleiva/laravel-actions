@@ -12,6 +12,11 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use Lorisleiva\Actions\Tests\Stubs\OperationRequestedEvent;
 
+/**
+ * @property string $operation
+ * @property int $left
+ * @property int $right
+ */
 class AsActionWithValidatedAttributesTest
 {
     use AsAction;
