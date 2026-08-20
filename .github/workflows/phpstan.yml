@@ -19,9 +19,9 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl
           coverage: none
 
-      # Analysis runs on a single dependency set. The baseline records line
-      # numbers and inferred types, so a prefer-lowest resolution would report
-      # errors that do not match it.
+      # Analysis runs on a single dependency set. Larastan infers different
+      # types across Laravel versions, so a prefer-lowest resolution would
+      # report errors the configuration does not account for.
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction
 
