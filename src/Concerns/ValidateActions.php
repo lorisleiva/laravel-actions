@@ -136,7 +136,7 @@ trait ValidateActions
     {
         try {
             $response = $this->hasMethod('authorize')
-                ? $this->resolveAndCallMethod('authorize')
+                ? $this->callAuthorizationMethod()
                 : true;
         } catch (AuthorizationException $e) {
             return $e->toResponse();
@@ -147,6 +147,16 @@ trait ValidateActions
         }
 
         return $response ? Response::allow() : Response::deny();
+    }
+
+    /**
+     * Resolve the dependencies of the action's authorize method and call it.
+     *
+     * @return mixed
+     */
+    protected function callAuthorizationMethod()
+    {
+        return $this->resolveAndCallMethod('authorize');
     }
 
     protected function deniedAuthorization(Response $response): void
