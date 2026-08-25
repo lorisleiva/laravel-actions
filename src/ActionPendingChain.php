@@ -10,14 +10,16 @@ class ActionPendingChain extends PendingChain
 {
     public function dispatch(): ?PendingDispatch
     {
-        /** @var $job AsJob */
-        if ($this->usesAsJobTrait($job = $this->job)) {
+        $job = $this->job;
+
+        if ($this->usesAsJobTrait($job)) {
             $this->job = $job::makeJob(...func_get_args());
         }
 
         return parent::dispatch();
     }
 
+    /** @phpstan-assert-if-true class-string $job */
     public function usesAsJobTrait($job): bool
     {
         return is_string($job)

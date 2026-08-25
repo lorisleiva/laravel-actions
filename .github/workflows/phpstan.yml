@@ -1,0 +1,29 @@
+name: PHPStan
+
+on: [push, pull_request]
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    name: PHPStan
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl
+          coverage: none
+
+      # Analysis runs on a single dependency set. Larastan infers different
+      # types across Laravel versions, so a prefer-lowest resolution would
+      # report errors the configuration does not account for.
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress

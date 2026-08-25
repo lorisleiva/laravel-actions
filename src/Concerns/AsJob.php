@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Testing\Fakes\QueueFake;
 use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\Decorators\JobDecorator;
@@ -116,7 +117,11 @@ trait AsJob
             ? ActionManager::$uniqueJobDecorator
             : ActionManager::$jobDecorator;
 
-        $count = Queue::pushed($decoratorClass, function (JobDecorator $job, $queue) use ($callback) {
+        // pushed() only exists once the queue has been faked.
+        /** @var QueueFake $fake */
+        $fake = Queue::getFacadeRoot();
+
+        $count = $fake->pushed($decoratorClass, function (JobDecorator $job, $queue) use ($callback) {
             if (! $job->decorates(static::class)) {
                 return false;
             }

@@ -12,7 +12,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Reflector;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use ReflectionMethod;
-use ReflectionParameter;
 use Throwable;
 
 class JobDecorator implements ShouldQueue
@@ -165,8 +164,9 @@ class JobDecorator implements ShouldQueue
             return $this->parameters;
         }
 
-        /** @var ReflectionParameter $firstParameter */
-        if (! $firstParameter = Arr::first($reflectionMethod->getParameters())) {
+        $firstParameter = Arr::first($reflectionMethod->getParameters());
+
+        if (! $firstParameter) {
             return $this->parameters;
         }
 

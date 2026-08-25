@@ -7,6 +7,11 @@ use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsObject;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 
+/**
+ * @property string $operation
+ * @property int $left
+ * @property int $right
+ */
 class AsObjectWithValidatedAttributesTest
 {
     use AsObject;

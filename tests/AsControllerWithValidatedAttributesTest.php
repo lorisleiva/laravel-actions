@@ -7,6 +7,11 @@ use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 
+/**
+ * @property string $operation
+ * @property int $left
+ * @property int $right
+ */
 class AsControllerWithValidatedAttributesTest
 {
     use AsController;

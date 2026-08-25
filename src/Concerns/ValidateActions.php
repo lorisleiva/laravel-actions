@@ -106,7 +106,9 @@ trait ValidateActions
     protected function failedValidation(Validator $validator)
     {
         if ($this->hasMethod('getValidationFailure')) {
-            return $this->resolveAndCallMethod('getValidationFailure', compact('validator'));
+            $this->resolveAndCallMethod('getValidationFailure', compact('validator'));
+
+            return;
         }
 
         throw (new ValidationException($validator))
@@ -166,7 +168,7 @@ trait ValidateActions
     protected function prepareForValidation()
     {
         if ($this->hasMethod('prepareForValidation')) {
-            return $this->resolveAndCallMethod('prepareForValidation');
+            $this->resolveAndCallMethod('prepareForValidation');
         }
     }
 }

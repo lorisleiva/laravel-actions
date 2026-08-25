@@ -3,7 +3,6 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
@@ -19,7 +18,7 @@ class ActionManager
     /** @var class-string<JobDecorator> */
     public static string $jobDecorator = JobDecorator::class;
 
-    /** @var class-string<JobDecorator&ShouldBeUnique> */
+    /** @var class-string<UniqueJobDecorator> */
     public static string $uniqueJobDecorator = UniqueJobDecorator::class;
 
     /** @var DesignPattern[] */
@@ -44,7 +43,7 @@ class ActionManager
     }
 
     /**
-     * @param class-string<JobDecorator&ShouldBeUnique> $uniqueJobDecoratorClass
+     * @param class-string<UniqueJobDecorator> $uniqueJobDecoratorClass
      */
     public static function useUniqueJobDecorator(string $uniqueJobDecoratorClass): void
     {
@@ -142,8 +141,8 @@ class ActionManager
             debug_backtrace($backtraceOptions, $ownNumberOfFrames + $this->backtraceLimit),
             $ownNumberOfFrames
         );
-        foreach ($frames as $frame) {
-            $frame = new BacktraceFrame($frame);
+        foreach ($frames as $rawFrame) {
+            $frame = new BacktraceFrame($rawFrame);
 
             /** @var DesignPattern $designPattern */
             foreach ($designPatterns as $designPattern) {
