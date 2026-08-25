@@ -3,12 +3,16 @@
 namespace Lorisleiva\Actions\Decorators;
 
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteDependencyResolverTrait;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\DecorateActions;
 use Lorisleiva\Actions\Concerns\WithAttributes;
+use ReflectionMethod;
+use ReflectionNamedType;
+use Illuminate\Support\Collection;
 
 class ControllerDecorator
 {
@@ -155,12 +159,68 @@ class ControllerDecorator
     {
         $this->container = Container::getInstance();
 
+        $this->container->instance(Route::class, $this->route);
+
+        $parameters = $this->route->parametersWithoutNulls();
+        $parameters = $this->resolveRouteModelBindings($parameters, $method);
+
         $arguments = $this->resolveClassMethodDependencies(
-            $this->route->parametersWithoutNulls(),
+            $parameters,
             $this->action,
             $method
         );
 
         return $this->action->{$method}(...array_values($arguments));
+    }
+
+    protected function resolveRouteModelBindings(array $parameters, string $method): array
+    {
+        $reflection = new ReflectionMethod($this->action, $method);
+        $reflectionParameters = Collection::make($reflection->getParameters())->keyBy(
+            fn($p) => $p->getName()
+        );
+
+        foreach ($parameters as $key => $value) {
+            if (is_object($value) || ! $reflectionParameters->has($key)) {
+                continue;
+            }
+
+            $type = $reflectionParameters->get($key)->getType();
+
+            if (! $type instanceof ReflectionNamedType || $type->isBuiltin()) {
+                continue;
+            }
+
+            $modelClass = $type->getName();
+
+            if (class_exists($modelClass) && is_subclass_of($modelClass, Model::class)) {
+                $bindingField = $this->getBindingFieldForRouteParameter($key);
+                $parameters[$key] = $this->resolveModel($modelClass, $value, $bindingField);
+            }
+        }
+
+        return $parameters;
+    }
+
+    protected function getBindingFieldForRouteParameter(string $parameter): ?string
+    {
+        if (property_exists($this->route, 'bindingFields') && isset($this->route->bindingFields[$parameter])) {
+            return $this->route->bindingFields[$parameter];
+        }
+
+        if (method_exists($this->route, 'bindingFieldFor')) {
+            return $this->route->bindingFieldFor($parameter);
+        }
+
+        return null;
+    }
+
+    protected function resolveModel(string $modelClass, mixed $value, ?string $bindingField = null): Model
+    {
+        if ($bindingField) {
+            return $modelClass::where($bindingField, $value)->firstOrFail();
+        }
+
+        return $modelClass::findOrFail($value);
     }
 }
