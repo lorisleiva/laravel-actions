@@ -6,14 +6,19 @@ use Closure;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\PendingDispatch;
+use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Testing\Fakes\QueueFake;
 use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\ActionPendingChain;
+use Lorisleiva\Actions\DebouncePendingDispatch;
+use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
+use LogicException;
 use PHPUnit\Framework\Assert as PHPUnit;
+use ReflectionClass;
 use Throwable;
 
 /**
@@ -22,7 +27,7 @@ use Throwable;
  * @property-read int $jobTries
  * @property-read int $jobMaxExceptions
  * @property-read int $jobTimeout
- * @method void configureJob(JobDecorator|UniqueJobDecorator $job)
+ * @method void configureJob(JobDecorator|UniqueJobDecorator|DebounceJobDecorator $job)
  *
  * @property-read int|array $jobBackoff
  * @method int|array getJobBackoff()
@@ -49,13 +54,26 @@ use Throwable;
  * @property-read bool $jobDeleteWhenMissingModels
  * @method bool getJobDeleteWhenMissingModels()
  *
+ * @property-read string $jobDebounceId
+ * @method string getJobDebounceId()
+ *
+ * @method \Illuminate\Contracts\Cache\Repository getJobDebounceVia()
+ *
  */
 trait AsJob
 {
     public static function makeJob(mixed ...$arguments): JobDecorator
     {
+        if (static::jobShouldBeUnique() && static::jobShouldBeDebounced()) {
+            throw new LogicException('A debounced job cannot also implement ShouldBeUnique.');
+        }
+
         if (static::jobShouldBeUnique()) {
             return static::makeUniqueJob(...$arguments);
+        }
+
+        if (static::jobShouldBeDebounced()) {
+            return static::makeDebounceJob(...$arguments);
         }
 
         return new ActionManager::$jobDecorator(static::class, ...$arguments);
@@ -66,14 +84,29 @@ trait AsJob
         return new ActionManager::$uniqueJobDecorator(static::class, ...$arguments);
     }
 
+    public static function makeDebounceJob(mixed ...$arguments): DebounceJobDecorator
+    {
+        return new ActionManager::$debounceJobDecorator(static::class, ...$arguments);
+    }
+
     protected static function jobShouldBeUnique(): bool
     {
         return is_subclass_of(static::class, ShouldBeUnique::class);
     }
 
+    protected static function jobShouldBeDebounced(): bool
+    {
+        return class_exists(DebounceFor::class)
+            && (new ReflectionClass(static::class))->getAttributes(DebounceFor::class) !== [];
+    }
+
     public static function dispatch(mixed ...$arguments): PendingDispatch
     {
-        return new PendingDispatch(static::makeJob(...$arguments));
+        $job = static::makeJob(...$arguments);
+
+        return static::jobShouldBeDebounced()
+            ? new DebouncePendingDispatch($job)
+            : new PendingDispatch($job);
     }
 
     public static function dispatchIf(bool $boolean, mixed ...$arguments): PendingDispatch|Fluent
@@ -113,9 +146,11 @@ trait AsJob
             $times = null;
         }
 
-        $decoratorClass = static::jobShouldBeUnique()
-            ? ActionManager::$uniqueJobDecorator
-            : ActionManager::$jobDecorator;
+        $decoratorClass = match (true) {
+            static::jobShouldBeUnique() => ActionManager::$uniqueJobDecorator,
+            static::jobShouldBeDebounced() => ActionManager::$debounceJobDecorator,
+            default => ActionManager::$jobDecorator,
+        };
 
         // pushed() only exists once the queue has been faked.
         /** @var QueueFake $fake */
