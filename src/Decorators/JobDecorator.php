@@ -29,7 +29,7 @@ class JobDecorator implements ShouldQueue
     public ?int $maxExceptions;
     public ?int $timeout;
     public ?bool $deleteWhenMissingModels;
-
+    public string $jobDebounceId = '';
     protected string $actionClass;
     protected array $parameters = [];
 
@@ -122,6 +122,16 @@ class JobDecorator implements ShouldQueue
             'getJobRetryUntil',
             'jobRetryUntil',
             null,
+            $this->parameters
+        );
+    }
+
+    public function debounceId(): string
+    {
+        return $this->fromActionMethodOrProperty(
+            'getJobDebounceId',
+            'jobDebounceId',
+            $this->jobDebounceId,
             $this->parameters
         );
     }
