@@ -30,7 +30,7 @@ it('makes debounce jobs by default when using properties', function () {
 
     // Then it returns a DebounceJobDecorator.
     expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('reads the debounce id from the action property', function () {
     // When we make a job from the action.
@@ -38,4 +38,4 @@ it('reads the debounce id from the action property', function () {
 
     // Then the debounceId reflects the action's jobDebounceId property.
     expect($job->debounceId())->toBe('my_debounce_id');
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');

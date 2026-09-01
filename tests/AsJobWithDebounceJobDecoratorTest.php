@@ -52,4 +52,4 @@ it('can access the DebounceJobDecorator instance from the asJob method', functio
 
     // And it received the expected result.
     expect(AsJobWithDebounceJobDecoratorTest::$latestResult)->toBe(3);
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');

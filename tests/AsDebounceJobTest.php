@@ -46,7 +46,7 @@ it('makes debounce jobs by default when the action has the DebounceFor attribute
 
     // Then it returns a DebounceJobDecorator.
     expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('forwards the debounceFor value from the action attribute to the decorator', function () {
     // When we make a job from the action.
@@ -54,7 +54,7 @@ it('forwards the debounceFor value from the action attribute to the decorator', 
 
     // Then the debounceFor property is set from the action's DebounceFor attribute.
     expect($job->debounceFor)->toBe(30);
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('forwards the debounce id from the action', function () {
     // When we make a job from the action with a specific id.
@@ -62,7 +62,7 @@ it('forwards the debounce id from the action', function () {
 
     // Then the debounceId reflects the action parameter.
     expect($job->debounceId())->toContain('42');
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('uses the cache driver provided in getJobDebounceVia', function () {
     // When we dispatch a debounced job.
@@ -70,7 +70,7 @@ it('uses the cache driver provided in getJobDebounceVia', function () {
 
     // Then the action's debounce cache driver was used.
     expect(AsDebounceJobTest::$cache)->not->toBeNull();
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('can be tested using the assertPushed helper method', function () {
     // When we dispatch a debounced job.
@@ -78,7 +78,7 @@ it('can be tested using the assertPushed helper method', function () {
 
     // Then we can assert it has been pushed using helper methods.
     AsDebounceJobTest::assertPushed();
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');
 
 it('dispatches a debounced job as a DebounceJobDecorator', function () {
     // When we dispatch a debounced job.
@@ -88,4 +88,4 @@ it('dispatches a debounced job as a DebounceJobDecorator', function () {
     Queue::assertPushed(DebounceJobDecorator::class, function (DebounceJobDecorator $job) {
         return $job->debounceFor === 30;
     });
-});
+})->skip(! class_exists(DebounceFor::class), 'Requires Laravel 13.6+ (Illuminate\Queue\Attributes\DebounceFor).');

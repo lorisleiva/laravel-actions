@@ -90,6 +90,10 @@ trait AsJob
 
     protected static function jobShouldBeDebounced(): bool
     {
+        if (! class_exists(DebounceFor::class)) {
+            return false;
+        }
+
         return ! empty((new ReflectionClass(static::class))->getAttributes(DebounceFor::class));
     }
 

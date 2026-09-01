@@ -14,10 +14,12 @@ class DebounceJobDecorator extends JobDecorator
 
     protected function constructed(): void
     {
-        $attributes = (new ReflectionClass($this->action))->getAttributes(DebounceFor::class);
+        if (class_exists(DebounceFor::class)) {
+            $attributes = (new ReflectionClass($this->action))->getAttributes(DebounceFor::class);
 
-        if (! empty($attributes)) {
-            $this->debounceFor = $attributes[0]->newInstance()->debounceFor;
+            if (! empty($attributes)) {
+                $this->debounceFor = $attributes[0]->newInstance()->debounceFor;
+            }
         }
 
         parent::constructed();
