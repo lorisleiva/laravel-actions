@@ -14,7 +14,10 @@ class ActionRequest extends FormRequest
 
     public function validateResolved(): void
     {
-        // Cancel the auto-resolution trait.
+        // Only run auto-resolution trait for precognitive requests.
+        if (request()->isPrecognitive()) {
+            parent::validateResolved();
+        }
     }
 
     public function getDefaultValidationData(): array
