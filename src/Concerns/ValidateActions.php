@@ -172,7 +172,7 @@ trait ValidateActions
 
     public function validated($key = null, $default = null): mixed
     {
-        return data_get($this->validator->validated(), $key, $default);
+        return data_get($this->validator?->validated(), $key, $default);
     }
 
     protected function prepareForValidation()
