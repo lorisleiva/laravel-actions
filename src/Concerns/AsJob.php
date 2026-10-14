@@ -52,6 +52,9 @@ use Throwable;
  * @property-read bool $jobDeleteWhenMissingModels
  * @method bool getJobDeleteWhenMissingModels()
  *
+ * @property-read int $jobDebounceFor
+ * @method int getJobDebounceFor()
+ *
  * @property-read string $jobDebounceId
  * @method string getJobDebounceId()
  *
@@ -94,7 +97,7 @@ trait AsJob
 
     protected static function jobShouldBeDebounced(): bool
     {
-        return DebounceJobDecorator::debounceAttributeFor(static::class) !== null;
+        return DebounceJobDecorator::shouldDebounce(static::class);
     }
 
     public static function dispatch(mixed ...$arguments): PendingDispatch

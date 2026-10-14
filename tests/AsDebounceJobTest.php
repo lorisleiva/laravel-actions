@@ -52,6 +52,22 @@ class AsDebounceJobWithMaxWaitTest
     }
 }
 
+#[DebounceFor(30, maxWait: 60)]
+class AsDebounceJobWithDebounceForMethodTest
+{
+    use AsJob;
+
+    public function handle(int $seconds): void
+    {
+        //
+    }
+
+    public function getJobDebounceFor(int $seconds): int
+    {
+        return $seconds;
+    }
+}
+
 #[DebounceFor(30)]
 class AsDebounceJobThatIsAlsoUniqueTest implements ShouldBeUnique
 {
@@ -129,6 +145,15 @@ it('forwards the maxWait value from the action attribute to the decorator', func
 
     // Then both debounceFor and maxWait are forwarded.
     expect($job->debounceFor)->toBe(30);
+    expect($job->maxWait)->toBe(60);
+});
+
+it('uses getJobDebounceFor over the attribute and keeps its maxWait', function () {
+    // When we make a job from an action whose getJobDebounceFor method uses its parameters.
+    $job = AsDebounceJobWithDebounceForMethodTest::makeJob(5);
+
+    // Then debounceFor comes from the method and maxWait from the attribute.
+    expect($job->debounceFor)->toBe(5);
     expect($job->maxWait)->toBe(60);
 });
 

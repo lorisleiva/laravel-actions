@@ -51,7 +51,7 @@ function assertJobPushed(string $class, ?Closure $callback = null): void
 {
     $decorator = match (true) {
         is_subclass_of($class, ShouldBeUnique::class) => ActionManager::$uniqueJobDecorator,
-        DebounceJobDecorator::debounceAttributeFor($class) !== null => ActionManager::$debounceJobDecorator,
+        DebounceJobDecorator::shouldDebounce($class) => ActionManager::$debounceJobDecorator,
         default => ActionManager::$jobDecorator,
     };
 

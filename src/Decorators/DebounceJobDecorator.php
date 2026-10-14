@@ -13,13 +13,29 @@ class DebounceJobDecorator extends JobDecorator
     public ?int $maxWait = null;
 
     /**
+     * Determine if the action is debounced, either by the DebounceFor attribute
+     * or by a jobDebounceFor property or getJobDebounceFor() method, just as
+     * Laravel debounces a job that only has a debounceFor property.
+     */
+    public static function shouldDebounce(string $actionClass): bool
+    {
+        if (! class_exists(DebounceFor::class)) {
+            return false;
+        }
+
+        return method_exists($actionClass, 'getJobDebounceFor')
+            || property_exists($actionClass, 'jobDebounceFor')
+            || static::debounceAttributeFor($actionClass) !== null;
+    }
+
+    /**
      * Resolve the DebounceFor attribute from the action class, its parents or
      * their traits, using the same lookup Laravel uses for debounced jobs.
      *
      * The guard must come first: ReadsClassAttributes only exists on Laravel 13.6+,
      * and the anonymous class only resolves its trait when it is instantiated.
      */
-    public static function debounceAttributeFor(string $actionClass): ?DebounceFor
+    protected static function debounceAttributeFor(string $actionClass): ?DebounceFor
     {
         if (! class_exists(DebounceFor::class)) {
             return null;
@@ -32,10 +48,17 @@ class DebounceJobDecorator extends JobDecorator
 
     protected function constructed(): void
     {
-        if ($attribute = static::debounceAttributeFor($this->actionClass)) {
-            $this->debounceFor = $attribute->debounceFor;
-            $this->maxWait = $attribute->maxWait;
-        }
+        $attribute = static::debounceAttributeFor($this->actionClass);
+
+        $this->debounceFor = $this->fromActionMethodOrProperty(
+            'getJobDebounceFor',
+            'jobDebounceFor',
+            $attribute?->debounceFor,
+            $this->parameters
+        );
+
+        // Like Laravel, maxWait can only be set through the attribute.
+        $this->maxWait = $attribute?->maxWait;
 
         parent::constructed();
     }
