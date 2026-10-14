@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
-use Lorisleiva\Actions\Decorators\JobDecorator;
 use LogicException;
 
 #[DebounceFor(30)]
@@ -132,16 +131,16 @@ it('makes debounce jobs by default when the action has the DebounceFor attribute
 });
 
 it('forwards the debounceFor value from the action attribute to the decorator', function () {
-    // When we make a job from the action.
-    $job = AsDebounceJobTest::makeJob();
+    // When we make a debounce job from the action.
+    $job = AsDebounceJobTest::makeDebounceJob();
 
     // Then the debounceFor property is set from the action's DebounceFor attribute.
     expect($job->debounceFor)->toBe(30);
 });
 
 it('forwards the maxWait value from the action attribute to the decorator', function () {
-    // When we make a job from an action whose attribute defines maxWait.
-    $job = AsDebounceJobWithMaxWaitTest::makeJob();
+    // When we make a debounce job from an action whose attribute defines maxWait.
+    $job = AsDebounceJobWithMaxWaitTest::makeDebounceJob();
 
     // Then both debounceFor and maxWait are forwarded.
     expect($job->debounceFor)->toBe(30);
@@ -149,8 +148,8 @@ it('forwards the maxWait value from the action attribute to the decorator', func
 });
 
 it('uses getJobDebounceFor over the attribute and keeps its maxWait', function () {
-    // When we make a job from an action whose getJobDebounceFor method uses its parameters.
-    $job = AsDebounceJobWithDebounceForMethodTest::makeJob(5);
+    // When we make a debounce job from an action whose getJobDebounceFor method uses its parameters.
+    $job = AsDebounceJobWithDebounceForMethodTest::makeDebounceJob(5);
 
     // Then debounceFor comes from the method and maxWait from the attribute.
     expect($job->debounceFor)->toBe(5);
@@ -158,8 +157,8 @@ it('uses getJobDebounceFor over the attribute and keeps its maxWait', function (
 });
 
 it('forwards the debounce id from the action', function () {
-    // When we make a job from the action with a specific id.
-    $job = AsDebounceJobTest::makeJob(42);
+    // When we make a debounce job from the action with a specific id.
+    $job = AsDebounceJobTest::makeDebounceJob(42);
 
     // Then the debounceId reflects the action parameter.
     expect($job->debounceId())->toBe('42');
@@ -168,19 +167,21 @@ it('forwards the debounce id from the action', function () {
 it('makes debounce jobs when the DebounceFor attribute is declared on a parent class', function () {
     // When we make a job from an action whose parent class has the DebounceFor attribute.
     $job = AsDebounceJobInheritingFromParentTest::makeJob();
+    $debounceJob = AsDebounceJobInheritingFromParentTest::makeDebounceJob();
 
     // Then it returns a DebounceJobDecorator using the inherited debounceFor value.
     expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
-    expect($job->debounceFor)->toBe(45);
+    expect($debounceJob->debounceFor)->toBe(45);
 });
 
 it('makes debounce jobs when the DebounceFor attribute is declared on a trait', function () {
     // When we make a job from an action using a trait that has the DebounceFor attribute.
     $job = AsDebounceJobInheritingFromTraitTest::makeJob();
+    $debounceJob = AsDebounceJobInheritingFromTraitTest::makeDebounceJob();
 
     // Then it returns a DebounceJobDecorator using the trait's debounceFor value.
     expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
-    expect($job->debounceFor)->toBe(15);
+    expect($debounceJob->debounceFor)->toBe(15);
 });
 
 it('uses the cache driver provided in getJobDebounceVia', function () {
@@ -211,7 +212,7 @@ it('dispatches a debounced job as a DebounceJobDecorator', function () {
     AsDebounceJobTest::dispatch(42);
 
     // Then it is pushed to the queue as a DebounceJobDecorator.
-    Queue::assertPushed(DebounceJobDecorator::class, function (JobDecorator $job) {
+    Queue::assertPushed(DebounceJobDecorator::class, function (DebounceJobDecorator $job) {
         return $job->debounceFor === 30;
     });
 });
@@ -236,5 +237,6 @@ it('dispatches without delay once maxWait is exceeded', function () {
     AsDebounceJobWithMaxWaitTest::dispatch();
 
     // Then the first job is delayed by debounceFor and the second is not delayed.
-    expect(Queue::pushed(DebounceJobDecorator::class)->map->delay->all())->toBe([30, 0]);
+    Queue::assertPushed(DebounceJobDecorator::class, fn (DebounceJobDecorator $job) => $job->delay === 30);
+    Queue::assertPushed(DebounceJobDecorator::class, fn (DebounceJobDecorator $job) => $job->delay === 0);
 });

@@ -53,16 +53,16 @@ it('makes debounce jobs from the jobDebounceFor property without the DebounceFor
 });
 
 it('reads the debounce id from the action property', function () {
-    // When we make a job from the action.
-    $job = AsDebounceJobUsingPropertiesTest::makeJob();
+    // When we make a debounce job from the action.
+    $job = AsDebounceJobUsingPropertiesTest::makeDebounceJob();
 
     // Then the debounceId reflects the action's jobDebounceId property.
     expect($job->debounceId())->toBe('my_debounce_id');
 });
 
 it('reads the debounceFor value from the action property', function () {
-    // When we make a job from the action.
-    $job = AsDebounceJobUsingPropertiesTest::makeJob();
+    // When we make a debounce job from the action.
+    $job = AsDebounceJobUsingPropertiesTest::makeDebounceJob();
 
     // Then the debounceFor property is set from jobDebounceFor, with no maxWait.
     expect($job->debounceFor)->toBe(20);

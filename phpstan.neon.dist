@@ -55,6 +55,15 @@ parameters:
             identifier: deadCode.unreachable
             path: src/Concerns/ValidateActions.php
 
+        # DebounceJobDecorator reuses Laravel's own attribute lookup so actions
+        # resolve #[DebounceFor] exactly like native jobs. Laravel types $target
+        # as an object but only hands it to ReflectionClass, which also accepts
+        # the class name makeJob() has before the action is built.
+        -
+            identifier: argument.type
+            message: '#^Parameter \#1 \$target of method .*::getAttributeInstance\(\) expects object, string given\.$#'
+            path: src/Decorators/DebounceJobDecorator.php
+
         # Testing a throw type extension means running PHPStan's own rules, which
         # sit outside its backward compatibility promise.
         -
