@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Testing\Fakes\QueueFake;
@@ -18,7 +17,6 @@ use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use LogicException;
 use PHPUnit\Framework\Assert as PHPUnit;
-use ReflectionClass;
 use Throwable;
 
 /**
@@ -96,15 +94,14 @@ trait AsJob
 
     protected static function jobShouldBeDebounced(): bool
     {
-        return class_exists(DebounceFor::class)
-            && (new ReflectionClass(static::class))->getAttributes(DebounceFor::class) !== [];
+        return DebounceJobDecorator::debounceAttributeFor(static::class) !== null;
     }
 
     public static function dispatch(mixed ...$arguments): PendingDispatch
     {
         $job = static::makeJob(...$arguments);
 
-        return static::jobShouldBeDebounced()
+        return $job instanceof DebounceJobDecorator
             ? new DebouncePendingDispatch($job)
             : new PendingDispatch($job);
     }

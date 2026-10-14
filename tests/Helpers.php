@@ -5,14 +5,13 @@ namespace Lorisleiva\Actions\Tests;
 use Closure;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionManager;
+use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\User;
-use ReflectionClass;
 
 function loadMigrations(): void
 {
@@ -52,7 +51,7 @@ function assertJobPushed(string $class, ?Closure $callback = null): void
 {
     $decorator = match (true) {
         is_subclass_of($class, ShouldBeUnique::class) => ActionManager::$uniqueJobDecorator,
-        class_exists(DebounceFor::class) && (new ReflectionClass($class))->getAttributes(DebounceFor::class) !== [] => ActionManager::$debounceJobDecorator,
+        DebounceJobDecorator::debounceAttributeFor($class) !== null => ActionManager::$debounceJobDecorator,
         default => ActionManager::$jobDecorator,
     };
 

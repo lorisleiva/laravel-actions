@@ -12,14 +12,34 @@ class DebounceJobDecorator extends JobDecorator
     public ?int $debounceFor = null;
     public ?int $maxWait = null;
 
+    /**
+     * Resolve the DebounceFor attribute from the action class, its parents or
+     * their traits, mirroring Laravel's ReadsClassAttributes::getAttributeInstance().
+     */
+    public static function debounceAttributeFor(string $actionClass): ?DebounceFor
+    {
+        if (! class_exists(DebounceFor::class)) {
+            return null;
+        }
+
+        $reflection = new ReflectionClass($actionClass);
+
+        do {
+            foreach ([$reflection, ...$reflection->getTraits()] as $source) {
+                if ($attributes = $source->getAttributes(DebounceFor::class)) {
+                    return $attributes[0]->newInstance();
+                }
+            }
+        } while ($reflection = $reflection->getParentClass());
+
+        return null;
+    }
+
     protected function constructed(): void
     {
-        $attributes = (new ReflectionClass($this->action))->getAttributes(DebounceFor::class);
-
-        if (! empty($attributes)) {
-            $instance = $attributes[0]->newInstance();
-            $this->debounceFor = $instance->debounceFor;
-            $this->maxWait = $instance->maxWait;
+        if ($attribute = static::debounceAttributeFor($this->actionClass)) {
+            $this->debounceFor = $attribute->debounceFor;
+            $this->maxWait = $attribute->maxWait;
         }
 
         parent::constructed();

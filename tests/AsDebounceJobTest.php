@@ -2,6 +2,7 @@
 
 namespace Lorisleiva\Actions\Tests;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Attributes\DebounceFor;
@@ -62,6 +63,37 @@ class AsDebounceJobThatIsAlsoUniqueTest implements ShouldBeUnique
     }
 }
 
+#[DebounceFor(45)]
+abstract class AsDebounceJobBaseTest
+{
+    use AsJob;
+}
+
+class AsDebounceJobInheritingFromParentTest extends AsDebounceJobBaseTest
+{
+    public function handle(): void
+    {
+        //
+    }
+}
+
+#[DebounceFor(15)]
+trait AsDebounceJobTraitTest
+{
+    //
+}
+
+class AsDebounceJobInheritingFromTraitTest
+{
+    use AsJob;
+    use AsDebounceJobTraitTest;
+
+    public function handle(): void
+    {
+        //
+    }
+}
+
 beforeEach(function () {
     // Debounced jobs are only available on Laravel 13.6+.
     if (! class_exists(DebounceFor::class)) {
@@ -105,7 +137,25 @@ it('forwards the debounce id from the action', function () {
     $job = AsDebounceJobTest::makeJob(42);
 
     // Then the debounceId reflects the action parameter.
-    expect($job->debounceId())->toContain('42');
+    expect($job->debounceId())->toBe('42');
+});
+
+it('makes debounce jobs when the DebounceFor attribute is declared on a parent class', function () {
+    // When we make a job from an action whose parent class has the DebounceFor attribute.
+    $job = AsDebounceJobInheritingFromParentTest::makeJob();
+
+    // Then it returns a DebounceJobDecorator using the inherited debounceFor value.
+    expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
+    expect($job->debounceFor)->toBe(45);
+});
+
+it('makes debounce jobs when the DebounceFor attribute is declared on a trait', function () {
+    // When we make a job from an action using a trait that has the DebounceFor attribute.
+    $job = AsDebounceJobInheritingFromTraitTest::makeJob();
+
+    // Then it returns a DebounceJobDecorator using the trait's debounceFor value.
+    expect($job)->toBeInstanceOf(DebounceJobDecorator::class);
+    expect($job->debounceFor)->toBe(15);
 });
 
 it('uses the cache driver provided in getJobDebounceVia', function () {
@@ -139,4 +189,27 @@ it('dispatches a debounced job as a DebounceJobDecorator', function () {
     Queue::assertPushed(DebounceJobDecorator::class, function (JobDecorator $job) {
         return $job->debounceFor === 30;
     });
+});
+
+it('acquires the debounce lock and delays the job by debounceFor', function () {
+    // When we dispatch a debounced job.
+    AsDebounceJobTest::dispatch(42);
+
+    // Then it was pushed with a debounce owner and delayed by debounceFor.
+    Queue::assertPushed(DebounceJobDecorator::class, function (DebounceJobDecorator $job) {
+        return $job->debounceOwner !== '' && $job->delay === 30;
+    });
+});
+
+it('dispatches without delay once maxWait is exceeded', function () {
+    // When we dispatch a job whose attribute defines a maxWait of 60 seconds.
+    Carbon::setTestNow($now = now());
+    AsDebounceJobWithMaxWaitTest::dispatch();
+
+    // And dispatch it again once maxWait has elapsed.
+    Carbon::setTestNow($now->copy()->addSeconds(61));
+    AsDebounceJobWithMaxWaitTest::dispatch();
+
+    // Then the first job is delayed by debounceFor and the second is not delayed.
+    expect(Queue::pushed(DebounceJobDecorator::class)->map->delay->all())->toBe([30, 0]);
 });
