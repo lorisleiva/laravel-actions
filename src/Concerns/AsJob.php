@@ -9,13 +9,13 @@ use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Testing\Fakes\QueueFake;
+use LogicException;
 use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\ActionPendingChain;
 use Lorisleiva\Actions\DebouncePendingDispatch;
 use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
-use LogicException;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Throwable;
 

@@ -8,9 +8,9 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
+use LogicException;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
-use LogicException;
 
 #[DebounceFor(30)]
 class AsDebounceJobTest

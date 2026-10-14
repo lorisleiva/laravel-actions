@@ -5,9 +5,9 @@ namespace Lorisleiva\Actions\Tests;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\Queue;
+use LogicException;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
-use LogicException;
 
 class AsDebounceJobUsingPropertiesTest
 {
