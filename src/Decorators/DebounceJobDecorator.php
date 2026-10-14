@@ -5,7 +5,7 @@ namespace Lorisleiva\Actions\Decorators;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Queue\Attributes\DebounceFor;
-use ReflectionClass;
+use Illuminate\Support\Traits\ReadsClassAttributes;
 
 class DebounceJobDecorator extends JobDecorator
 {
@@ -14,7 +14,10 @@ class DebounceJobDecorator extends JobDecorator
 
     /**
      * Resolve the DebounceFor attribute from the action class, its parents or
-     * their traits, mirroring Laravel's ReadsClassAttributes::getAttributeInstance().
+     * their traits, using the same lookup Laravel uses for debounced jobs.
+     *
+     * The guard must come first: ReadsClassAttributes only exists on Laravel 13.6+,
+     * and the anonymous class only resolves its trait when it is instantiated.
      */
     public static function debounceAttributeFor(string $actionClass): ?DebounceFor
     {
@@ -22,17 +25,9 @@ class DebounceJobDecorator extends JobDecorator
             return null;
         }
 
-        $reflection = new ReflectionClass($actionClass);
-
-        do {
-            foreach ([$reflection, ...$reflection->getTraits()] as $source) {
-                if ($attributes = $source->getAttributes(DebounceFor::class)) {
-                    return $attributes[0]->newInstance();
-                }
-            }
-        } while ($reflection = $reflection->getParentClass());
-
-        return null;
+        return (new class {
+            use ReadsClassAttributes { getAttributeInstance as public; }
+        })->getAttributeInstance($actionClass, DebounceFor::class);
     }
 
     protected function constructed(): void
