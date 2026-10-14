@@ -32,7 +32,7 @@ class DebounceJobDecorator extends JobDecorator
      * Resolve the DebounceFor attribute from the action class, its parents or
      * their traits, using the same lookup Laravel uses for debounced jobs.
      *
-     * The guard must come first: ReadsClassAttributes only exists on Laravel 13.6+,
+     * The guard must come first: ReadsClassAttributes doesn't exist on older Laravel,
      * and the anonymous class only resolves its trait when it is instantiated.
      *
      * Laravel types getAttributeInstance()'s $target as an object, but only hands

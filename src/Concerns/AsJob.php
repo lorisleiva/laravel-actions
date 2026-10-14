@@ -65,15 +65,18 @@ trait AsJob
 {
     public static function makeJob(mixed ...$arguments): JobDecorator
     {
-        if (static::jobShouldBeUnique() && static::jobShouldBeDebounced()) {
+        $unique = static::jobShouldBeUnique();
+        $debounced = static::jobShouldBeDebounced();
+
+        if ($unique && $debounced) {
             throw new LogicException('A debounced job cannot also implement ShouldBeUnique.');
         }
 
-        if (static::jobShouldBeUnique()) {
+        if ($unique) {
             return static::makeUniqueJob(...$arguments);
         }
 
-        if (static::jobShouldBeDebounced()) {
+        if ($debounced) {
             return static::makeDebounceJob(...$arguments);
         }
 

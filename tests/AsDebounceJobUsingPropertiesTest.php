@@ -75,7 +75,7 @@ it('delays the job by the jobDebounceFor property', function () {
 
     // Then it was pushed with a debounce owner and delayed by jobDebounceFor.
     Queue::assertPushed(DebounceJobDecorator::class, function (DebounceJobDecorator $job) {
-        return $job->debounceOwner !== '' && $job->delay === 20;
+        return ! empty($job->debounceOwner) && $job->delay === 20;
     });
 });
 
