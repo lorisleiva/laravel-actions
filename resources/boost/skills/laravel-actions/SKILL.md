@@ -132,6 +132,7 @@ Use these members only when needed:
 - `getJobRetryUntil()`: absolute retry deadline.
 - `getJobBackoff()`: retry delay strategy per attempt.
 - `getJobUniqueId(...)`: deduplication key for unique jobs.
+- `#[DebounceFor(...)]` or `$jobDebounceFor`: collapse repeated dispatches into the last one (Laravel 13.6+), keyed by `getJobDebounceId(...)`.
 - `asJob(JobDecorator $job, ...)`: access attempt metadata and queue-only branching.
 
 ### Run as Listener
