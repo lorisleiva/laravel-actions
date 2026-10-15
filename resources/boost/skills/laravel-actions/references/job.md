@@ -5,9 +5,9 @@ Use this reference when running an action through queues.
 
 ## Recap
 - Lists async/sync dispatch helpers and conditional dispatch variants.
-- Covers job wrapping/chaining with `makeJob`, `makeUniqueJob`, and `withChain`.
+- Covers job wrapping/chaining with `makeJob`, `makeUniqueJob`, `makeDebounceJob`, and `withChain`.
 - Documents queue assertion helpers for tests (`assertPushed*`).
-- Summarizes `JobDecorator` hooks/properties for retries, uniqueness, timeout, and failure handling.
+- Summarizes `JobDecorator` hooks/properties for retries, uniqueness, debouncing, timeout, and failure handling.
 
 ## Recommended pattern
 - Dispatch with `Action::dispatch(...)` for async execution.
@@ -70,6 +70,13 @@ Creates a `UniqueJobDecorator` wrapper. Usually automatic with `ShouldBeUnique`,
 
 ```php
 dispatch(SendTeamReportEmail::makeUniqueJob($team));
+```
+
+### `makeDebounceJob`
+Creates a `DebounceJobDecorator` wrapper. Used automatically when the action is debounced (`#[DebounceFor]`, `$jobDebounceFor` or `getJobDebounceFor`).
+
+```php
+$job = SendTeamReportEmail::makeDebounceJob($team);
 ```
 
 ### `withChain`
@@ -342,6 +349,63 @@ public function getJobUniqueVia()
 }
 ```
 
+### `#[DebounceFor]`
+Debounces the job (Laravel 13.6+): dispatches within the window replace each other and only the last one runs. `maxWait` caps how long a stream of dispatches can push it back. Also read from parent classes and traits.
+
+```php
+use Illuminate\Queue\Attributes\DebounceFor;
+
+#[DebounceFor(60, maxWait: 300)]
+class SendTeamReportEmail
+{
+    use AsAction;
+}
+```
+
+### `getJobDebounceFor`
+Defines the debounce delay in seconds. Debounces the action without the attribute, and takes precedence over it.
+
+```php
+public function getJobDebounceFor(Team $team): int
+{
+    return $team->role === 'premium' ? 10 : 60;
+}
+```
+
+### `$jobDebounceFor`
+Property alternative for the debounce delay. `maxWait` can only be set through the attribute.
+
+```php
+public int $jobDebounceFor = 60;
+```
+
+### `getJobDebounceId`
+Defines the debounce key, so only dispatches with the same key replace each other.
+
+```php
+public function getJobDebounceId(Team $team): int
+{
+    return $team->id;
+}
+```
+
+### `$jobDebounceId`
+Static debounce key alternative.
+
+```php
+public string $jobDebounceId = 'some_static_key';
+```
+
+### `getJobDebounceVia`
+Defines cache driver used for the debounce lock.
+
+```php
+public function getJobDebounceVia()
+{
+    return Cache::driver('redis');
+}
+```
+
 ### `$jobDeleteWhenMissingModels`
 Property alternative for missing model handling.
 
@@ -380,6 +444,8 @@ public function jobFailed(?Throwable $e, ...$parameters): void
 - Embedding domain logic only in `asJob(...)`.
 - Forgetting uniqueness/timeout/retry controls on heavy jobs.
 - Missing queue-specific assertions in tests.
+- Making an action both `ShouldBeUnique` and debounced; `makeJob()` throws a `LogicException`.
+- Dispatching a debounced action with `dispatch(Action::makeJob(...))`, which drops `maxWait`; use `Action::dispatch(...)`. The first job of a `withChain()` isn't debounced.
 
 ## References
 - https://www.laravelactions.com/2.x/as-job.html
