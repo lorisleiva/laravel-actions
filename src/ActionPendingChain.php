@@ -3,12 +3,11 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Foundation\Bus\PendingChain;
-use Illuminate\Foundation\Bus\PendingDispatch;
 use Lorisleiva\Actions\Concerns\AsJob;
 
 class ActionPendingChain extends PendingChain
 {
-    public function dispatch(): ?PendingDispatch
+    public function dispatch(): mixed
     {
         $job = $this->job;
 
