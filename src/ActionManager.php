@@ -3,14 +3,20 @@
 namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
+use Illuminate\Contracts\Queue\Interruptible;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
 use Lorisleiva\Actions\Concerns\AsController;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Decorators\DebounceJobDecorator;
+use Lorisleiva\Actions\Decorators\InterruptibleDebounceJobDecorator;
+use Lorisleiva\Actions\Decorators\InterruptibleJobDecorator;
+use Lorisleiva\Actions\Decorators\InterruptibleUniqueJobDecorator;
+use Lorisleiva\Actions\Decorators\InterruptibleUniqueUntilProcessingJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
+use Lorisleiva\Actions\Decorators\UniqueUntilProcessingJobDecorator;
 use Lorisleiva\Actions\DesignPatterns\DesignPattern;
 use Lorisleiva\Lody\Lody;
 
@@ -22,8 +28,23 @@ class ActionManager
     /** @var class-string<UniqueJobDecorator> */
     public static string $uniqueJobDecorator = UniqueJobDecorator::class;
 
+    /** @var class-string<UniqueUntilProcessingJobDecorator> */
+    public static string $uniqueUntilProcessingJobDecorator = UniqueUntilProcessingJobDecorator::class;
+
     /** @var class-string<DebounceJobDecorator> */
     public static string $debounceJobDecorator = DebounceJobDecorator::class;
+
+    /** @var class-string<JobDecorator&Interruptible> */
+    public static string $interruptibleJobDecorator = InterruptibleJobDecorator::class;
+
+    /** @var class-string<UniqueJobDecorator&Interruptible> */
+    public static string $interruptibleUniqueJobDecorator = InterruptibleUniqueJobDecorator::class;
+
+    /** @var class-string<UniqueUntilProcessingJobDecorator&Interruptible> */
+    public static string $interruptibleUniqueUntilProcessingJobDecorator = InterruptibleUniqueUntilProcessingJobDecorator::class;
+
+    /** @var class-string<DebounceJobDecorator&Interruptible> */
+    public static string $interruptibleDebounceJobDecorator = InterruptibleDebounceJobDecorator::class;
 
     /** @var DesignPattern[] */
     protected array $designPatterns = [];
@@ -55,11 +76,51 @@ class ActionManager
     }
 
     /**
+     * @param class-string<UniqueUntilProcessingJobDecorator> $uniqueUntilProcessingJobDecoratorClass
+     */
+    public static function useUniqueUntilProcessingJobDecorator(string $uniqueUntilProcessingJobDecoratorClass): void
+    {
+        static::$uniqueUntilProcessingJobDecorator = $uniqueUntilProcessingJobDecoratorClass;
+    }
+
+    /**
      * @param class-string<DebounceJobDecorator> $debounceJobDecoratorClass
      */
     public static function useDebounceJobDecorator(string $debounceJobDecoratorClass): void
     {
         static::$debounceJobDecorator = $debounceJobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<JobDecorator&Interruptible> $interruptibleJobDecoratorClass
+     */
+    public static function useInterruptibleJobDecorator(string $interruptibleJobDecoratorClass): void
+    {
+        static::$interruptibleJobDecorator = $interruptibleJobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<UniqueJobDecorator&Interruptible> $interruptibleUniqueJobDecoratorClass
+     */
+    public static function useInterruptibleUniqueJobDecorator(string $interruptibleUniqueJobDecoratorClass): void
+    {
+        static::$interruptibleUniqueJobDecorator = $interruptibleUniqueJobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<UniqueUntilProcessingJobDecorator&Interruptible> $interruptibleUniqueUntilProcessingJobDecoratorClass
+     */
+    public static function useInterruptibleUniqueUntilProcessingJobDecorator(string $interruptibleUniqueUntilProcessingJobDecoratorClass): void
+    {
+        static::$interruptibleUniqueUntilProcessingJobDecorator = $interruptibleUniqueUntilProcessingJobDecoratorClass;
+    }
+
+    /**
+     * @param class-string<DebounceJobDecorator&Interruptible> $interruptibleDebounceJobDecoratorClass
+     */
+    public static function useInterruptibleDebounceJobDecorator(string $interruptibleDebounceJobDecoratorClass): void
+    {
+        static::$interruptibleDebounceJobDecorator = $interruptibleDebounceJobDecoratorClass;
     }
 
     public function setBacktraceLimit(int $backtraceLimit): ActionManager

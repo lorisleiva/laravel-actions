@@ -5,7 +5,6 @@ namespace Lorisleiva\Actions\Decorators;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Queue\Attributes\DebounceFor;
-use Illuminate\Support\Traits\ReadsClassAttributes;
 
 class DebounceJobDecorator extends JobDecorator
 {
@@ -28,27 +27,9 @@ class DebounceJobDecorator extends JobDecorator
             || static::debounceAttributeFor($actionClass) !== null;
     }
 
-    /**
-     * Resolve the DebounceFor attribute from the action class, its parents or
-     * their traits, using the same lookup Laravel uses for debounced jobs.
-     *
-     * The guard must come first: ReadsClassAttributes doesn't exist on older Laravel,
-     * and the anonymous class only resolves its trait when it is instantiated.
-     *
-     * Laravel types getAttributeInstance()'s $target as an object, but only hands
-     * it to ReflectionClass, which accepts a class name too. A class name is all
-     * makeJob() has when choosing the decorator, before the action is built, so
-     * the resulting PHPStan error is ignored in phpstan.neon.dist.
-     */
     protected static function debounceAttributeFor(string $actionClass): ?DebounceFor
     {
-        if (! class_exists(DebounceFor::class)) {
-            return null;
-        }
-
-        return (new class {
-            use ReadsClassAttributes { getAttributeInstance as public; }
-        })->getAttributeInstance($actionClass, DebounceFor::class);
+        return static::actionAttribute($actionClass, DebounceFor::class);
     }
 
     protected function constructed(): void
