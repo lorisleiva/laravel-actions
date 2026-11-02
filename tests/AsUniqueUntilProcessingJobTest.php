@@ -7,9 +7,13 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
+use LogicException;
+use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use Lorisleiva\Actions\Decorators\UniqueUntilProcessingJobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\CustomUniqueJobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\CustomUniqueUntilProcessingJobDecorator;
 
 class AsUniqueUntilProcessingJobTest implements ShouldBeUniqueUntilProcessing
 {
@@ -115,4 +119,27 @@ it('can be tested using the assertPushed helper method', function () {
 
     // Then we can assert it has been pushed using helper methods.
     AsUniqueUntilProcessingJobTest::assertPushed();
+});
+
+it('refuses to drop a custom unique job decorator', function () {
+    // Given we registered a custom unique decorator, but no unique until processing one that extends it.
+    ActionManager::useUniqueJobDecorator(CustomUniqueJobDecorator::class);
+
+    // When we make a job from a unique until processing action.
+    // Then it fails loudly rather than silently skipping the custom decorator.
+    expect(fn () => AsUniqueUntilProcessingJobTest::makeJob())
+        ->toThrow(LogicException::class, 'ActionManager::useUniqueUntilProcessingJobDecorator()');
+});
+
+it('uses a custom unique until processing job decorator that extends the custom unique one', function () {
+    // Given we registered a custom unique decorator and a unique until processing one that extends it.
+    ActionManager::useUniqueJobDecorator(CustomUniqueJobDecorator::class);
+    ActionManager::useUniqueUntilProcessingJobDecorator(CustomUniqueUntilProcessingJobDecorator::class);
+
+    // When we make a job from a unique until processing action.
+    $job = AsUniqueUntilProcessingJobTest::makeJob();
+
+    // Then it keeps the custom behaviour and is unique until processing.
+    expect($job)->toBeInstanceOf(CustomUniqueJobDecorator::class);
+    expect($job)->toBeInstanceOf(ShouldBeUniqueUntilProcessing::class);
 });

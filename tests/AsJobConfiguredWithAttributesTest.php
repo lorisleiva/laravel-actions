@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Queue\Attributes\Backoff;
 use Illuminate\Queue\Attributes\Connection;
 use Illuminate\Queue\Attributes\CountCrashesAsExceptions;
+use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Queue\Attributes\Delay;
 use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\Attributes\FailOnTimeout;
@@ -49,6 +50,37 @@ class AsJobConfiguredWithAttributesAndPropertiesTest extends AsJobConfiguredWith
     public string $jobQueue = 'property_queue';
     public int $jobTries = 5;
     public int $jobBackoff = 60;
+}
+
+class AsJobConfiguredWithNullPropertyTest
+{
+    use AsJob;
+
+    public ?int $jobTries = null;
+    public int $jobTimeout = 60;
+
+    public function handle(): void
+    {
+        //
+    }
+}
+
+#[Timeout(120)]
+#[Tries(5)]
+class AsJobConfiguredWithAttributesOverParentPropertiesTest extends AsJobConfiguredWithNullPropertyTest
+{
+}
+
+#[DebounceFor(30)]
+#[Delay(5)]
+class AsJobConfiguredWithDebounceAndDelayAttributesTest
+{
+    use AsJob;
+
+    public function handle(): void
+    {
+        //
+    }
 }
 
 /**
@@ -187,6 +219,33 @@ it('lets properties take precedence over inherited attributes', function () {
     // And the remaining attributes are still inherited from the parent class.
     expect($job->connection)->toBe('my_connection');
     expect($job->timeout)->toBe(120);
+});
+
+it('lets attributes take precedence over null or inherited properties, as Laravel does', function () {
+    // When we make a job from an action whose attributes sit on a child of the class declaring the properties.
+    $job = AsJobConfiguredWithAttributesOverParentPropertiesTest::makeJob();
+
+    // Then the attributes win over a null property and an inherited default.
+    expect($job->tries)->toBe(5);
+    expect($job->timeout)->toBe(120);
+});
+
+it('ignores the Delay attribute on debounced jobs, as Laravel does', function () {
+    // Debounced jobs are only available on Laravel 13.6+.
+    if (! class_exists(DebounceFor::class)) {
+        test()->markTestSkipped('Debounced jobs require Laravel 13.6+.');
+    }
+
+    // Given we mock the queue driver.
+    Queue::fake();
+
+    // When we dispatch a debounced action that also has a Delay attribute.
+    AsJobConfiguredWithDebounceAndDelayAttributesTest::dispatch();
+
+    // Then it is delayed by the debounce window.
+    assertJobPushed(AsJobConfiguredWithDebounceAndDelayAttributesTest::class, function (JobDecorator $job) {
+        return $job->delay === 30;
+    });
 });
 
 it('uses the UniqueFor attribute on unique jobs', function () {

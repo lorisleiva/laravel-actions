@@ -48,6 +48,8 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
     public bool $countCrashesAsExceptions = false;
     public bool $shouldBeEncrypted = false;
 
+    protected static ?ActionAttributes $actionAttributes = null;
+
     protected string $actionClass;
     protected array $parameters = [];
 
@@ -63,17 +65,16 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
     {
         $this->onConnection($this->fromActionPropertyOrAttribute('jobConnection', Connection::class));
         $this->onQueue($this->fromActionPropertyOrAttribute('jobQueue', QueueAttribute::class));
-        $this->delay($this->fromActionAttribute(Delay::class));
+        $this->delay($this->delayFromAction());
         $this->setTries($this->fromActionPropertyOrAttribute('jobTries', Tries::class));
         $this->setMaxExceptions($this->fromActionPropertyOrAttribute('jobMaxExceptions', MaxExceptions::class));
         $this->setTimeout($this->fromActionPropertyOrAttribute('jobTimeout', Timeout::class));
         $this->setFailOnTimeout((bool) $this->fromActionPropertyOrAttribute('jobFailOnTimeout', FailOnTimeout::class));
         $this->setCountCrashesAsExceptions((bool) $this->fromActionPropertyOrAttribute('jobCountCrashesAsExceptions', CountCrashesAsExceptions::class));
-        $this->setDeleteWhenMissingModels($this->fromActionMethodOrProperty(
+        $this->setDeleteWhenMissingModels($this->fromActionMethodPropertyOrAttribute(
             'getJobDeleteWhenMissingModels',
             'jobDeleteWhenMissingModels',
-            fn () => $this->fromActionAttribute(DeleteWhenMissingModels::class),
-            $this->parameters
+            DeleteWhenMissingModels::class
         ));
         $this->applyQueueInterfacesFromAction();
         $this->fromActionMethod('configureJob', [$this]);
@@ -96,56 +97,66 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
     }
 
     /**
+     * Laravel ignores #[Delay] on debounced jobs, which DebounceJobDecorator
+     * mirrors by overriding this.
+     */
+    protected function delayFromAction(): mixed
+    {
+        return $this->fromActionAttribute(Delay::class);
+    }
+
+    /**
      * Laravel reads queue attributes off the queued command, which is this
-     * decorator rather than the action, so we copy them across. Like Laravel,
-     * an explicit property on the action takes precedence over its attribute.
+     * decorator rather than the action, so we copy them across. Precedence
+     * between the property and the attribute is resolved by Laravel itself.
      */
     protected function fromActionPropertyOrAttribute(string $property, string $attributeClass): mixed
     {
-        return $this->fromActionProperty($property, fn () => $this->fromActionAttribute($attributeClass));
+        $attributes = static::actionAttributes();
+
+        if (! $attributes) {
+            return $this->fromActionProperty($property);
+        }
+
+        return $attributes->valueOrProperty($this->action, $attributeClass, $property);
+    }
+
+    protected function fromActionMethodPropertyOrAttribute(string $method, string $property, string $attributeClass): mixed
+    {
+        if ($this->hasMethod($method)) {
+            return $this->callMethod($method, $this->parameters);
+        }
+
+        return $this->fromActionPropertyOrAttribute($property, $attributeClass);
     }
 
     protected function fromActionAttribute(string $attributeClass): mixed
     {
-        $attribute = static::actionAttribute($this->actionClass, $attributeClass);
-
-        if (! $attribute) {
-            return null;
-        }
-
-        // Marker attributes like #[FailOnTimeout] have no properties and mean true.
-        $values = get_object_vars($attribute);
-
-        return $values === [] ? true : reset($values);
+        return static::actionAttributes()?->value($this->actionClass, $attributeClass);
     }
 
     /**
-     * Resolve an attribute from the action class, its parents or their traits,
-     * using the same lookup Laravel uses for queued jobs.
-     *
-     * The guards must come first: ReadsClassAttributes and the queue attributes
-     * don't exist on older Laravel, and the anonymous class only resolves its
-     * trait when it is instantiated.
-     *
-     * Laravel types getAttributeInstance()'s $target as an object, but only hands
-     * it to ReflectionClass, which accepts a class name too. A class name is all
-     * makeJob() has when choosing the decorator, before the action is built, so
-     * the resulting PHPStan error is ignored in phpstan.neon.dist.
-     *
      * @template T of object
      * @param class-string $actionClass
      * @param class-string<T> $attributeClass
      * @return T|null
      */
-    public static function actionAttribute(string $actionClass, string $attributeClass): ?object
+    protected static function actionAttribute(string $actionClass, string $attributeClass): ?object
     {
-        if (! trait_exists(ReadsClassAttributes::class) || ! class_exists($attributeClass)) {
+        return static::actionAttributes()?->instance($actionClass, $attributeClass);
+    }
+
+    /**
+     * Queue attributes are read with ReadsClassAttributes, which only exists
+     * from Laravel 13. Checking it first keeps ActionAttributes from loading.
+     */
+    protected static function actionAttributes(): ?ActionAttributes
+    {
+        if (! trait_exists(ReadsClassAttributes::class)) {
             return null;
         }
 
-        return (new class {
-            use ReadsClassAttributes { getAttributeInstance as public; }
-        })->getAttributeInstance($actionClass, $attributeClass);
+        return static::$actionAttributes ??= new ActionAttributes();
     }
 
     public function handle()
@@ -218,12 +229,7 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
 
     public function backoff()
     {
-        return $this->fromActionMethodOrProperty(
-            'getJobBackoff',
-            'jobBackoff',
-            fn () => $this->fromActionAttribute(Backoff::class),
-            $this->parameters
-        );
+        return $this->fromActionMethodPropertyOrAttribute('getJobBackoff', 'jobBackoff', Backoff::class);
     }
 
     public function retryUntil()
@@ -245,6 +251,10 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
      * Laravel calls prepareForDispatch() before dispatching the job, and cancels
      * the dispatch when it returns false. Only actions that implement
      * PreparesForDispatch are asked, receiving the dispatched parameters.
+     *
+     * The action is stateless, so it can't prepare itself the way a native job
+     * does. Like asJob(), it can ask for this decorator as its first argument
+     * and prepare that instead.
      */
     public function prepareForDispatch()
     {
@@ -252,7 +262,7 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
             return null;
         }
 
-        return $this->callMethod('prepareForDispatch', $this->parameters);
+        return $this->callMethod('prepareForDispatch', $this->getPrependedParameters('prepareForDispatch'));
     }
 
     /**

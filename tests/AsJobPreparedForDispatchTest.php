@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Queue;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\UniqueJobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\PreparesForDispatchAction;
+use Lorisleiva\Actions\Tests\Stubs\PreparesForDispatchConfiguringAction;
 use Lorisleiva\Actions\Tests\Stubs\PreparesForDispatchUniqueAction;
 
 class AsJobPreparedForDispatchTest
@@ -59,6 +60,14 @@ it('cancels the dispatch when the action returns false', function () {
 
     // Then it was not dispatched.
     PreparesForDispatchAction::assertNotPushed();
+});
+
+it('lets the action prepare the job it is dispatched in', function () {
+    // When we dispatch an action that asks for its job to prepare it.
+    PreparesForDispatchConfiguringAction::dispatch('prepared');
+
+    // Then the job was dispatched as the action prepared it.
+    PreparesForDispatchConfiguringAction::assertPushedOn('prepared');
 });
 
 it('prepares unique jobs before taking their lock', function () {

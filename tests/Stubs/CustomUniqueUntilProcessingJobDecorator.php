@@ -2,8 +2,8 @@
 
 namespace Lorisleiva\Actions\Tests\Stubs;
 
-use Lorisleiva\Actions\Decorators\UniqueUntilProcessingJobDecorator;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
-class CustomUniqueUntilProcessingJobDecorator extends UniqueUntilProcessingJobDecorator
+class CustomUniqueUntilProcessingJobDecorator extends CustomUniqueJobDecorator implements ShouldBeUniqueUntilProcessing
 {
 }

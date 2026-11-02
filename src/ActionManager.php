@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions;
 
 use Illuminate\Console\Application as Artisan;
 use Illuminate\Contracts\Queue\Interruptible;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
 use Lorisleiva\Actions\Concerns\AsCommand;
@@ -28,7 +29,7 @@ class ActionManager
     /** @var class-string<UniqueJobDecorator> */
     public static string $uniqueJobDecorator = UniqueJobDecorator::class;
 
-    /** @var class-string<UniqueUntilProcessingJobDecorator> */
+    /** @var class-string<UniqueJobDecorator&ShouldBeUniqueUntilProcessing> */
     public static string $uniqueUntilProcessingJobDecorator = UniqueUntilProcessingJobDecorator::class;
 
     /** @var class-string<DebounceJobDecorator> */
@@ -40,7 +41,7 @@ class ActionManager
     /** @var class-string<UniqueJobDecorator&Interruptible> */
     public static string $interruptibleUniqueJobDecorator = InterruptibleUniqueJobDecorator::class;
 
-    /** @var class-string<UniqueUntilProcessingJobDecorator&Interruptible> */
+    /** @var class-string<UniqueJobDecorator&ShouldBeUniqueUntilProcessing&Interruptible> */
     public static string $interruptibleUniqueUntilProcessingJobDecorator = InterruptibleUniqueUntilProcessingJobDecorator::class;
 
     /** @var class-string<DebounceJobDecorator&Interruptible> */
@@ -76,7 +77,7 @@ class ActionManager
     }
 
     /**
-     * @param class-string<UniqueUntilProcessingJobDecorator> $uniqueUntilProcessingJobDecoratorClass
+     * @param class-string<UniqueJobDecorator&ShouldBeUniqueUntilProcessing> $uniqueUntilProcessingJobDecoratorClass
      */
     public static function useUniqueUntilProcessingJobDecorator(string $uniqueUntilProcessingJobDecoratorClass): void
     {
@@ -108,7 +109,7 @@ class ActionManager
     }
 
     /**
-     * @param class-string<UniqueUntilProcessingJobDecorator&Interruptible> $interruptibleUniqueUntilProcessingJobDecoratorClass
+     * @param class-string<UniqueJobDecorator&ShouldBeUniqueUntilProcessing&Interruptible> $interruptibleUniqueUntilProcessingJobDecoratorClass
      */
     public static function useInterruptibleUniqueUntilProcessingJobDecorator(string $interruptibleUniqueUntilProcessingJobDecoratorClass): void
     {

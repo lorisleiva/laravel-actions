@@ -32,6 +32,15 @@ class DebounceJobDecorator extends JobDecorator
         return static::actionAttribute($actionClass, DebounceFor::class);
     }
 
+    /**
+     * A debounced job runs once the debounce window closes, so Laravel ignores
+     * #[Delay]: the debounce lock only sets the delay while it is still null.
+     */
+    protected function delayFromAction(): mixed
+    {
+        return null;
+    }
+
     protected function constructed(): void
     {
         $attribute = static::debounceAttributeFor($this->actionClass);

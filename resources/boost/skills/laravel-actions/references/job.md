@@ -447,14 +447,14 @@ public function getJobDeleteWhenMissingModels(): bool
 ```
 
 ### Queue attributes
-On Laravel 13, an action can declare the same queue attributes as a native job. They are also read from parent classes and traits. An explicit `$job*` property or `getJob*` method takes precedence over the attribute, as a property does on a native job.
+On Laravel 13, an action can declare the same queue attributes as a native job. They are also read from parent classes and traits. A `getJob*` method always wins. Between a `$job*` property and an attribute, Laravel's own rules apply: the property wins when it holds a non-default value, or is declared on a subclass of the class carrying the attribute; otherwise the attribute wins.
 
 | Attribute | Equivalent |
 |---|---|
 | `#[Backoff(10, 20)]` | `$jobBackoff` |
 | `#[Connection('redis')]` | `$jobConnection` |
 | `#[CountCrashesAsExceptions]` | `$jobCountCrashesAsExceptions` |
-| `#[Delay(30)]` | `Action::dispatch(...)->delay(30)` |
+| `#[Delay(30)]` | `Action::dispatch(...)->delay(30)`. Ignored on debounced actions, as on native jobs. |
 | `#[DeleteWhenMissingModels]` | `$jobDeleteWhenMissingModels` |
 | `#[FailOnTimeout]` | `$jobFailOnTimeout` |
 | `#[MaxExceptions(3)]` | `$jobMaxExceptions` |
@@ -484,7 +484,7 @@ Laravel checks these interfaces on the queued job, which is the decorator rather
 - `ShouldBeEncrypted`: the job payload is encrypted on the queue.
 - `ShouldQueueAfterCommit`: the job waits for open database transactions to commit. `Action::dispatch(...)->beforeCommit()` still opts out.
 - `Interruptible` (Laravel 13): `interrupted(int $signal)` is called when the worker times out or is told to stop while the job runs. The action gets an `Interruptible*JobDecorator`, swappable via `ActionManager::useInterruptibleJobDecorator()` and its unique, unique until processing and debounce equivalents.
-- `PreparesForDispatch` (Laravel 13): `prepareForDispatch()` is called before dispatching, and returning `false` cancels the dispatch.
+- `PreparesForDispatch` (Laravel 13): `prepareForDispatch()` is called before dispatching, and returning `false` cancels the dispatch. The action is stateless, so to prepare the job (queue, delay...) ask for the `JobDecorator` as the first argument, as in `asJob()`.
 
 Both methods also receive the dispatched parameters after Laravel's own arguments. The interface fixes their signatures, so declare those parameters as optional.
 
@@ -493,8 +493,10 @@ class SendTeamReportEmail implements Interruptible, PreparesForDispatch
 {
     use AsAction;
 
-    public function prepareForDispatch(?Team $team = null): bool
+    public function prepareForDispatch(?JobDecorator $job = null, ?Team $team = null): bool
     {
+        $job?->onQueue($team?->reportsQueue());
+
         return $team?->wantsReports() ?? true;
     }
 
@@ -534,7 +536,7 @@ public function jobFailed(?Throwable $e, ...$parameters): void
 - Forgetting uniqueness/timeout/retry controls on heavy jobs.
 - Missing queue-specific assertions in tests.
 - Asserting a `ShouldBeUniqueUntilProcessing` or `Interruptible` action with `Queue::assertPushed(UniqueJobDecorator::class)`; it is pushed as a different decorator, so use `Action::assertPushed()`.
-- Registering a custom decorator through `ActionManager` and not its `Interruptible` equivalent; interruptible actions then skip the custom decorator.
+- Registering a custom decorator through `ActionManager` without a matching variant. `ShouldBeUniqueUntilProcessing` and `Interruptible` actions are queued with a variant decorator, which must extend the registered one (e.g. `useUniqueUntilProcessingJobDecorator()` with a class extending your custom unique decorator and implementing `ShouldBeUniqueUntilProcessing`), otherwise `makeJob()` throws a `LogicException`.
 - Making an action both `ShouldBeUnique` (or `ShouldBeUniqueUntilProcessing`) and debounced; `makeJob()` throws a `LogicException`.
 - Dispatching a debounced action with `dispatch(Action::makeJob(...))`, which drops `maxWait`; use `Action::dispatch(...)`. The first job of a `withChain()` isn't debounced.
 

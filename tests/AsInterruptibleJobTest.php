@@ -4,6 +4,7 @@ namespace Lorisleiva\Actions\Tests;
 
 use Illuminate\Contracts\Queue\Interruptible;
 use Illuminate\Support\Facades\Queue;
+use LogicException;
 use Lorisleiva\Actions\ActionManager;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\InterruptibleDebounceJobDecorator;
@@ -12,6 +13,7 @@ use Lorisleiva\Actions\Decorators\InterruptibleUniqueJobDecorator;
 use Lorisleiva\Actions\Decorators\InterruptibleUniqueUntilProcessingJobDecorator;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\CustomInterruptibleJobDecorator;
+use Lorisleiva\Actions\Tests\Stubs\CustomJobDecorator;
 use Lorisleiva\Actions\Tests\Stubs\InterruptibleAction;
 use Lorisleiva\Actions\Tests\Stubs\InterruptibleDebounceAction;
 use Lorisleiva\Actions\Tests\Stubs\InterruptibleUniqueAction;
@@ -68,6 +70,29 @@ it('uses a custom interruptible job decorator when one is registered', function 
 
     // Then it uses the custom decorator.
     expect($job)->toBeInstanceOf(CustomInterruptibleJobDecorator::class);
+});
+
+it('refuses to drop a custom job decorator', function () {
+    // Given we registered a custom decorator, but no interruptible one that extends it.
+    ActionManager::useJobDecorator(CustomJobDecorator::class);
+
+    // When we make a job from an interruptible action.
+    // Then it fails loudly rather than silently skipping the custom decorator.
+    expect(fn () => InterruptibleAction::makeJob())
+        ->toThrow(LogicException::class, 'ActionManager::useInterruptibleJobDecorator()');
+});
+
+it('uses a custom interruptible job decorator that extends the custom one', function () {
+    // Given we registered a custom decorator and an interruptible one that extends it.
+    ActionManager::useJobDecorator(CustomJobDecorator::class);
+    ActionManager::useInterruptibleJobDecorator(CustomInterruptibleJobDecorator::class);
+
+    // When we make a job from an interruptible action.
+    $job = InterruptibleAction::makeJob();
+
+    // Then it keeps the custom behaviour and is interruptible.
+    expect($job)->toBeInstanceOf(CustomJobDecorator::class);
+    expect($job)->toBeInstanceOf(Interruptible::class);
 });
 
 it('passes the signal and the dispatched parameters to the action', function () {
