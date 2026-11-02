@@ -52,6 +52,11 @@ class ActionAttributes
      */
     public function valueOrProperty(object $action, string $attributeClass, string $property): mixed
     {
+        // Some attributes, like CountCrashesAsExceptions, only exist on later 13.x releases.
+        if (! class_exists($attributeClass)) {
+            return $action->{$property} ?? null;
+        }
+
         return $this->getAttributeValue($action, $attributeClass, $property);
     }
 }

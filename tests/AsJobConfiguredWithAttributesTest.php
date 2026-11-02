@@ -22,12 +22,12 @@ use Illuminate\Queue\Attributes\UniqueFor;
 use Illuminate\Queue\Attributes\WithoutRelations;
 use Illuminate\Queue\SyncQueue;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Traits\ReadsClassAttributes;
 use Lorisleiva\Actions\Concerns\AsJob;
 use Lorisleiva\Actions\Decorators\JobDecorator;
 
 #[Backoff(10, 20)]
 #[Connection('my_connection')]
-#[CountCrashesAsExceptions]
 #[Delay(30)]
 #[DeleteWhenMissingModels]
 #[FailOnTimeout]
@@ -58,6 +58,17 @@ class AsJobConfiguredWithNullPropertyTest
 
     public ?int $jobTries = null;
     public int $jobTimeout = 60;
+
+    public function handle(): void
+    {
+        //
+    }
+}
+
+#[CountCrashesAsExceptions]
+class AsJobConfiguredWithCountCrashesAsExceptionsAttributeTest
+{
+    use AsJob;
 
     public function handle(): void
     {
@@ -163,9 +174,9 @@ function serializedRelationsOf(JobDecorator $job): array
 }
 
 beforeEach(function () {
-    // Queue attributes are only available on Laravel 13.
-    if (! class_exists(Tries::class)) {
-        test()->markTestSkipped('Queue attributes require Laravel 13.');
+    // Actions read queue attributes with ReadsClassAttributes, added in Laravel 13.2.
+    if (! trait_exists(ReadsClassAttributes::class)) {
+        test()->markTestSkipped('Queue attributes on actions require Laravel 13.2+.');
     }
 });
 
@@ -186,7 +197,6 @@ it('uses the configuration provided in attributes', function () {
             && $job->backoff() === [10, 20]
             && $job->timeout === 120
             && $job->failOnTimeout === true
-            && $job->countCrashesAsExceptions === true
             && $job->deleteWhenMissingModels === true;
     });
 });
@@ -202,9 +212,22 @@ it('passes the attribute configuration on to the queue payload', function () {
         'backoff' => '10,20',
         'timeout' => 120,
         'failOnTimeout' => true,
-        'countCrashesAsExceptions' => true,
         'deleteWhenMissingModels' => true,
     ]);
+});
+
+it('uses the CountCrashesAsExceptions attribute', function () {
+    // The CountCrashesAsExceptions attribute was added in Laravel 13.34.
+    if (! class_exists(CountCrashesAsExceptions::class)) {
+        test()->markTestSkipped('The CountCrashesAsExceptions attribute requires Laravel 13.34+.');
+    }
+
+    // When we build the queue payload of an action with the CountCrashesAsExceptions attribute.
+    $job = AsJobConfiguredWithCountCrashesAsExceptionsAttributeTest::makeJob();
+
+    // Then the queue worker counts crashes as exceptions.
+    expect($job->countCrashesAsExceptions)->toBeTrue();
+    expect(payloadForJob($job))->toMatchArray(['countCrashesAsExceptions' => true]);
 });
 
 it('lets properties take precedence over inherited attributes', function () {

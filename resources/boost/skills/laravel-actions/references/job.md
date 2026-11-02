@@ -447,13 +447,13 @@ public function getJobDeleteWhenMissingModels(): bool
 ```
 
 ### Queue attributes
-On Laravel 13, an action can declare the same queue attributes as a native job. They are also read from parent classes and traits. A `getJob*` method always wins. Between a `$job*` property and an attribute, Laravel's own rules apply: the property wins when it holds a non-default value, or is declared on a subclass of the class carrying the attribute; otherwise the attribute wins.
+On Laravel 13.2+, an action can declare the same queue attributes as a native job. They are also read from parent classes and traits. A `getJob*` method always wins. Between a `$job*` property and an attribute, Laravel's own rules apply: the property wins when it holds a non-default value, or is declared on a subclass of the class carrying the attribute; otherwise the attribute wins.
 
 | Attribute | Equivalent |
 |---|---|
 | `#[Backoff(10, 20)]` | `$jobBackoff` |
 | `#[Connection('redis')]` | `$jobConnection` |
-| `#[CountCrashesAsExceptions]` | `$jobCountCrashesAsExceptions` |
+| `#[CountCrashesAsExceptions]` (Laravel 13.34+) | `$jobCountCrashesAsExceptions` |
 | `#[Delay(30)]` | `Action::dispatch(...)->delay(30)`. Ignored on debounced actions, as on native jobs. |
 | `#[DeleteWhenMissingModels]` | `$jobDeleteWhenMissingModels` |
 | `#[FailOnTimeout]` | `$jobFailOnTimeout` |
