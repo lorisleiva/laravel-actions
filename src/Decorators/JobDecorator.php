@@ -69,7 +69,12 @@ class JobDecorator implements ShouldQueue, PreparesForDispatchWhenSupported
         $this->setTimeout($this->fromActionPropertyOrAttribute('jobTimeout', Timeout::class));
         $this->setFailOnTimeout((bool) $this->fromActionPropertyOrAttribute('jobFailOnTimeout', FailOnTimeout::class));
         $this->setCountCrashesAsExceptions((bool) $this->fromActionPropertyOrAttribute('jobCountCrashesAsExceptions', CountCrashesAsExceptions::class));
-        $this->setDeleteWhenMissingModels($this->fromActionPropertyOrAttribute('jobDeleteWhenMissingModels', DeleteWhenMissingModels::class));
+        $this->setDeleteWhenMissingModels($this->fromActionMethodOrProperty(
+            'getJobDeleteWhenMissingModels',
+            'jobDeleteWhenMissingModels',
+            fn () => $this->fromActionAttribute(DeleteWhenMissingModels::class),
+            $this->parameters
+        ));
         $this->applyQueueInterfacesFromAction();
         $this->fromActionMethod('configureJob', [$this]);
     }
