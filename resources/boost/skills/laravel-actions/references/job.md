@@ -5,7 +5,9 @@ Use this reference when running an action through queues.
 
 ## Recap
 - Lists async/sync dispatch helpers and conditional dispatch variants.
-- Covers job wrapping/chaining with `makeJob`, `makeUniqueJob`, `makeDebounceJob`, and `withChain`.
+- Covers job wrapping/chaining with `makeJob`, `makeUniqueJob`, `makeUniqueUntilProcessingJob`, `makeDebounceJob`, and `withChain`.
+- Lists the Laravel 13 queue attributes an action can declare (`#[Tries]`, `#[Queue]`, `#[UniqueFor]`, ...).
+- Lists the queue interfaces an action can implement (`ShouldBeUnique`, `ShouldBeUniqueUntilProcessing`, `ShouldBeEncrypted`, `ShouldQueueAfterCommit`, `Interruptible`, `PreparesForDispatch`).
 - Documents queue assertion helpers for tests (`assertPushed*`).
 - Summarizes `JobDecorator` hooks/properties for retries, uniqueness, debouncing, timeout, and failure handling.
 
@@ -66,10 +68,17 @@ dispatch(SendTeamReportEmail::makeJob($team));
 ```
 
 ### `makeUniqueJob`
-Creates a `UniqueJobDecorator` wrapper. Usually automatic with `ShouldBeUnique`, but can be forced.
+Creates a `UniqueJobDecorator` wrapper. Usually automatic with `ShouldBeUnique`, but can be forced. Returns a `UniqueUntilProcessingJobDecorator` when the action implements `ShouldBeUniqueUntilProcessing`.
 
 ```php
 dispatch(SendTeamReportEmail::makeUniqueJob($team));
+```
+
+### `makeUniqueUntilProcessingJob`
+Creates a `UniqueUntilProcessingJobDecorator` wrapper, which releases the unique lock when the job starts rather than when it finishes. Usually automatic with `ShouldBeUniqueUntilProcessing`, but can be forced.
+
+```php
+dispatch(SendTeamReportEmail::makeUniqueUntilProcessingJob($team));
 ```
 
 ### `makeDebounceJob`
@@ -268,6 +277,20 @@ Defines timeout in seconds.
 public int $jobTimeout = 60 * 30;
 ```
 
+### `$jobFailOnTimeout`
+Marks the job as failed when it times out, instead of retrying it.
+
+```php
+public bool $jobFailOnTimeout = true;
+```
+
+### `$jobCountCrashesAsExceptions`
+Counts worker crashes towards `$jobMaxExceptions`.
+
+```php
+public bool $jobCountCrashesAsExceptions = true;
+```
+
 ### `$jobRetryUntil`
 Defines timestamp retry deadline.
 
@@ -423,6 +446,74 @@ public function getJobDeleteWhenMissingModels(): bool
 }
 ```
 
+### Queue attributes
+On Laravel 13.2+, an action can declare the same queue attributes as a native job. They are also read from parent classes and traits. A `getJob*` method always wins. Between a `$job*` property and an attribute, Laravel's own rules apply: the property wins when it holds a non-default value, or is declared on a subclass of the class carrying the attribute; otherwise the attribute wins.
+
+| Attribute | Equivalent |
+|---|---|
+| `#[Backoff(10, 20)]` | `$jobBackoff` |
+| `#[Connection('redis')]` | `$jobConnection` |
+| `#[CountCrashesAsExceptions]` (Laravel 13.34+) | `$jobCountCrashesAsExceptions` |
+| `#[Delay(30)]` | `Action::dispatch(...)->delay(30)`. Ignored on debounced actions, as on native jobs. |
+| `#[DeleteWhenMissingModels]` | `$jobDeleteWhenMissingModels` |
+| `#[FailOnTimeout]` | `$jobFailOnTimeout` |
+| `#[MaxExceptions(3)]` | `$jobMaxExceptions` |
+| `#[Queue('reports')]` | `$jobQueue` |
+| `#[Timeout(120)]` | `$jobTimeout` |
+| `#[Tries(5)]` | `$jobTries` |
+| `#[UniqueFor(3600)]` | `$jobUniqueFor` |
+| `#[WithoutRelations]` | Serializes model arguments without their loaded relations. |
+
+```php
+use Illuminate\Queue\Attributes\Queue;
+use Illuminate\Queue\Attributes\Tries;
+
+#[Queue('reports')]
+#[Tries(5)]
+class SendTeamReportEmail
+{
+    use AsAction;
+}
+```
+
+### Queue interfaces
+Laravel checks these interfaces on the queued job, which is the decorator rather than the action. Implement them on the action and the decorator honours them.
+
+- `ShouldBeUnique`: dispatched through a `UniqueJobDecorator`.
+- `ShouldBeUniqueUntilProcessing`: dispatched through a `UniqueUntilProcessingJobDecorator`, swappable via `ActionManager::useUniqueUntilProcessingJobDecorator()`.
+- `ShouldBeEncrypted`: the job payload is encrypted on the queue.
+- `ShouldQueueAfterCommit`: the job waits for open database transactions to commit. `Action::dispatch(...)->beforeCommit()` still opts out.
+- `Interruptible` (Laravel 13): `interrupted(int $signal)` is called when the worker times out or is told to stop while the job runs. The action gets an `Interruptible*JobDecorator`, swappable via `ActionManager::useInterruptibleJobDecorator()` and its unique, unique until processing and debounce equivalents.
+- `PreparesForDispatch` (Laravel 13): `prepareForDispatch()` is called before dispatching, and returning `false` cancels the dispatch. The action is stateless, so to prepare the job (queue, delay...) ask for the `JobDecorator` as the first argument, as in `asJob()`.
+
+Both methods also receive the dispatched parameters after Laravel's own arguments. The interface fixes their signatures, so declare those parameters as optional.
+
+```php
+class SendTeamReportEmail implements Interruptible, PreparesForDispatch
+{
+    use AsAction;
+
+    public function prepareForDispatch(?JobDecorator $job = null, ?Team $team = null): bool
+    {
+        $job?->onQueue($team?->reportsQueue());
+
+        return $team?->wantsReports() ?? true;
+    }
+
+    public function interrupted(int $signal, ?Team $team = null): void
+    {
+        // Release resources, record progress...
+    }
+}
+```
+
+```php
+class SendTeamReportEmail implements ShouldBeEncrypted, ShouldQueueAfterCommit
+{
+    use AsAction;
+}
+```
+
 ### `jobFailed`
 Handles job failure. Receives exception and dispatched parameters.
 
@@ -444,7 +535,9 @@ public function jobFailed(?Throwable $e, ...$parameters): void
 - Embedding domain logic only in `asJob(...)`.
 - Forgetting uniqueness/timeout/retry controls on heavy jobs.
 - Missing queue-specific assertions in tests.
-- Making an action both `ShouldBeUnique` and debounced; `makeJob()` throws a `LogicException`.
+- Asserting a `ShouldBeUniqueUntilProcessing` or `Interruptible` action with `Queue::assertPushed(UniqueJobDecorator::class)`; it is pushed as a different decorator, so use `Action::assertPushed()`.
+- Registering a custom decorator through `ActionManager` without a matching variant. `ShouldBeUniqueUntilProcessing` and `Interruptible` actions are queued with a variant decorator, which must extend the registered one (e.g. `useUniqueUntilProcessingJobDecorator()` with a class extending your custom unique decorator and implementing `ShouldBeUniqueUntilProcessing`), otherwise `makeJob()` throws a `LogicException`.
+- Making an action both `ShouldBeUnique` (or `ShouldBeUniqueUntilProcessing`) and debounced; `makeJob()` throws a `LogicException`.
 - Dispatching a debounced action with `dispatch(Action::makeJob(...))`, which drops `maxWait`; use `Action::dispatch(...)`. The first job of a `withChain()` isn't debounced.
 
 ## References

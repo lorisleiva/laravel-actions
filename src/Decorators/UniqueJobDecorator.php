@@ -5,6 +5,7 @@ namespace Lorisleiva\Actions\Decorators;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\Attributes\UniqueFor;
 
 class UniqueJobDecorator extends JobDecorator implements ShouldBeUnique
 {
@@ -12,7 +13,7 @@ class UniqueJobDecorator extends JobDecorator implements ShouldBeUnique
 
     protected function constructed(): void
     {
-        $this->uniqueFor = (int) $this->fromActionWithParameters('getJobUniqueFor', 'jobUniqueFor', 0);
+        $this->uniqueFor = (int) $this->fromActionMethodPropertyOrAttribute('getJobUniqueFor', 'jobUniqueFor', UniqueFor::class);
 
         parent::constructed();
     }

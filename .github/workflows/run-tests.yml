@@ -41,6 +41,13 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+      # Every laravel/framework 11.x release carries a security advisory, which Composer
+      # refuses to install by default. Laravel 11 is still supported, so lift the block for
+      # those jobs only: this is a test install, and nothing it resolves ships.
+      - name: Allow Laravel 11 releases with security advisories
+        if: matrix.laravel == '^11.0'
+        run: composer config policy.advisories.block false
+
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update

@@ -4,7 +4,9 @@ namespace Lorisleiva\Actions\Concerns;
 
 use Closure;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Queue\Interruptible;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Fluent;
@@ -25,7 +27,7 @@ use Throwable;
  * @property-read int $jobTries
  * @property-read int $jobMaxExceptions
  * @property-read int $jobTimeout
- * @method void configureJob(JobDecorator|UniqueJobDecorator|DebounceJobDecorator $job)
+ * @method void configureJob(JobDecorator $job)
  *
  * @property-read int|array $jobBackoff
  * @method int|array getJobBackoff()
@@ -80,22 +82,169 @@ trait AsJob
             return static::makeDebounceJob(...$arguments);
         }
 
-        return new ActionManager::$jobDecorator(static::class, ...$arguments);
+        $decorator = static::defaultJobDecoratorClass();
+
+        return new $decorator(static::class, ...$arguments);
     }
 
     public static function makeUniqueJob(mixed ...$arguments): UniqueJobDecorator
     {
-        return new ActionManager::$uniqueJobDecorator(static::class, ...$arguments);
+        if (static::jobShouldBeUniqueUntilProcessing()) {
+            return static::makeUniqueUntilProcessingJob(...$arguments);
+        }
+
+        $decorator = static::uniqueJobDecoratorClass();
+
+        return new $decorator(static::class, ...$arguments);
+    }
+
+    /**
+     * @return UniqueJobDecorator&ShouldBeUniqueUntilProcessing
+     */
+    public static function makeUniqueUntilProcessingJob(mixed ...$arguments): UniqueJobDecorator
+    {
+        $decorator = static::uniqueUntilProcessingJobDecoratorClass();
+
+        return new $decorator(static::class, ...$arguments);
     }
 
     public static function makeDebounceJob(mixed ...$arguments): DebounceJobDecorator
     {
-        return new ActionManager::$debounceJobDecorator(static::class, ...$arguments);
+        $decorator = static::debounceJobDecoratorClass();
+
+        return new $decorator(static::class, ...$arguments);
+    }
+
+    /**
+     * The decorator class makeJob() wraps this action in.
+     *
+     * @return class-string<JobDecorator>
+     */
+    protected static function jobDecoratorClass(): string
+    {
+        return match (true) {
+            static::jobShouldBeUniqueUntilProcessing() => static::uniqueUntilProcessingJobDecoratorClass(),
+            static::jobShouldBeUnique() => static::uniqueJobDecoratorClass(),
+            static::jobShouldBeDebounced() => static::debounceJobDecoratorClass(),
+            default => static::defaultJobDecoratorClass(),
+        };
+    }
+
+    /**
+     * @return class-string<JobDecorator>
+     */
+    protected static function defaultJobDecoratorClass(): string
+    {
+        return static::jobDecoratorFor(
+            ActionManager::$jobDecorator,
+            ActionManager::$interruptibleJobDecorator,
+            'useInterruptibleJobDecorator'
+        );
+    }
+
+    /**
+     * @return class-string<UniqueJobDecorator>
+     */
+    protected static function uniqueJobDecoratorClass(): string
+    {
+        return static::jobDecoratorFor(
+            ActionManager::$uniqueJobDecorator,
+            ActionManager::$interruptibleUniqueJobDecorator,
+            'useInterruptibleUniqueJobDecorator'
+        );
+    }
+
+    /**
+     * @return class-string<UniqueJobDecorator&ShouldBeUniqueUntilProcessing>
+     */
+    protected static function uniqueUntilProcessingJobDecoratorClass(): string
+    {
+        static::ensureDecoratorVariantExtends(
+            ActionManager::$uniqueUntilProcessingJobDecorator,
+            ActionManager::$uniqueJobDecorator,
+            ShouldBeUniqueUntilProcessing::class,
+            'useUniqueUntilProcessingJobDecorator'
+        );
+
+        return static::jobDecoratorFor(
+            ActionManager::$uniqueUntilProcessingJobDecorator,
+            ActionManager::$interruptibleUniqueUntilProcessingJobDecorator,
+            'useInterruptibleUniqueUntilProcessingJobDecorator'
+        );
+    }
+
+    /**
+     * @return class-string<DebounceJobDecorator>
+     */
+    protected static function debounceJobDecoratorClass(): string
+    {
+        return static::jobDecoratorFor(
+            ActionManager::$debounceJobDecorator,
+            ActionManager::$interruptibleDebounceJobDecorator,
+            'useInterruptibleDebounceJobDecorator'
+        );
+    }
+
+    /**
+     * Laravel only notifies a running job of worker signals when the queued
+     * command implements Interruptible, so interruptible actions get a
+     * decorator that implements it and other actions don't.
+     *
+     * @template TDecorator of JobDecorator
+     * @template TInterruptibleDecorator of TDecorator
+     * @param class-string<TDecorator> $decorator
+     * @param class-string<TInterruptibleDecorator> $interruptibleDecorator
+     * @return class-string<TDecorator>
+     */
+    protected static function jobDecoratorFor(string $decorator, string $interruptibleDecorator, string $interruptibleSetter): string
+    {
+        if (! static::jobShouldBeInterruptible()) {
+            return $decorator;
+        }
+
+        static::ensureDecoratorVariantExtends($interruptibleDecorator, $decorator, Interruptible::class, $interruptibleSetter);
+
+        return $interruptibleDecorator;
+    }
+
+    /**
+     * A variant decorator replaces the registered one, so it must extend it.
+     * Otherwise a custom decorator's behaviour would be silently dropped for
+     * actions that implement the variant's interface.
+     *
+     * @param class-string<JobDecorator> $variant
+     * @param class-string<JobDecorator> $decorator
+     */
+    protected static function ensureDecoratorVariantExtends(string $variant, string $decorator, string $interface, string $setter): void
+    {
+        if (is_a($variant, $decorator, true)) {
+            return;
+        }
+
+        throw new LogicException(sprintf(
+            '[%s] implements %s, so it is queued with [%s] instead of the registered [%s], which it does not extend. Register a decorator that extends [%s] with ActionManager::%s().',
+            static::class,
+            class_basename($interface),
+            $variant,
+            $decorator,
+            $decorator,
+            $setter
+        ));
     }
 
     protected static function jobShouldBeUnique(): bool
     {
         return is_subclass_of(static::class, ShouldBeUnique::class);
+    }
+
+    protected static function jobShouldBeUniqueUntilProcessing(): bool
+    {
+        return is_subclass_of(static::class, ShouldBeUniqueUntilProcessing::class);
+    }
+
+    protected static function jobShouldBeInterruptible(): bool
+    {
+        return is_subclass_of(static::class, Interruptible::class);
     }
 
     protected static function jobShouldBeDebounced(): bool
@@ -149,11 +298,7 @@ trait AsJob
             $times = null;
         }
 
-        $decoratorClass = match (true) {
-            static::jobShouldBeUnique() => ActionManager::$uniqueJobDecorator,
-            static::jobShouldBeDebounced() => ActionManager::$debounceJobDecorator,
-            default => ActionManager::$jobDecorator,
-        };
+        $decoratorClass = static::jobDecoratorClass();
 
         // pushed() only exists once the queue has been faked.
         /** @var QueueFake $fake */
