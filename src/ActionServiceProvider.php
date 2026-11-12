@@ -8,6 +8,7 @@ use Lorisleiva\Actions\Console\MakeActionCommand;
 use Lorisleiva\Actions\DesignPatterns\CommandDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ControllerDesignPattern;
 use Lorisleiva\Actions\DesignPatterns\ListenerDesignPattern;
+use Lorisleiva\Actions\DesignPatterns\PipelineDesignPattern;
 
 class ActionServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,7 @@ class ActionServiceProvider extends ServiceProvider
                 new ControllerDesignPattern(),
                 new ListenerDesignPattern(),
                 new CommandDesignPattern(),
+                new PipelineDesignPattern(),
             ]);
         });
 
