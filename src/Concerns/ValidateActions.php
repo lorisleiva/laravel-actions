@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Concerns\CanBePrecognitive;
 use Illuminate\Routing\Redirector;
 use Illuminate\Validation\ValidationException;
 
@@ -67,9 +68,13 @@ trait ValidateActions
 
     protected function createDefaultValidator(ValidationFactory $factory): Validator
     {
-        return $factory->make(
+        $rules = $this->rules();
+        if (in_array(CanBePrecognitive::class, class_uses_recursive($this)) && $this->isPrecognitive())
+            $rules = $this->filterPrecognitiveRules($rules);
+
+        return  $factory->make(
             $this->validationData(),
-            $this->rules(),
+            $rules,
             $this->messages(),
             $this->attributes()
         );
