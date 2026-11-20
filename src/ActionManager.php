@@ -31,6 +31,9 @@ class ActionManager
     /** @var bool[] */
     protected array $extended = [];
 
+    /** @var array<class-string, array<string, string>> */
+    protected array $usedTraits = [];
+
     protected int $backtraceLimit = 10;
 
     public function __construct(array $designPatterns = [])
@@ -129,9 +132,9 @@ class ActionManager
 
     public function identifyAndDecorate($instance)
     {
-        $usedTraits = class_uses_recursive($instance);
+        $usedTraits = $this->usedTraits[$instance::class] ??= class_uses_recursive($instance);
 
-        if (in_array(AsFake::class, $usedTraits) && $instance::isFake()) {
+        if (isset($usedTraits[AsFake::class]) && $instance::isFake()) {
             $instance = $instance::mock();
         }
 
@@ -145,6 +148,11 @@ class ActionManager
     public function identifyFromBacktrace($usedTraits, ?BacktraceFrame &$frame = null): ?DesignPattern
     {
         $designPatterns = $this->getDesignPatternsMatching($usedTraits);
+
+        if ($designPatterns === []) {
+            return null;
+        }
+
         $backtraceOptions = DEBUG_BACKTRACE_PROVIDE_OBJECT
             | DEBUG_BACKTRACE_IGNORE_ARGS;
         
