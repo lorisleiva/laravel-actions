@@ -2,8 +2,6 @@
 
 namespace Lorisleiva\Actions;
 
-use Illuminate\Support\Arr;
-
 class BacktraceFrame
 {
     public ?string $class;
@@ -13,10 +11,10 @@ class BacktraceFrame
 
     public function __construct(array $frame)
     {
-        $this->class = Arr::get($frame, 'class');
-        $this->function = Arr::get($frame, 'function');
-        $this->isStatic = Arr::get($frame, 'type') === '::';
-        $this->object = Arr::get($frame, 'object');
+        $this->class = $frame['class'] ?? null;
+        $this->function = $frame['function'] ?? null;
+        $this->isStatic = ($frame['type'] ?? null) === '::';
+        $this->object = $frame['object'] ?? null;
     }
 
     public function fromClass(): bool
@@ -36,11 +34,9 @@ class BacktraceFrame
 
     public function matches(string $class, string $method, ?bool $isStatic = null): bool
     {
-        $matchesStatic = is_null($isStatic) || $this->isStatic === $isStatic;
-
-        return $this->instanceOf($class)
-            && $this->function === $method
-            && $matchesStatic;
+        return $this->function === $method
+            && (is_null($isStatic) || $this->isStatic === $isStatic)
+            && $this->instanceOf($class);
     }
 
     public function getObject()
